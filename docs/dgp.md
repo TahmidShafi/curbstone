@@ -233,6 +233,8 @@ Labels are written to a **separate file** (`truth/labels_round{r}.parquet`) that
 5. **Secondary data sources.** The asset rates in §3.2 come from secondary reports of the BBS ICT survey and must be checked against the primary publication before release.
 6. **Single primary mode per fabricator.** Real fabricators may mix strategies. Mixed-mode fraud is a planned extension.
 7. **Modal knowledge in too_average.** too_average fabricators use the exact village modal values from the full frame; real fabricators know local norms only approximately, so this mode may be easier to detect than its real-world counterpart.
+8. F3 treats roster_ages as one field; honest households with common sizes and asset profiles can match as near-duplicates.
+9. Calibrated FDR control was not achieved (Scoring v1–v3); the delivered method is risk ranking with a fixed back-check budget.
 
 ---
 

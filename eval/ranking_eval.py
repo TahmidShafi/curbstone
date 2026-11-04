@@ -16,7 +16,13 @@ from engine.scoring import score_enumerators
 from generator.run import run_generation
 
 
-def evaluate_ranking(start_seed: int = 400, n_seeds: int = 20, prevalence: float = 0.125, k: int = 4) -> None:
+def evaluate_ranking(
+    start_seed: int = 400,
+    n_seeds: int = 20,
+    prevalence: float = 0.125,
+    k: int = 4,
+    verbose: bool = False,
+) -> None:
     eval_dir = Path("eval_ranking_temp")
     eval_dir.mkdir(parents=True, exist_ok=True)
 
@@ -169,6 +175,15 @@ def evaluate_ranking(start_seed: int = 400, n_seeds: int = 20, prevalence: float
     print(f"v3 - Rules:             Mean = {np.mean(diff_rules):+.4f},  95% CI = [{ci_rules[0]:+.4f}, {ci_rules[1]:+.4f}]")
     print(f"v3 - (v3 --no-shrink):  Mean = {np.mean(diff_noshrink):+.4f},  95% CI = [{ci_noshrink[0]:+.4f}, {ci_noshrink[1]:+.4f}]")
 
+    if verbose:
+        print("\n" + "=" * 80)
+        print(f"PER-SEED PRECISION@{k} BREAKDOWN (Seeds {start_seed}..{start_seed + n_seeds - 1})")
+        print("=" * 80)
+        df_per_seed = pd.DataFrame({"Seed": list(range(start_seed, start_seed + n_seeds))})
+        for m_name in methods:
+            df_per_seed[m_name] = metrics[m_name]["precision"]
+        print(df_per_seed.to_string(index=False, formatters={m: "{:.4f}".format for m in methods}))
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Evaluate enumerator ranking on held-out seeds.")
@@ -176,9 +191,16 @@ def main() -> None:
     parser.add_argument("--n-seeds", type=int, default=20, help="Number of seeds (default: 20)")
     parser.add_argument("--prevalence", type=float, default=0.125, help="Prevalence (default: 0.125)")
     parser.add_argument("--k", type=int, default=4, help="Top-k cut (default: 4)")
+    parser.add_argument("--verbose", action="store_true", help="Print per-seed breakdown")
     args = parser.parse_args()
 
-    evaluate_ranking(start_seed=args.start_seed, n_seeds=args.n_seeds, prevalence=args.prevalence, k=args.k)
+    evaluate_ranking(
+        start_seed=args.start_seed,
+        n_seeds=args.n_seeds,
+        prevalence=args.prevalence,
+        k=args.k,
+        verbose=args.verbose,
+    )
 
 
 if __name__ == "__main__":
