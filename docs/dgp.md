@@ -329,3 +329,23 @@ Evaluation across honest-only rounds (seeds 0..19, medium ICC):
 
 
 
+
+## 11. Scoring v2 (post-hoc)
+
+- **Primary output:** Enumerator ranking by risk score (risk_score = -log10 p_e); primary metric is precision@k (k = 10% of enumerators, k = 4 for 40 enumerators) and recall@k, as pre-specified in §7.
+- **Data split:** Development seeds 0..19 and 42 are burned. Scoring v2 evaluation uses strictly held-out seeds:
+  - Seeds 100..119: held-out honest-only null calibration.
+  - Seeds 200..219: held-out fraud evaluation (prevalence 0.125).
+
+### 11.1 Methodological Changes in v2
+
+- **V1 F3 defect fix (near_dup):**
+  - Count observed near-duplicates strictly *within* cells (e, v) (same footing as the null resampling distribution).
+  - Smooth the expected rate identically to other count features: p_s = sum(mu_e) / sum(n), p0_e = (mu_e + p_s) / (n + 1).
+  - Beta-Binomial variance estimate: v_eff = max(v_e, binomial var at p0_e) where binomial var = n * p0_e * (1 - p0_e). Overdispersion rho_e estimated from moments with variance floor.
+- **V2 F4, F8, F9 (count features):**
+  - Estimate overdispersion rho by method of moments across all enumerators *without trimming* (retaining the full empirical spread, analogous to C1 for continuous features).
+- **V3 Continuous features (F1, F2, F5, F6, F7, F10):**
+  - Compute p-values from the Student-t distribution with degrees of freedom df = (number of enumerators with non-NaN d) - 1 instead of standard normal (Z), accounting for finite-sample reference dispersion uncertainty.
+- **FDR flags:**
+  - FDR flags are secondary; claim FDR control only if honest-only acceptance (same criteria as Amendment 2: share p < 0.05 <= 0.08, share p < 0.01 <= 0.02, share p < 0.001 <= 0.004, and <= 4 / 20 rounds with flags) passes on held-out seeds 100..119.

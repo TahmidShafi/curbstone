@@ -1,5 +1,9 @@
-"""Evaluation script for Amendment 2 acceptance checks (honest-only, seeds 0..19)."""
+"""Evaluation script for Scoring acceptance checks (honest-only calibration).
 
+Supports both Scoring v1 (seeds 0..19) and Scoring v2 (seeds 100..119).
+"""
+
+import argparse
 import sys
 from pathlib import Path
 import shutil
@@ -16,17 +20,20 @@ from generator.run import run_generation
 FEATURE_IDS = ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10"]
 
 
-def run_acceptance_comparison(n_seeds: int = 20) -> Tuple[pd.DataFrame, int, pd.DataFrame, int]:
-    """Run honest null calibration across seeds 0..n_seeds-1 for both base and fallback."""
+def run_acceptance_check(
+    start_seed: int = 100,
+    n_seeds: int = 20,
+    scoring_version: str = "v2",
+    empirical_null: bool = False,
+) -> Tuple[pd.DataFrame, int]:
+    """Run honest null calibration across held-out seeds."""
     eval_dir = Path("eval_acceptance_temp")
     eval_dir.mkdir(parents=True, exist_ok=True)
 
-    pooled_base: Dict[str, List[float]] = {f: [] for f in FEATURE_IDS}
-    pooled_fb: Dict[str, List[float]] = {f: [] for f in FEATURE_IDS}
-    rounds_flagged_base = 0
-    rounds_flagged_fb = 0
+    pooled_p: Dict[str, List[float]] = {f: [] for f in FEATURE_IDS}
+    rounds_flagged = 0
 
-    for s in range(n_seeds):
+    for s in range(start_seed, start_seed + n_seeds):
         r_dir = eval_dir / f"seed_{s}"
         sub_path = run_generation(
             icc_level="medium",
@@ -37,71 +44,75 @@ def run_acceptance_comparison(n_seeds: int = 20) -> Tuple[pd.DataFrame, int, pd.
         )
         vil_path = r_dir / "reference" / "villages.parquet"
         df_feat = build_feature_table(sub_path, vil_path)
+        scores = score_enumerators(
+            df_feat,
+            q=0.10,
+            empirical_null=empirical_null,
+            scoring_version=scoring_version,
+        )
 
-        scores_base = score_enumerators(df_feat, q=0.10, empirical_null=False)
-        scores_fb = score_enumerators(df_feat, q=0.10, empirical_null=True)
-
-        if int(scores_base["flagged"].sum()) >= 1:
-            rounds_flagged_base += 1
-        if int(scores_fb["flagged"].sum()) >= 1:
-            rounds_flagged_fb += 1
+        n_fl = int(scores["flagged"].sum())
+        if n_fl >= 1:
+            rounds_flagged += 1
 
         for f in FEATURE_IDS:
             col = f"{f}_p"
-            pooled_base[f].extend(scores_base[col].dropna().tolist())
-            pooled_fb[f].extend(scores_fb[col].dropna().tolist())
+            pooled_p[f].extend(scores[col].dropna().tolist())
 
     shutil.rmtree(eval_dir, ignore_errors=True)
 
-    def summarize(pooled: Dict[str, List[float]]) -> pd.DataFrame:
-        rows = []
-        for f in FEATURE_IDS:
-            arr = np.array(pooled[f])
-            n_tests = len(arr)
-            p05 = float(np.mean(arr < 0.05)) if n_tests > 0 else 0.0
-            p01 = float(np.mean(arr < 0.01)) if n_tests > 0 else 0.0
-            p001 = float(np.mean(arr < 0.001)) if n_tests > 0 else 0.0
-            pass_05 = p05 <= 0.08
-            pass_01 = p01 <= 0.02
-            pass_001 = p001 <= 0.004
-            all_passed = pass_05 and pass_01 and pass_001
-            rows.append({
-                "Feature": f.upper(),
-                "Non-NaN Tests": n_tests,
-                "Share p < 0.05": p05,
-                "Share p < 0.01": p01,
-                "Share p < 0.001": p001,
-                "Status": "PASS" if all_passed else "FAIL",
-            })
-        return pd.DataFrame(rows)
+    rows = []
+    for f in FEATURE_IDS:
+        arr = np.array(pooled_p[f])
+        n_tests = len(arr)
+        p05 = float(np.mean(arr < 0.05)) if n_tests > 0 else 0.0
+        p01 = float(np.mean(arr < 0.01)) if n_tests > 0 else 0.0
+        p001 = float(np.mean(arr < 0.001)) if n_tests > 0 else 0.0
+        pass_05 = p05 <= 0.08
+        pass_01 = p01 <= 0.02
+        pass_001 = p001 <= 0.004
+        all_passed = pass_05 and pass_01 and pass_001
+        rows.append({
+            "Feature": f.upper(),
+            "Non-NaN Tests": n_tests,
+            "Share p < 0.05": p05,
+            "Share p < 0.01": p01,
+            "Share p < 0.001": p001,
+            "Status": "PASS" if all_passed else "FAIL",
+        })
 
-    return summarize(pooled_base), rounds_flagged_base, summarize(pooled_fb), rounds_flagged_fb
+    return pd.DataFrame(rows), rounds_flagged
 
 
 def main() -> None:
-    df_base, rounds_base, df_fb, rounds_fb = run_acceptance_comparison(n_seeds=20)
+    parser = argparse.ArgumentParser(description="Evaluate scoring calibration on honest-only seeds.")
+    parser.add_argument("--v2", action="store_true", default=True, help="Evaluate Scoring v2 (default: True)")
+    parser.add_argument("--v1", action="store_true", help="Evaluate Scoring v1")
+    parser.add_argument("--seeds-start", type=int, default=None, help="Start seed (default: 100 for v2, 0 for v1)")
+    parser.add_argument("--n-seeds", type=int, default=20, help="Number of seeds (default: 20)")
+    args = parser.parse_args()
+
+    scoring_ver = "v1" if args.v1 else "v2"
+    start_seed = args.seeds_start if args.seeds_start is not None else (0 if scoring_ver == "v1" else 100)
 
     print("=" * 80)
-    print("ACCEPTANCE CHECK: Amendment 2 Baseline (empirical_null=False)")
+    print(f"ACCEPTANCE CHECK: Scoring {scoring_ver.upper()} (Seeds {start_seed}..{start_seed + args.n_seeds - 1}, honest-only)")
     print("=" * 80)
-    print(df_base.to_string(index=False, formatters={
+
+    df_res, rounds_fl = run_acceptance_check(
+        start_seed=start_seed,
+        n_seeds=args.n_seeds,
+        scoring_version=scoring_ver,
+    )
+
+    print(df_res.to_string(index=False, formatters={
         "Share p < 0.05": "{:.4f}".format,
         "Share p < 0.01": "{:.4f}".format,
         "Share p < 0.001": "{:.4f}".format,
     }))
-    print(f"\nRounds with >= 1 BH flag: {rounds_base} / 20 (Target <= 4)")
-    print(f"Decision: {'ACCEPT' if rounds_base <= 4 and (df_base['Status'] == 'PASS').all() else 'REJECT'}")
-
-    print("\n" + "=" * 80)
-    print("ACCEPTANCE CHECK: Amendment 2 + Empirical-Null Fallback (empirical_null=True)")
-    print("=" * 80)
-    print(df_fb.to_string(index=False, formatters={
-        "Share p < 0.05": "{:.4f}".format,
-        "Share p < 0.01": "{:.4f}".format,
-        "Share p < 0.001": "{:.4f}".format,
-    }))
-    print(f"\nRounds with >= 1 BH flag: {rounds_fb} / 20 (Target <= 4)")
-    print(f"Decision: {'ACCEPT' if rounds_fb <= 4 and (df_fb['Status'] == 'PASS').all() else 'REJECT'}")
+    print(f"\nRounds with >= 1 BH flag: {rounds_fl} / {args.n_seeds} (Target <= 4)")
+    decision = "ACCEPT" if rounds_fl <= 4 and (df_res["Status"] == "PASS").all() else "REJECT"
+    print(f"Decision: {decision}")
 
 
 if __name__ == "__main__":

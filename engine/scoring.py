@@ -1,4 +1,7 @@
-"""Enumerator scoring engine: empirical Bayes shrinkage, feature hypothesis tests, and FDR control."""
+"""Enumerator scoring engine: empirical Bayes shrinkage, feature hypothesis tests, and FDR control.
+
+Supports both Scoring v1 (pre-registered) and Scoring v2 (post-hoc ranking & calibration).
+"""
 
 import logging
 import math
@@ -6,7 +9,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 import numpy as np
 import pandas as pd
-from scipy.stats import beta, betabinom, binom, norm
+from scipy.stats import beta, betabinom, binom, norm, t
 
 logger = logging.getLogger(__name__)
 
@@ -94,43 +97,69 @@ def score_enumerators(
     no_fdr: bool = False,
     q: float = 0.10,
     empirical_null: bool = True,
+    scoring_version: str = "v1",
 ) -> pd.DataFrame:
-    """Score enumerators using empirical Bayes shrinkage and FDR control."""
+    """Score enumerators using empirical Bayes shrinkage and FDR control (v1 or v2)."""
     df = pd.read_parquet(features) if isinstance(features, (str, Path)) else features.copy()
     enum_ids = [str(x) for x in df["enumerator_id"]]
-    n_enums = len(df)
-    n_e = df["n_e"].values.astype(int)
+    n_enums, n_e = len(df), df["n_e"].values.astype(int)
+    is_v2 = str(scoring_version).lower() in ["v2", "2"]
 
     p_matrix: Dict[str, np.ndarray] = {}
     est_cols: Dict[str, np.ndarray] = {}
 
-    # 1. Feature F3: near_dup (workload-matched null, beta-binomial moments)
+    # 1. Feature F3: near_dup
     k3 = df["f3_k"].values.astype(int)
     n3 = np.maximum(1, df["f3_n"].values.astype(int))
     mu3 = df["f3_k_exp"].values.astype(float)
     v3 = df["f3_var"].values.astype(float) if "f3_var" in df else mu3
     p3, post3, cilo3, cihi3 = np.ones(n_enums), np.zeros(n_enums), np.zeros(n_enums), np.zeros(n_enums)
-    for i in range(n_enums):
-        if k3[i] == 0:
-            continue
-        p0 = mu3[i] / n3[i]
-        vb = n3[i] * p0 * (1.0 - p0)
-        if no_shrinkage or v3[i] <= vb or p0 <= 1e-6 or p0 >= 1.0 - 1e-6:
-            p3[i] = binom.sf(k3[i] - 1, n3[i], max(1e-6, p0))
-            pm = k3[i] / n3[i]
-            se = math.sqrt(pm * (1.0 - pm) / n3[i])
-            post3[i], cilo3[i], cihi3[i] = pm, max(0.0, pm - 1.645 * se), min(1.0, pm + 1.645 * se)
-        else:
-            rho_i = min(0.999, max(1e-4, (v3[i] - vb) / ((n3[i] - 1) * vb)))
-            M_i = (1.0 - rho_i) / rho_i
-            a_i, b_i = max(1e-6, p0 * M_i), max(1e-6, (1.0 - p0) * M_i)
-            p3[i] = betabinom.sf(k3[i] - 1, n3[i], a_i, b_i)
-            a_post, b_post = a_i + k3[i], b_i + n3[i] - k3[i]
-            post3[i] = a_post / (a_post + b_post)
-            cilo3[i], cihi3[i] = beta.ppf(0.05, a_post, b_post), beta.ppf(0.95, a_post, b_post)
+
+    if is_v2:
+        # V1: smoothed p0 and variance floor
+        p_s3 = float(np.sum(mu3) / np.sum(n3))
+        p0_3 = np.clip((mu3 + p_s3) / (n3 + 1), 1e-6, 1.0 - 1e-6)
+        vb_3 = n3 * p0_3 * (1.0 - p0_3)
+        veff_3 = np.maximum(v3, vb_3)
+        for i in range(n_enums):
+            if k3[i] == 0:
+                continue
+            if no_shrinkage or veff_3[i] <= vb_3[i] + 1e-9:
+                p3[i] = binom.sf(k3[i] - 1, n3[i], p0_3[i])
+                pm = k3[i] / n3[i]
+                se = math.sqrt(pm * (1.0 - pm) / n3[i])
+                post3[i], cilo3[i], cihi3[i] = pm, max(0.0, pm - 1.645 * se), min(1.0, pm + 1.645 * se)
+            else:
+                rho_i = min(0.999, max(1e-4, (veff_3[i] - vb_3[i]) / ((n3[i] - 1) * vb_3[i])))
+                M_i = (1.0 - rho_i) / rho_i
+                a_i, b_i = max(1e-6, p0_3[i] * M_i), max(1e-6, (1.0 - p0_3[i]) * M_i)
+                p3[i] = betabinom.sf(k3[i] - 1, n3[i], a_i, b_i)
+                a_post, b_post = a_i + k3[i], b_i + n3[i] - k3[i]
+                post3[i] = a_post / (a_post + b_post)
+                cilo3[i], cihi3[i] = beta.ppf(0.05, a_post, b_post), beta.ppf(0.95, a_post, b_post)
+    else:
+        # v1 code path
+        for i in range(n_enums):
+            if k3[i] == 0:
+                continue
+            p0 = mu3[i] / n3[i]
+            vb = n3[i] * p0 * (1.0 - p0)
+            if no_shrinkage or v3[i] <= vb or p0 <= 1e-6 or p0 >= 1.0 - 1e-6:
+                p3[i] = binom.sf(k3[i] - 1, n3[i], max(1e-6, p0))
+                pm = k3[i] / n3[i]
+                se = math.sqrt(pm * (1.0 - pm) / n3[i])
+                post3[i], cilo3[i], cihi3[i] = pm, max(0.0, pm - 1.645 * se), min(1.0, pm + 1.645 * se)
+            else:
+                rho_i = min(0.999, max(1e-4, (v3[i] - vb) / ((n3[i] - 1) * vb)))
+                M_i = (1.0 - rho_i) / rho_i
+                a_i, b_i = max(1e-6, p0 * M_i), max(1e-6, (1.0 - p0) * M_i)
+                p3[i] = betabinom.sf(k3[i] - 1, n3[i], a_i, b_i)
+                a_post, b_post = a_i + k3[i], b_i + n3[i] - k3[i]
+                post3[i] = a_post / (a_post + b_post)
+                cilo3[i], cihi3[i] = beta.ppf(0.05, a_post, b_post), beta.ppf(0.95, a_post, b_post)
     p_matrix["f3"], est_cols["f3_est"], est_cols["f3_ci_low"], est_cols["f3_ci_high"] = p3, post3, cilo3, cihi3
 
-    # 2. Count features: F4, F8, F9 (smoothed p0 with trimmed rho)
+    # 2. Count features: F4, F8, F9
     count_configs = [
         ("f4", "f4_k", "f4_n", "f4_k_exp", "high"),
         ("f8", "f8_k", "f8_n", "f8_k_exp", "high"),
@@ -149,9 +178,15 @@ def score_enumerators(
             ci_low = np.maximum(0.0, pm - 1.645 * np.sqrt(pm * (1 - pm) / n))
             ci_high = np.minimum(1.0, pm + 1.645 * np.sqrt(pm * (1 - pm) / n))
         else:
-            p_plain = binom.sf(k - 1, n, p0) if direction == "high" else np.minimum(1.0, 2.0 * np.minimum(binom.cdf(k, n, p0), binom.sf(k - 1, n, p0)))
-            trim = p_plain >= 0.01
-            rho = estimate_beta_binomial_rho(k[trim], n[trim], k_exp[trim], p0[trim]) if np.sum(trim) >= 3 else estimate_beta_binomial_rho(k, n, k_exp, p0)
+            if is_v2:
+                # V2: estimate rho WITHOUT trimming
+                rho = estimate_beta_binomial_rho(k, n, k_exp, p0)
+            else:
+                # v1: trimmed rho
+                p_plain = binom.sf(k - 1, n, p0) if direction == "high" else np.minimum(1.0, 2.0 * np.minimum(binom.cdf(k, n, p0), binom.sf(k - 1, n, p0)))
+                trim = p_plain >= 0.01
+                rho = estimate_beta_binomial_rho(k[trim], n[trim], k_exp[trim], p0[trim]) if np.sum(trim) >= 3 else estimate_beta_binomial_rho(k, n, k_exp, p0)
+
             M = (1.0 - rho) / rho
             a_prior, b_prior = np.maximum(1e-6, p0 * M), np.maximum(1e-6, (1.0 - p0) * M)
             if direction == "high":
@@ -164,46 +199,54 @@ def score_enumerators(
         p_matrix[f_id], est_cols[f"{f_id}_est"], est_cols[f"{f_id}_ci_low"], est_cols[f"{f_id}_ci_high"] = p_vals, pm, ci_low, ci_high
 
     # 3. Continuous features: F1, F2, F5, F6, F7, F10
-    # Helper to process continuous feature
     def process_cont(d: np.ndarray, s: np.ndarray, valid: np.ndarray, direction: str, f_id: str):
         tau2 = estimate_tau2(d, s) if not no_shrinkage else 0.0
         se = np.where(valid, np.sqrt(tau2 + s ** 2), np.nan)
         z = np.where(valid, d / se, np.nan)
-        if empirical_null and not no_shrinkage:
-            vz = z[valid]
-            if len(vz) > 1:
-                z = np.where(valid, (z - float(np.nanmedian(vz))) / _mad(vz), np.nan)
-        if direction == "low":
-            p = np.where(valid, norm.cdf(z), np.nan)
-        elif direction == "high":
-            p = np.where(valid, norm.sf(z), np.nan)
+
+        if is_v2:
+            # V3: Student-t distribution with df = (non-NaN count) - 1
+            df_t = max(1, int(np.sum(valid)) - 1)
+            if direction == "low":
+                p = np.where(valid, t.cdf(z, df=df_t), np.nan)
+            elif direction == "high":
+                p = np.where(valid, t.sf(z, df=df_t), np.nan)
+            else:
+                p = np.where(valid, 2.0 * t.sf(np.abs(z), df=df_t), np.nan)
         else:
-            p = np.where(valid, 2.0 * norm.sf(np.abs(z)), np.nan)
+            # v1 code path: normal (with optional empirical_null fallback)
+            if empirical_null and not no_shrinkage:
+                vz = z[valid]
+                if len(vz) > 1:
+                    z = np.where(valid, (z - float(np.nanmedian(vz))) / _mad(vz), np.nan)
+            if direction == "low":
+                p = np.where(valid, norm.cdf(z), np.nan)
+            elif direction == "high":
+                p = np.where(valid, norm.sf(z), np.nan)
+            else:
+                p = np.where(valid, 2.0 * norm.sf(np.abs(z)), np.nan)
+
         shrunk = np.where(valid, d * tau2 / (tau2 + s ** 2), np.nan) if tau2 > 0 else (np.where(valid, d, np.nan) if no_shrinkage else np.where(valid, 0.0, np.nan))
         p_matrix[f_id] = p
         est_cols[f"{f_id}_est"] = shrunk
         est_cols[f"{f_id}_ci_low"] = shrunk - 1.645 * se
         est_cols[f"{f_id}_ci_high"] = shrunk + 1.645 * se
 
-    # F1 duration_resid (low)
     d1 = (df["f1_value"] - df["f1_peer_value"]).values
     sig_r = float(df["f1_sigma_r"].iloc[0]) if "f1_sigma_r" in df else max(_mad(d1), 0.25)
     s1 = (1.2533 * sig_r) / np.sqrt(np.maximum(1, n_e))
     process_cont(d1, s1, np.ones(n_enums, dtype=bool), "low", "f1")
 
-    # F2 throughput (high)
     d2 = (df["f2_value"] - df["f2_peer_value"]).values
     s2 = np.maximum(0.5, df["f2_value"].values / np.sqrt(np.maximum(1, n_e)))
     process_cont(d2, s2, np.ones(n_enums, dtype=bool), "high", "f2")
 
-    # F5, F6, F7 dispersion (low)
     for fid in ["f5", "f6", "f7"]:
         val = df[f"{fid}_value"].values.astype(float)
         null_sd = df[f"{fid}_null_sd"].values.astype(float) if f"{fid}_null_sd" in df else np.full(n_enums, np.nan)
         valid = (~np.isnan(val)) & (~np.isnan(null_sd)) & (null_sd > 0)
         process_cont(val, null_sd, valid, "low", fid)
 
-    # F10 dur_size_coupling (two-sided)
     r10 = np.clip(df["f10_value"].values.astype(float), -0.999, 0.999)
     rp10 = np.clip(df["f10_peer_value"].values.astype(float), -0.999, 0.999)
     d10 = np.arctanh(r10) - np.arctanh(rp10)
@@ -211,7 +254,7 @@ def score_enumerators(
     s10 = np.where(valid_f10, np.sqrt(1.06 / np.maximum(1, n_e - 3)), np.nan)
     process_cont(d10, s10, valid_f10, "two-sided", "f10")
 
-    # 4. Enumerator decision: Bonferroni within enumerator
+    # 4. Enumerator decision & risk score
     all_f_ids = ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10"]
     p_e = np.ones(n_enums)
     m_e = np.zeros(n_enums, dtype=int)
@@ -224,8 +267,7 @@ def score_enumerators(
             min_p = min(row_p.values())
             p_e[i] = min(1.0, m_e[i] * min_p)
             cutoff = 0.05 / m_e[i]
-            ev = [f.upper() for f, val in row_p.items() if val < cutoff]
-            evidence_list.append(", ".join(ev))
+            evidence_list.append(", ".join([f.upper() for f, val in row_p.items() if val < cutoff]))
         else:
             p_e[i] = 1.0
             evidence_list.append("")

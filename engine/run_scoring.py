@@ -16,6 +16,7 @@ def execute_scoring_pipeline(
     no_shrinkage: bool = False,
     no_fdr: bool = False,
     q: float = 0.10,
+    scoring_version: str = "v1",
 ) -> Path:
     """Execute scoring pipeline on feature table and write scores to parquet."""
     if not features_path.is_file():
@@ -26,6 +27,7 @@ def execute_scoring_pipeline(
         no_shrinkage=no_shrinkage,
         no_fdr=no_fdr,
         q=q,
+        scoring_version=scoring_version,
     )
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -67,7 +69,20 @@ def main():
         default=0.10,
         help="FDR target rate q (default 0.10)",
     )
+    parser.add_argument(
+        "--v2",
+        action="store_true",
+        help="Use scoring v2 algorithms (post-hoc ranking and calibration)",
+    )
+    parser.add_argument(
+        "--scoring-version",
+        choices=["v1", "v2"],
+        default="v1",
+        help="Scoring algorithm version (default: v1)",
+    )
     args = parser.parse_args()
+
+    version = "v2" if (args.v2 or args.scoring_version == "v2") else "v1"
 
     execute_scoring_pipeline(
         features_path=args.features,
@@ -75,6 +90,7 @@ def main():
         no_shrinkage=args.no_shrinkage,
         no_fdr=args.no_fdr,
         q=args.q,
+        scoring_version=version,
     )
 
 

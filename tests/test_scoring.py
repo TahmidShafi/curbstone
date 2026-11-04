@@ -63,18 +63,6 @@ def test_posterior_shrinkage():
 
 def test_bh_hand_example():
     """Verify Benjamini-Hochberg flags and q-values match hand-computed 4 p-value example."""
-    # Hand example: p = [0.08, 0.01, 0.20, 0.04], q = 0.10, m = 4
-    # Sorted:
-    # i=1: 0.01 <= 1/4 * 0.10 = 0.025 (True)
-    # i=2: 0.04 <= 2/4 * 0.10 = 0.050 (True)
-    # i=3: 0.08 <= 3/4 * 0.10 = 0.075 (False)
-    # i=4: 0.20 <= 4/4 * 0.10 = 0.100 (False)
-    # Max passing index is i=2 (p=0.04), so p <= 0.04 are flagged -> indices 1 and 3
-    # Step-up q-values:
-    # q(4) = 0.20
-    # q(3) = min(0.20, 0.08 * 4 / 3) = 0.106667
-    # q(2) = min(0.106667, 0.04 * 4 / 2) = 0.08
-    # q(1) = min(0.08, 0.01 * 4 / 1) = 0.04
     p = np.array([0.08, 0.01, 0.20, 0.04])
     flags, q_vals = benjamini_hochberg(p, q=0.10)
 
@@ -84,20 +72,40 @@ def test_bh_hand_example():
     np.testing.assert_array_equal(flags, expected_flags)
     np.testing.assert_allclose(q_vals, expected_q, rtol=1e-5)
 
-    # Benjamini-Yekutieli is strictly conservative: c(4) = 1 + 1/2 + 1/3 + 1/4 = 25/12 = 2.0833
-    # Only p=0.01 <= 0.025 / 2.0833 = 0.0120 is flagged
     by_flags = benjamini_yekutieli(p, q=0.10)
     expected_by = np.array([False, True, False, False])
     np.testing.assert_array_equal(by_flags, expected_by)
 
 
+def test_scoring_v2_basic():
+    """Verify Scoring v2 runs without errors and produces valid scores and risk ranking."""
+    df_feat = pd.DataFrame([{
+        "enumerator_id": f"enum_{i:02d}",
+        "n_e": 25,
+        "f1_value": 0.0, "f1_peer_value": 0.0, "f1_sigma_r": 0.25,
+        "f2_value": 5.0, "f2_peer_value": 5.0,
+        "f3_k": 0, "f3_k_exp": 0.1, "f3_var": 0.1, "f3_n": 25,
+        "f4_k": 1, "f4_k_exp": 1.0, "f4_n": 25,
+        "f5_value": 0.0, "f5_null_sd": 0.1,
+        "f6_value": 0.0, "f6_null_sd": 0.1,
+        "f7_value": 0.0, "f7_null_sd": 0.1,
+        "f8_k": 5, "f8_k_exp": 5.0, "f8_n": 25,
+        "f9_k": 1, "f9_k_exp": 1.0, "f9_n": 25,
+        "f10_value": 0.3, "f10_peer_value": 0.3,
+    } for i in range(10)])
+
+    res_v1 = score_enumerators(df_feat, scoring_version="v1")
+    res_v2 = score_enumerators(df_feat, scoring_version="v2")
+
+    assert len(res_v1) == 10
+    assert len(res_v2) == 10
+    assert "risk_score" in res_v2.columns
+    assert (res_v2["risk_score"] >= 0).all()
+
+
 @pytest.mark.slow
 def test_honest_calibration(tmp_path):
-    """Honest calibration test across seeds 0..19 without fraud.
-    
-    Reports the number of rounds having >= 1 flagged enumerator under:
-    full engine, --no-shrinkage, and --no-fdr.
-    """
+    """Honest calibration test across seeds 0..19 without fraud."""
     n_rounds = 20
     full_flagged_rounds = 0
     noshrink_flagged_rounds = 0
@@ -115,25 +123,17 @@ def test_honest_calibration(tmp_path):
         vil_path = round_dir / "reference" / "villages.parquet"
         df_feat = build_feature_table(sub_path, vil_path)
 
-        # Full engine
         scores_full = score_enumerators(df_feat)
         if int(scores_full["flagged"].sum()) >= 1:
             full_flagged_rounds += 1
 
-        # No shrinkage
         scores_noshrink = score_enumerators(df_feat, no_shrinkage=True)
         if int(scores_noshrink["flagged"].sum()) >= 1:
             noshrink_flagged_rounds += 1
 
-        # No FDR
         scores_nofdr = score_enumerators(df_feat, no_fdr=True)
         if int(scores_nofdr["flagged"].sum()) >= 1:
             nofdr_flagged_rounds += 1
-
-    print("\nCalibration Results across seeds 0..19 (--no-fraud):")
-    print(f"  Full Engine rounds with >= 1 flag:    {full_flagged_rounds}/{n_rounds}")
-    print(f"  No-Shrinkage rounds with >= 1 flag:   {noshrink_flagged_rounds}/{n_rounds}")
-    print(f"  No-FDR rounds with >= 1 flag:          {nofdr_flagged_rounds}/{n_rounds}")
 
     assert 0 <= full_flagged_rounds <= n_rounds
     assert 0 <= noshrink_flagged_rounds <= n_rounds
