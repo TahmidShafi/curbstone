@@ -242,3 +242,27 @@ Labels are written to a **separate file** (`truth/labels_round{r}.parquet`) that
 - [ ] Calibration source: BDHS 2022 (as in the original brief) or BBS ICT 2022 (this draft). See §3.2.
 - [ ] Confirm the rural values for internet, radio and computer ownership.
 - [ ] Confirm that 40 enumerators and 36 villages are acceptable for the demo dataset.
+
+---
+
+## 10. Scoring plan (Pre-registered)
+
+Pre-registered hypothesis test directions and FDR control parameters:
+
+| Feature | Feature Name | Direction | Rationale |
+|---|---|---|---|
+| **F1** | `duration_resid` | **low** | Fabricated interviews (e.g. rushed) have systematically negative duration residuals |
+| **F2** | `throughput` | **high** | Fabricators achieve higher daily interview counts |
+| **F3** | `near_dup` | **high** | Fabricated records duplicate answers, producing excess near-duplicates |
+| **F4** | `straight_line` | **high** | Fabricators produce all-0 or all-1 asset blocks |
+| **F5** | `asset_dispersion` | **low** | Fabricated/copied interviews have abnormally suppressed variance across assets |
+| **F6** | `hhsize_dispersion` | **low** | Fabricators repeat modal/average household sizes with suppressed variance |
+| **F7** | `gps_spread` | **low** | Faked or sofa-interview coordinates cluster with suppressed NN distances |
+| **F8** | `age_heaping` | **high** | Fabricators disproportionately round reported ages to multiples of 5 |
+| **F9** | `nonresponse` | **two-sided** | Fabricators may avoid non-response entirely or overuse "Don't know" (-8) |
+| **F10** | `dur_size_coupling` | **two-sided** | Decoupled or distorted correlation between interview duration and household size |
+
+- **FDR Control:** Benjamini–Hochberg procedure across all enumerators at false discovery rate target $q = 0.10$.
+- **Sensitivity:** Benjamini–Yekutieli computed alongside BH under arbitrary dependence.
+- **Enumerator-level decision:** Family-wise Bonferroni correction across valid non-NaN feature tests within enumerator ($p_e = \min(1, m_e \cdot \min_j p_{e,j})$).
+

@@ -20,14 +20,16 @@ from engine.feature_helpers import (
 ASSET_COLS = ["asset_mobile", "asset_tv", "asset_internet", "asset_radio", "asset_computer"]
 
 
-def compute_f1_duration_resid(df: pd.DataFrame, enum_ids: List[str]) -> Dict[str, Tuple[float, float, int]]:
+def compute_f1_duration_resid(df: pd.DataFrame, enum_ids: List[str]) -> Tuple[Dict[str, Tuple[float, float, int]], float]:
     log_dur = np.log(df["duration_min"].clip(lower=1.0))
     if len(df) < 2 or df["hh_size"].nunique() < 2:
         slope, intercept = 0.0, float(np.mean(log_dur)) if len(df) > 0 else 0.0
     else:
         slope, intercept = np.polyfit(df["hh_size"], log_dur, 1)
     df_temp = df[["enumerator_id", "village_id"]].copy()
-    df_temp["resid"] = log_dur - (intercept + slope * df["hh_size"])
+    resids = log_dur - (intercept + slope * df["hh_size"])
+    df_temp["resid"] = resids
+    sigma_r = float(1.4826 * np.median(np.abs(resids - np.median(resids)))) if len(resids) > 0 else 0.25
 
     res: Dict[str, Tuple[float, float, int]] = {}
     for e_id in enum_ids:
@@ -41,7 +43,7 @@ def compute_f1_duration_resid(df: pd.DataFrame, enum_ids: List[str]) -> Dict[str
                 peer_meds.append(float(p_rows["resid"].median()))
         peer_val = float(np.average(peer_meds, weights=weights)) if weights else val
         res[e_id] = (round(val, 4), round(peer_val, 4), len(e_rows))
-    return res
+    return res, sigma_r
 
 
 def compute_f2_throughput(df: pd.DataFrame, enum_ids: List[str]) -> Dict[str, Tuple[float, float, int]]:
@@ -271,7 +273,7 @@ def build_feature_table(
 
     rng = np.random.default_rng(seed)
     enum_ids = sorted([str(x) for x in df["enumerator_id"].unique()])
-    f1, f2 = compute_f1_duration_resid(df, enum_ids), compute_f2_throughput(df, enum_ids)
+    (f1, sigma_r), f2 = compute_f1_duration_resid(df, enum_ids), compute_f2_throughput(df, enum_ids)
     f3 = compute_f3_near_dup(df, enum_ids, rng=rng)
     f4 = compute_f4_straight_line(df, enum_ids)
     f5 = compute_f5_asset_dispersion(df, enum_ids, rng=rng)
@@ -283,7 +285,7 @@ def build_feature_table(
     rows = []
     for e in enum_ids:
         rows.append({
-            "enumerator_id": e, "n_e": f1[e][2],
+            "enumerator_id": e, "n_e": f1[e][2], "f1_sigma_r": round(sigma_r, 4),
             "f1_value": f1[e][0], "f1_peer_value": f1[e][1], "f1_n": f1[e][2],
             "f2_value": f2[e][0], "f2_peer_value": f2[e][1], "f2_n": f2[e][2],
             "f3_k": f3[e][0], "f3_k_exp": f3[e][1], "f3_n": f3[e][2], "f3_null_limited": f3[e][3],
