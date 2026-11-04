@@ -16,3 +16,7 @@ Hard rules:
 - Do not add dependencies beyond the list above without asking.
 - Keep each file under ~300 lines; split modules if larger.
 - End every task with a short summary: files changed, how to run, open questions.
+- engine/ must never read truth/ or import generator.fraud.
+- Rules may use only: the submissions table, and a reference table
+  `villages(village_id, upazila_code, ref_lat, ref_lon)` written by the generator to
+  data/reference/villages.parquet (real MIS systems hold village reference locations).

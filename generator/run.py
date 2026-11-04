@@ -4,6 +4,7 @@ import argparse
 from pathlib import Path
 from typing import Any, Dict, Optional
 import numpy as np
+import pandas as pd
 import yaml
 
 from generator.geography import build_geography
@@ -67,6 +68,21 @@ def run_generation(
     round_dir.mkdir(parents=True, exist_ok=True)
     parquet_path = round_dir / "interviews.parquet"
     df.to_parquet(parquet_path, engine="pyarrow", index=False)
+
+    # Save reference villages table: data/reference/villages.parquet
+    ref_dir = out_dir / "reference"
+    ref_dir.mkdir(parents=True, exist_ok=True)
+    ref_villages_path = ref_dir / "villages.parquet"
+    villages_records = [
+        {
+            "village_id": v.village_id,
+            "upazila_code": v.upazila_code,
+            "ref_lat": v.centroid_lat,
+            "ref_lon": v.centroid_lon,
+        }
+        for v in geography.villages.values()
+    ]
+    pd.DataFrame(villages_records).to_parquet(ref_villages_path, engine="pyarrow", index=False)
 
     # 5. Save ground-truth labels if fraud was active (never into data/)
     if enable_fraud and "labels_submission" in meta:

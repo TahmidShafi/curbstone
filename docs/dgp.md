@@ -156,7 +156,7 @@ A fabricator has one **primary mode** and a **fabrication share** s ∈ (0, 1]: 
 
 | Mode | What the fabricator does | Trace in the data | Intensity parameter | Honest look-alike |
 |---|---|---|---|---|
-| **copy_paste** | Copies one of their own honest submissions and edits a few fields | Near-duplicate rows within an enumerator | edit_rate ∈ [0.1, 0.3]: probability each field is re-drawn | Similar households in a high-ICC village |
+| **copy_paste** | Copies one of their own honest submissions and edits a few fields. Re-drawn binary fields often reproduce the original value, so the effective edit rate is below the nominal edit_rate. | Near-duplicate rows within an enumerator | edit_rate ∈ [0.1, 0.3]: probability each field is re-drawn | Similar households in a high-ICC village |
 | **straight_lining** | Answers every asset item the same way (all yes or all no) | Zero within-record variance across assets | prob_straight ∈ [0.7, 1.0] per fabricated record | Very poor or very rich households, especially at high ICC |
 | **rushed** | Real visit, but the interview is cut short | Short durations relative to household size | duration multiplier ∈ [0.3, 0.5] | Fast honest enumerators; small households |
 | **invented_gps** | Fills forms from one location | GPS points clustered within ≈ 20 m, or identical coordinates | n_anchor_points ∈ {1, 2, 3} | Dense village cores; poor device accuracy |
