@@ -86,3 +86,6 @@ fraud:
       noise_range: [0.0, 0.2]  # [DESIGN] dgp §5
       hh_size_noise_sd: 0.5  # [DESIGN] dgp §5
   holdout_mode: "partial_section"  # ASSUMPTION – verify
+
+engine:
+  seed: 12345  # ASSUMPTION – verify
