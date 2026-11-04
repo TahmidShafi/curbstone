@@ -266,3 +266,14 @@ Pre-registered hypothesis test directions and FDR control parameters:
 - **Sensitivity:** Benjamini–Yekutieli computed alongside BH under arbitrary dependence.
 - **Enumerator-level decision:** Family-wise Bonferroni correction across valid non-NaN feature tests within enumerator ($p_e = \min(1, m_e \cdot \min_j p_{e,j})$).
 
+### 10.1 Amendments
+
+#### Amendment 1 (2026-11-04)
+Reason: honest-only calibration failure (20/20 null rounds flagged), caused by (a) continuous-feature SEs omitting between-enumerator variance, (b) overdispersion estimates inflated by outlying enumerators. Changes were evaluated on honest-only data only; fraud-round results were not used to choose them.
+
+- **B1 Continuous features (F1, F2, F5, F6, F7, F10):** Random-effects SE. $d_e$ = feature estimate (value - peer_value, or value - null), $s_e$ = within-enumerator SE. Estimate $\tau^2$ per feature per round with DerSimonian–Laird after excluding enumerators with $|d_e / s_e|$ above the 90th percentile (one trim pass, no truth). $z_e = d_e / \sqrt{\tau^2 + s_e^2}$. Shrunk estimate $= d_e \cdot \tau^2 / (\tau^2 + s_e^2)$ stored with 90% interval.
+- **B2 Count features (F3, F4, F8, F9):** Estimate $\rho$ by method of moments after a one-pass trim (exclude enumerators whose plain-binomial $p < 0.01$ in the pre-registered direction).
+- **B3 Skipped cells:** Skipped cells for F5, F6, and F7 must evaluate to NaN, never 0; enumerators with NaN for a feature simply have fewer tests ($m_e$).
+- **B4 Survey-wide baseline floor:** Count features floor local peer expectation at the survey-wide mean: $p_{\text{floor}} = \max(10^{-4}, \sum k_{\text{exp}} / \sum n)$, $p0_e = \max(k_{\text{exp}} / n, p_{\text{floor}})$.
+
+

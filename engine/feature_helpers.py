@@ -101,7 +101,7 @@ def simulate_gps_null(
 def aggregate_cell_nulls(cells: List[Tuple[float, float]]) -> Tuple[float, float]:
     """Aggregate (diff, sd) pairs across cells using inverse-variance weighting."""
     if not cells:
-        return 0.0, float("nan")
+        return float("nan"), float("nan")
     weights = [1.0 / (s ** 2) for _, s in cells]
     diffs = [d for d, _ in cells]
     sds = [s for _, s in cells]

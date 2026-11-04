@@ -26,6 +26,31 @@ def _mad(x: np.ndarray) -> float:
     return float(1.4826 * np.median(np.abs(clean - med)))
 
 
+def dersimonian_laird(d: np.ndarray, s: np.ndarray) -> float:
+    """DerSimonian-Laird estimator of between-unit variance tau^2 with one-pass trim."""
+    valid = (~np.isnan(d)) & (~np.isnan(s)) & (s > 0)
+    d_v, s_v = d[valid], s[valid]
+    if len(d_v) < 3:
+        return 0.0
+    t_stat = np.abs(d_v / s_v)
+    q90 = float(np.percentile(t_stat, 90))
+    trim_mask = t_stat <= q90
+    d_trim, s_trim = d_v[trim_mask], s_v[trim_mask]
+    K = len(d_trim)
+    if K < 2:
+        return 0.0
+    w = 1.0 / (s_trim ** 2)
+    sum_w = float(np.sum(w))
+    if sum_w <= 0:
+        return 0.0
+    d_bar = float(np.sum(w * d_trim) / sum_w)
+    Q = float(np.sum(w * (d_trim - d_bar) ** 2))
+    C = float(sum_w - np.sum(w ** 2) / sum_w)
+    if C <= 0:
+        return 0.0
+    return max(0.0, (Q - (K - 1)) / C)
+
+
 def estimate_beta_binomial_rho(k: np.ndarray, n: np.ndarray, k_exp: np.ndarray) -> float:
     """Estimate overdispersion rho by method of moments across all enumerators."""
     # Note: fraud inflates rho -> conservative under the null
@@ -123,10 +148,21 @@ def score_enumerators(
             ci_low = np.maximum(0.0, post_means - 1.645 * np.sqrt(post_means * (1 - post_means) / n))
             ci_high = np.minimum(1.0, post_means + 1.645 * np.sqrt(post_means * (1 - post_means) / n))
         else:
-            # Empirical Bayes beta-binomial
-            rho = estimate_beta_binomial_rho(k, n, k_exp)
+            # Plain binomial p for trimming (B2)
+            if direction == "high":
+                p_plain = binom.sf(k - 1, n, p0)
+            else:
+                p_plain = np.minimum(1.0, 2.0 * np.minimum(binom.cdf(k, n, p0), binom.sf(k - 1, n, p0)))
+
+            trim_mask = p_plain >= 0.01
+            if np.sum(trim_mask) >= 3:
+                k_trim, n_trim, exp_trim = k[trim_mask], n[trim_mask], k_exp[trim_mask]
+                rho = estimate_beta_binomial_rho(k_trim, n_trim, exp_trim)
+            else:
+                rho = estimate_beta_binomial_rho(k, n, k_exp)
+
             M = (1.0 - rho) / rho
-            a_prior, b_prior = p0 * M, (1.0 - p0) * M
+            a_prior, b_prior = np.maximum(1e-6, p0 * M), np.maximum(1e-6, (1.0 - p0) * M)
             if direction == "high":
                 p_vals = betabinom.sf(k - 1, n, a_prior, b_prior)
             else:
@@ -148,53 +184,69 @@ def score_enumerators(
     # 2. Continuous features: F1, F2, F5, F6, F7, F10
     # F1 duration_resid (low)
     diff_f1 = (df["f1_value"] - df["f1_peer_value"]).values
+    sig_r = float(df["f1_sigma_r"].iloc[0]) if "f1_sigma_r" in df else max(_mad(diff_f1), 0.25)
+    se_f1 = (1.2533 * sig_r) / np.sqrt(np.maximum(1, n_e))
     if no_shrinkage:
         mad_f1 = max(_mad(diff_f1), 1e-4)
-        z_f1 = (diff_f1 - float(np.median(diff_f1))) / mad_f1
-        se_f1 = np.full(n_enums, mad_f1)
+        z_f1, se_tot_f1, shrunk_f1 = (diff_f1 - float(np.median(diff_f1))) / mad_f1, np.full(n_enums, mad_f1), diff_f1
     else:
-        sig_r = float(df["f1_sigma_r"].iloc[0]) if "f1_sigma_r" in df else max(_mad(diff_f1), 0.25)
-        se_f1 = (1.2533 * sig_r) / np.sqrt(np.maximum(1, n_e))
-        z_f1 = diff_f1 / se_f1
+        tau2_f1 = dersimonian_laird(diff_f1, se_f1)
+        se_tot_f1 = np.sqrt(tau2_f1 + se_f1 ** 2)
+        z_f1 = diff_f1 / se_tot_f1
+        shrunk_f1 = diff_f1 * tau2_f1 / (tau2_f1 + se_f1 ** 2) if tau2_f1 > 0 else np.zeros_like(diff_f1)
     p_matrix["f1"] = norm.cdf(z_f1)
-    est_cols["f1_est"], est_cols["f1_ci_low"], est_cols["f1_ci_high"] = diff_f1, diff_f1 - 1.645 * se_f1, diff_f1 + 1.645 * se_f1
+    est_cols["f1_est"], est_cols["f1_ci_low"], est_cols["f1_ci_high"] = shrunk_f1, shrunk_f1 - 1.645 * se_tot_f1, shrunk_f1 + 1.645 * se_tot_f1
 
     # F2 throughput (high)
     diff_f2 = (df["f2_value"] - df["f2_peer_value"]).values
-    mad_f2 = max(_mad(diff_f2), 1e-4)
-    z_f2 = (diff_f2 - float(np.median(diff_f2))) / mad_f2
+    s_f2 = np.maximum(0.5, df["f2_value"].values / np.sqrt(np.maximum(1, n_e)))
+    if no_shrinkage:
+        mad_f2 = max(_mad(diff_f2), 1e-4)
+        z_f2, se_tot_f2, shrunk_f2 = (diff_f2 - float(np.median(diff_f2))) / mad_f2, np.full(n_enums, mad_f2), diff_f2
+    else:
+        tau2_f2 = dersimonian_laird(diff_f2, s_f2)
+        se_tot_f2 = np.sqrt(tau2_f2 + s_f2 ** 2)
+        z_f2 = diff_f2 / se_tot_f2
+        shrunk_f2 = diff_f2 * tau2_f2 / (tau2_f2 + s_f2 ** 2) if tau2_f2 > 0 else np.zeros_like(diff_f2)
     p_matrix["f2"] = norm.sf(z_f2)
-    est_cols["f2_est"], est_cols["f2_ci_low"], est_cols["f2_ci_high"] = diff_f2, diff_f2 - 1.645 * mad_f2, diff_f2 + 1.645 * mad_f2
+    est_cols["f2_est"], est_cols["f2_ci_low"], est_cols["f2_ci_high"] = shrunk_f2, shrunk_f2 - 1.645 * se_tot_f2, shrunk_f2 + 1.645 * se_tot_f2
 
     # F5, F6, F7 dispersion (low)
     for f_id in ["f5", "f6", "f7"]:
         val = df[f"{f_id}_value"].values.astype(float)
         null_sd = df[f"{f_id}_null_sd"].values.astype(float) if f"{f_id}_null_sd" in df else np.full(n_enums, np.nan)
+        valid_mask = (~np.isnan(val)) & (~np.isnan(null_sd)) & (null_sd > 0)
         if no_shrinkage:
             mad_val = max(_mad(val), 1e-4)
-            z = (val - float(np.median(val))) / mad_val
-            se = np.full(n_enums, mad_val)
+            z = np.where(valid_mask, (val - float(np.nanmedian(val))) / mad_val, np.nan)
+            se, shrunk = np.full(n_enums, mad_val), val
         else:
-            se = null_sd
-            z = np.where(np.isnan(se) | (se <= 0), np.nan, val / np.where(np.isnan(se) | (se <= 0), 1.0, se))
-        p = np.where(np.isnan(z), np.nan, norm.cdf(z))
-        p_matrix[f_id] = p
-        est_cols[f"{f_id}_est"], est_cols[f"{f_id}_ci_low"], est_cols[f"{f_id}_ci_high"] = val, val - 1.645 * se, val + 1.645 * se
+            tau2 = dersimonian_laird(val, null_sd)
+            se = np.where(valid_mask, np.sqrt(tau2 + null_sd ** 2), np.nan)
+            z = np.where(valid_mask, val / se, np.nan)
+            shrunk = np.where(valid_mask, val * tau2 / (tau2 + null_sd ** 2), np.nan) if tau2 > 0 else np.where(valid_mask, 0.0, np.nan)
+        p_matrix[f_id] = np.where(valid_mask, norm.cdf(z), np.nan)
+        est_cols[f"{f_id}_est"], est_cols[f"{f_id}_ci_low"], est_cols[f"{f_id}_ci_high"] = shrunk, shrunk - 1.645 * se, shrunk + 1.645 * se
 
     # F10 dur_size_coupling (two-sided)
     r10 = np.clip(df["f10_value"].values.astype(float), -0.999, 0.999)
     rp10 = np.clip(df["f10_peer_value"].values.astype(float), -0.999, 0.999)
     diff_z10 = np.arctanh(r10) - np.arctanh(rp10)
     valid_f10 = (n_e >= 5) & (~np.isnan(r10)) & (~np.isnan(rp10))
+    s10 = np.where(valid_f10, np.sqrt(1.06 / np.maximum(1, n_e - 3)), np.nan)
     if no_shrinkage:
         mad_10 = max(_mad(diff_z10), 1e-4)
         z10 = np.where(valid_f10, (diff_z10 - float(np.nanmedian(diff_z10))) / mad_10, np.nan)
-        se10 = np.full(n_enums, mad_10)
+        p_matrix["f10"] = np.where(valid_f10, 2.0 * norm.sf(np.abs(z10)), np.nan)
+        se_tot_10 = np.full(n_enums, mad_10)
+        shrunk_10 = diff_z10
     else:
-        se10 = np.where(n_e >= 5, np.sqrt(1.06 / np.maximum(1, n_e - 3)), np.nan)
-        z10 = np.where(valid_f10, diff_z10 / se10, np.nan)
-    p_matrix["f10"] = np.where(valid_f10, 2.0 * norm.sf(np.abs(z10)), np.nan)
-    est_cols["f10_est"], est_cols["f10_ci_low"], est_cols["f10_ci_high"] = diff_z10, diff_z10 - 1.645 * se10, diff_z10 + 1.645 * se10
+        tau2_10 = dersimonian_laird(diff_z10, s10)
+        se_tot_10 = np.where(valid_f10, np.sqrt(tau2_10 + s10 ** 2), np.nan)
+        z10 = np.where(valid_f10, diff_z10 / se_tot_10, np.nan)
+        p_matrix["f10"] = np.where(valid_f10, 2.0 * norm.sf(np.abs(z10)), np.nan)
+        shrunk_10 = np.where(valid_f10, diff_z10 * tau2_10 / (tau2_10 + s10 ** 2), np.nan) if tau2_10 > 0 else np.where(valid_f10, 0.0, np.nan)
+    est_cols["f10_est"], est_cols["f10_ci_low"], est_cols["f10_ci_high"] = shrunk_10, shrunk_10 - 1.645 * se_tot_10, shrunk_10 + 1.645 * se_tot_10
 
     # 3. Enumerator decision: Bonferroni within enumerator
     all_f_ids = ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10"]
