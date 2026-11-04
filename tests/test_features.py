@@ -120,6 +120,7 @@ def test_workload_fairness_and_honest_centring(tmp_path):
                 "n_e": n_e,
                 "f3_diff_norm": (r["f3_k"] - r["f3_k_exp"]) / max(1, n_e),
                 "f5_val": r["f5_value"],
+                "f6_val": r["f6_value"],
                 "f7_val": r["f7_value"],
                 "f1_diff": r["f1_value"] - r["f1_peer_value"],
                 "f3_k": r["f3_k"], "f3_k_exp": r["f3_k_exp"], "f3_lim": r["f3_null_limited"],
@@ -130,24 +131,28 @@ def test_workload_fairness_and_honest_centring(tmp_path):
 
     df = pd.DataFrame(records)
 
-    # 1. Workload fairness: Spearman |rho| < 0.3
+    # 1. Workload fairness: F5, F6, F7 target |rho| < 0.15, F3 < 0.3
     r_f3, _ = spearmanr(df["n_e"], df["f3_diff_norm"])
     r_f5, _ = spearmanr(df["n_e"], df["f5_val"])
+    r_f6, _ = spearmanr(df["n_e"], df["f6_val"])
     r_f7, _ = spearmanr(df["n_e"], df["f7_val"])
 
-    print(f"\nWorkload fairness rhos: F3={r_f3:.4f}, F5={r_f5:.4f}, F7={r_f7:.4f}")
+    print(f"\nWorkload fairness rhos: F3={r_f3:.4f}, F5={r_f5:.4f}, F6={r_f6:.4f}, F7={r_f7:.4f}")
     assert abs(r_f3) < 0.3, f"F3 workload |rho| {abs(r_f3):.4f} >= 0.3"
-    assert abs(r_f5) < 0.3, f"F5 workload |rho| {abs(r_f5):.4f} >= 0.3"
-    assert abs(r_f7) < 0.3, f"F7 workload |rho| {abs(r_f7):.4f} >= 0.3"
+    assert abs(r_f5) < 0.15, f"F5 workload |rho| {abs(r_f5):.4f} >= 0.15"
+    assert abs(r_f6) < 0.15, f"F6 workload |rho| {abs(r_f6):.4f} >= 0.15"
+    assert abs(r_f7) < 0.15, f"F7 workload |rho| {abs(r_f7):.4f} >= 0.15"
 
-    # 2. Honest centring medians: F1, F5, F7 within [-0.1, 0.1]
+    # 2. Honest centring medians: F1, F5, F6, F7 within [-0.1, 0.1]
     med_f1 = float(df["f1_diff"].median())
     med_f5 = float(df["f5_val"].median())
+    med_f6 = float(df["f6_val"].median())
     med_f7 = float(df["f7_val"].median())
 
-    print(f"Honest centring medians: F1={med_f1:.4f}, F5={med_f5:.4f}, F7={med_f7:.4f}")
+    print(f"Honest centring medians: F1={med_f1:.4f}, F5={med_f5:.4f}, F6={med_f6:.4f}, F7={med_f7:.4f}")
     assert -0.1 <= med_f1 <= 0.1, f"F1 median {med_f1:.4f} outside [-0.1, 0.1]"
     assert -0.1 <= med_f5 <= 0.1, f"F5 median {med_f5:.4f} outside [-0.1, 0.1]"
+    assert -0.1 <= med_f6 <= 0.1, f"F6 median {med_f6:.4f} outside [-0.1, 0.1]"
     assert -0.1 <= med_f7 <= 0.1, f"F7 median {med_f7:.4f} outside [-0.1, 0.1]"
 
     # 3. Honest centring ratios: F4, F8, F9 (and F3 un-limited) within [0.8, 1.2]
@@ -162,3 +167,4 @@ def test_workload_fairness_and_honest_centring(tmp_path):
     assert 0.8 <= ratio_f8 <= 1.2, f"F8 ratio {ratio_f8:.4f} outside [0.8, 1.2]"
     assert 0.8 <= ratio_f9 <= 1.2, f"F9 ratio {ratio_f9:.4f} outside [0.8, 1.2]"
     assert 0.8 <= ratio_f3 <= 1.2, f"F3 ratio {ratio_f3:.4f} outside [0.8, 1.2]"
+

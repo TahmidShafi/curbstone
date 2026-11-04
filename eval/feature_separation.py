@@ -68,3 +68,4 @@ def run_feature_separation(seed: int = 42, prevalence: float = 0.125) -> pd.Data
 
 if __name__ == "__main__":
     run_feature_separation()
+
