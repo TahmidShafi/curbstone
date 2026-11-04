@@ -66,12 +66,23 @@ fraud:
   modes:
     copy_paste:
       intensity: 0.7  # ASSUMPTION – verify
+      edit_rate_range: [0.1, 0.3]  # [DESIGN] dgp §5
+      gps_jitter_sd_m: 15.0  # [DESIGN] dgp §5
     straight_lining:
       intensity: 0.8  # ASSUMPTION – verify
+      prob_straight_range: [0.7, 1.0]  # [DESIGN] dgp §5
+      all_zero_prob: 0.8  # [ASSUMPTION] dgp §5
+      all_one_prob: 0.2  # [ASSUMPTION] dgp §5
     rushed:
       intensity: 0.5  # ASSUMPTION – verify
+      duration_multiplier_range: [0.3, 0.5]  # [DESIGN] dgp §5
     invented_gps:
       intensity: 0.6  # ASSUMPTION – verify
+      n_anchor_choices: [1, 2, 3]  # [DESIGN] dgp §5
+      anchor_radius_m: 200.0  # [DESIGN] dgp §5
+      jitter_sd_m: 5.0  # [DESIGN] dgp §5
     too_average:
       intensity: 0.5  # ASSUMPTION – verify
+      noise_range: [0.0, 0.2]  # [DESIGN] dgp §5
+      hh_size_noise_sd: 0.5  # [DESIGN] dgp §5
   holdout_mode: "partial_section"  # ASSUMPTION – verify
