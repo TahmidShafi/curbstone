@@ -75,14 +75,24 @@ def main():
         help="Use scoring v2 algorithms (post-hoc ranking and calibration)",
     )
     parser.add_argument(
+        "--v3",
+        action="store_true",
+        help="Use scoring v3 algorithms (cell-shrunk peer expectations)",
+    )
+    parser.add_argument(
         "--scoring-version",
-        choices=["v1", "v2"],
+        choices=["v1", "v2", "v3"],
         default="v1",
         help="Scoring algorithm version (default: v1)",
     )
     args = parser.parse_args()
 
-    version = "v2" if (args.v2 or args.scoring_version == "v2") else "v1"
+    if args.v3 or args.scoring_version == "v3":
+        version = "v3"
+    elif args.v2 or args.scoring_version == "v2":
+        version = "v2"
+    else:
+        version = "v1"
 
     execute_scoring_pipeline(
         features_path=args.features,

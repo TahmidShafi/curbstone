@@ -86,14 +86,24 @@ def run_acceptance_check(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Evaluate scoring calibration on honest-only seeds.")
-    parser.add_argument("--v2", action="store_true", default=True, help="Evaluate Scoring v2 (default: True)")
+    parser.add_argument("--v3", action="store_true", help="Evaluate Scoring v3 (default: seeds 300..319)")
+    parser.add_argument("--v2", action="store_true", help="Evaluate Scoring v2")
     parser.add_argument("--v1", action="store_true", help="Evaluate Scoring v1")
-    parser.add_argument("--seeds-start", type=int, default=None, help="Start seed (default: 100 for v2, 0 for v1)")
+    parser.add_argument("--seeds-start", type=int, default=None, help="Start seed")
     parser.add_argument("--n-seeds", type=int, default=20, help="Number of seeds (default: 20)")
     args = parser.parse_args()
 
-    scoring_ver = "v1" if args.v1 else "v2"
-    start_seed = args.seeds_start if args.seeds_start is not None else (0 if scoring_ver == "v1" else 100)
+    if args.v1:
+        scoring_ver = "v1"
+        default_start = 0
+    elif args.v2:
+        scoring_ver = "v2"
+        default_start = 100
+    else:
+        scoring_ver = "v3"
+        default_start = 300
+
+    start_seed = args.seeds_start if args.seeds_start is not None else default_start
 
     print("=" * 80)
     print(f"ACCEPTANCE CHECK: Scoring {scoring_ver.upper()} (Seeds {start_seed}..{start_seed + args.n_seeds - 1}, honest-only)")

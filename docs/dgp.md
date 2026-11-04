@@ -349,3 +349,23 @@ Evaluation across honest-only rounds (seeds 0..19, medium ICC):
   - Compute p-values from the Student-t distribution with degrees of freedom df = (number of enumerators with non-NaN d) - 1 instead of standard normal (Z), accounting for finite-sample reference dispersion uncertainty.
 - **FDR flags:**
   - FDR flags are secondary; claim FDR control only if honest-only acceptance (same criteria as Amendment 2: share p < 0.05 <= 0.08, share p < 0.01 <= 0.02, share p < 0.001 <= 0.004, and <= 4 / 20 rounds with flags) passes on held-out seeds 100..119.
+
+
+## 12. Scoring v3 (post-hoc, final)
+
+Scoring v3 (post-hoc, final). Reason: v2 count features failed honest calibration because peer expected counts for rare events were zero and the one-pseudo-observation smoothing was too weak. M = 50 is fixed before seeing any v3 results. After v3, scoring is frozen permanently regardless of outcome. Evaluation uses fresh seeds only: 300..319 (honest), 400..419 (fraud, prevalence 0.125).
+
+### 12.1 Methodological Changes in v3
+
+- **Shrink cell-level peer rate toward survey rate (F3, F4, F8, F9):**
+  - Peer rate in each cell (e, v) shrunk with M = 50 pseudo-trials toward survey rate p_s:
+    p_peer = (k_peer + M * p_s) / (n_peer + M)
+  - Expected count for enumerator e: mu_e = sum_{v in V_e} n_ev * p_peer.
+- **F3 near-dup adjustments:**
+  - Retain the workload-matched null draws, but floor mu_e at the expected count from the shrunk peer rate: mu_e = max(mu_e_null, sum_v n_ev * p_peer).
+  - Variance: v_e = max(v_e, beta-binomial variance at that mean).
+- **Count model smoothing removal:**
+  - Remove the (k_exp + p_s)/(n + 1) smoothing at the enumerator level since expectation is already shrunk at the cell level: p0_e = k_exp / n_e.
+- **Overdispersion and continuous features:**
+  - Estimate rho by method of moments across all enumerators untrimmed (as in v2).
+  - Continuous features remain unchanged from v2 (robust tau^2 without trimming, Student-t distribution with df = N_d - 1).

@@ -1,6 +1,6 @@
 """Enumerator scoring engine: empirical Bayes shrinkage, feature hypothesis tests, and FDR control.
 
-Supports both Scoring v1 (pre-registered) and Scoring v2 (post-hoc ranking & calibration).
+Supports Scoring v1 (pre-registered), Scoring v2 (post-hoc ranking), and Scoring v3 (cell-shrunk peer expectations).
 """
 
 import logging
@@ -11,84 +11,16 @@ import numpy as np
 import pandas as pd
 from scipy.stats import beta, betabinom, binom, norm, t
 
+from engine.scoring_helpers import (
+    _mad,
+    benjamini_hochberg,
+    benjamini_yekutieli,
+    dersimonian_laird,
+    estimate_beta_binomial_rho,
+    estimate_tau2,
+)
+
 logger = logging.getLogger(__name__)
-
-DIRECTIONS = {
-    "f1": "low", "f2": "high", "f3": "high", "f4": "high", "f5": "low",
-    "f6": "low", "f7": "low", "f8": "high", "f9": "two-sided", "f10": "two-sided",
-}
-
-
-def _mad(x: np.ndarray) -> float:
-    """Median Absolute Deviation (MAD) scaled by 1.4826 for normal consistency."""
-    clean = x[~np.isnan(x)]
-    if len(clean) == 0:
-        return 1.0
-    med = float(np.median(clean))
-    return float(max(1e-4, 1.4826 * np.median(np.abs(clean - med))))
-
-
-def estimate_tau2(d: np.ndarray, s: np.ndarray) -> float:
-    """Robust between-unit variance: tau^2 = max(0, (1.4826 * MAD(d))^2 - median(s_e^2))."""
-    valid = (~np.isnan(d)) & (~np.isnan(s)) & (s > 0)
-    if np.sum(valid) < 2:
-        return 0.0
-    mad_d = _mad(d[valid])
-    med_s2 = float(np.median(s[valid] ** 2))
-    return max(0.0, float(mad_d ** 2 - med_s2))
-
-
-dersimonian_laird = estimate_tau2  # Alias for backward compatibility
-
-
-def estimate_beta_binomial_rho(
-    k: np.ndarray, n: np.ndarray, k_exp: np.ndarray, p0: Optional[np.ndarray] = None
-) -> float:
-    """Estimate overdispersion rho by method of moments across all enumerators."""
-    denom_n = np.maximum(1, n)
-    if p0 is None:
-        p_s = float(np.sum(k_exp) / np.sum(denom_n))
-        p0 = np.clip((k_exp + p_s) / (denom_n + 1), 1e-6, 1.0 - 1e-6)
-    var_binom = denom_n * p0 * (1.0 - p0)
-    denom = np.sum(denom_n * (denom_n - 1) * p0 * (1.0 - p0))
-    if denom <= 0:
-        return 1e-4
-    raw_rho = float(np.sum((k - denom_n * p0) ** 2 - var_binom) / denom)
-    return min(max(1e-4, raw_rho), 0.999)
-
-
-def benjamini_hochberg(p_values: np.ndarray, q: float = 0.10) -> Tuple[np.ndarray, np.ndarray]:
-    """Compute Benjamini-Hochberg flags and adjusted q-values."""
-    n = len(p_values)
-    if n == 0:
-        return np.array([], dtype=bool), np.array([], dtype=float)
-    order = np.argsort(p_values)
-    sorted_p = p_values[order]
-    below = np.where(sorted_p <= (np.arange(1, n + 1) / n) * q)[0]
-    flags = np.zeros(n, dtype=bool)
-    if len(below) > 0:
-        flags[order[: below.max() + 1]] = True
-    q_vals = np.zeros(n, dtype=float)
-    accum_q = 1.0
-    for i in range(n - 1, -1, -1):
-        accum_q = min(accum_q, float(sorted_p[i] * n / (i + 1)))
-        q_vals[order[i]] = accum_q
-    return flags, q_vals
-
-
-def benjamini_yekutieli(p_values: np.ndarray, q: float = 0.10) -> np.ndarray:
-    """Compute Benjamini-Yekutieli flags under arbitrary dependence."""
-    n = len(p_values)
-    if n == 0:
-        return np.array([], dtype=bool)
-    c_n = float(np.sum(1.0 / np.arange(1, n + 1)))
-    order = np.argsort(p_values)
-    sorted_p = p_values[order]
-    below = np.where(sorted_p <= (np.arange(1, n + 1) / (n * c_n)) * q)[0]
-    flags = np.zeros(n, dtype=bool)
-    if len(below) > 0:
-        flags[order[: below.max() + 1]] = True
-    return flags
 
 
 def score_enumerators(
@@ -99,11 +31,12 @@ def score_enumerators(
     empirical_null: bool = True,
     scoring_version: str = "v1",
 ) -> pd.DataFrame:
-    """Score enumerators using empirical Bayes shrinkage and FDR control (v1 or v2)."""
+    """Score enumerators using empirical Bayes shrinkage and FDR control (v1, v2, or v3)."""
     df = pd.read_parquet(features) if isinstance(features, (str, Path)) else features.copy()
     enum_ids = [str(x) for x in df["enumerator_id"]]
     n_enums, n_e = len(df), df["n_e"].values.astype(int)
-    is_v2 = str(scoring_version).lower() in ["v2", "2"]
+    ver_str = str(scoring_version).lower()
+    is_v2, is_v3 = ver_str in ["v2", "2"], ver_str in ["v3", "3"]
 
     p_matrix: Dict[str, np.ndarray] = {}
     est_cols: Dict[str, np.ndarray] = {}
@@ -111,12 +44,33 @@ def score_enumerators(
     # 1. Feature F3: near_dup
     k3 = df["f3_k"].values.astype(int)
     n3 = np.maximum(1, df["f3_n"].values.astype(int))
-    mu3 = df["f3_k_exp"].values.astype(float)
-    v3 = df["f3_var"].values.astype(float) if "f3_var" in df else mu3
     p3, post3, cilo3, cihi3 = np.ones(n_enums), np.zeros(n_enums), np.zeros(n_enums), np.zeros(n_enums)
 
-    if is_v2:
-        # V1: smoothed p0 and variance floor
+    if is_v3:
+        mu3 = df["f3_k_exp_v3"].values.astype(float) if "f3_k_exp_v3" in df else df["f3_k_exp"].values.astype(float)
+        v3 = df["f3_var_v3"].values.astype(float) if "f3_var_v3" in df else df["f3_var"].values.astype(float)
+        p0_3 = np.clip(mu3 / n3, 1e-6, 1.0 - 1e-6)
+        vb_3 = n3 * p0_3 * (1.0 - p0_3)
+        veff_3 = np.maximum(v3, vb_3)
+        for i in range(n_enums):
+            if k3[i] == 0:
+                continue
+            if no_shrinkage or veff_3[i] <= vb_3[i] + 1e-9:
+                p3[i] = binom.sf(k3[i] - 1, n3[i], p0_3[i])
+                pm = k3[i] / n3[i]
+                se = math.sqrt(pm * (1.0 - pm) / n3[i])
+                post3[i], cilo3[i], cihi3[i] = pm, max(0.0, pm - 1.645 * se), min(1.0, pm + 1.645 * se)
+            else:
+                rho_i = min(0.999, max(1e-4, (veff_3[i] - vb_3[i]) / ((n3[i] - 1) * vb_3[i])))
+                M_i = (1.0 - rho_i) / rho_i
+                a_i, b_i = max(1e-6, p0_3[i] * M_i), max(1e-6, (1.0 - p0_3[i]) * M_i)
+                p3[i] = betabinom.sf(k3[i] - 1, n3[i], a_i, b_i)
+                a_post, b_post = a_i + k3[i], b_i + n3[i] - k3[i]
+                post3[i] = a_post / (a_post + b_post)
+                cilo3[i], cihi3[i] = beta.ppf(0.05, a_post, b_post), beta.ppf(0.95, a_post, b_post)
+    elif is_v2:
+        mu3 = df["f3_k_exp"].values.astype(float)
+        v3 = df["f3_var"].values.astype(float) if "f3_var" in df else mu3
         p_s3 = float(np.sum(mu3) / np.sum(n3))
         p0_3 = np.clip((mu3 + p_s3) / (n3 + 1), 1e-6, 1.0 - 1e-6)
         vb_3 = n3 * p0_3 * (1.0 - p0_3)
@@ -139,6 +93,8 @@ def score_enumerators(
                 cilo3[i], cihi3[i] = beta.ppf(0.05, a_post, b_post), beta.ppf(0.95, a_post, b_post)
     else:
         # v1 code path
+        mu3 = df["f3_k_exp"].values.astype(float)
+        v3 = df["f3_var"].values.astype(float) if "f3_var" in df else mu3
         for i in range(n_enums):
             if k3[i] == 0:
                 continue
@@ -168,9 +124,22 @@ def score_enumerators(
     for f_id, k_col, n_col, exp_col, direction in count_configs:
         k = df[k_col].values.astype(int)
         n = np.maximum(1, df[n_col].values.astype(int))
-        k_exp = df[exp_col].values.astype(float)
-        p_s = float(np.sum(k_exp) / np.sum(n))
-        p0 = np.clip((k_exp + p_s) / (n + 1), 1e-6, 1.0 - 1e-6)
+
+        if is_v3:
+            v3_exp = f"{f_id}_k_exp_v3"
+            k_exp = df[v3_exp].values.astype(float) if v3_exp in df else df[exp_col].values.astype(float)
+            p0 = np.clip(k_exp / n, 1e-6, 1.0 - 1e-6)
+            rho = estimate_beta_binomial_rho(k, n, k_exp, p0)
+        else:
+            k_exp = df[exp_col].values.astype(float)
+            p_s = float(np.sum(k_exp) / np.sum(n))
+            p0 = np.clip((k_exp + p_s) / (n + 1), 1e-6, 1.0 - 1e-6)
+            if is_v2:
+                rho = estimate_beta_binomial_rho(k, n, k_exp, p0)
+            else:
+                p_plain = binom.sf(k - 1, n, p0) if direction == "high" else np.minimum(1.0, 2.0 * np.minimum(binom.cdf(k, n, p0), binom.sf(k - 1, n, p0)))
+                trim = p_plain >= 0.01
+                rho = estimate_beta_binomial_rho(k[trim], n[trim], k_exp[trim], p0[trim]) if np.sum(trim) >= 3 else estimate_beta_binomial_rho(k, n, k_exp, p0)
 
         if no_shrinkage:
             p_vals = binom.sf(k - 1, n, p0) if direction == "high" else np.minimum(1.0, 2.0 * np.minimum(binom.cdf(k, n, p0), binom.sf(k - 1, n, p0)))
@@ -178,15 +147,6 @@ def score_enumerators(
             ci_low = np.maximum(0.0, pm - 1.645 * np.sqrt(pm * (1 - pm) / n))
             ci_high = np.minimum(1.0, pm + 1.645 * np.sqrt(pm * (1 - pm) / n))
         else:
-            if is_v2:
-                # V2: estimate rho WITHOUT trimming
-                rho = estimate_beta_binomial_rho(k, n, k_exp, p0)
-            else:
-                # v1: trimmed rho
-                p_plain = binom.sf(k - 1, n, p0) if direction == "high" else np.minimum(1.0, 2.0 * np.minimum(binom.cdf(k, n, p0), binom.sf(k - 1, n, p0)))
-                trim = p_plain >= 0.01
-                rho = estimate_beta_binomial_rho(k[trim], n[trim], k_exp[trim], p0[trim]) if np.sum(trim) >= 3 else estimate_beta_binomial_rho(k, n, k_exp, p0)
-
             M = (1.0 - rho) / rho
             a_prior, b_prior = np.maximum(1e-6, p0 * M), np.maximum(1e-6, (1.0 - p0) * M)
             if direction == "high":
@@ -204,8 +164,7 @@ def score_enumerators(
         se = np.where(valid, np.sqrt(tau2 + s ** 2), np.nan)
         z = np.where(valid, d / se, np.nan)
 
-        if is_v2:
-            # V3: Student-t distribution with df = (non-NaN count) - 1
+        if is_v2 or is_v3:
             df_t = max(1, int(np.sum(valid)) - 1)
             if direction == "low":
                 p = np.where(valid, t.cdf(z, df=df_t), np.nan)
@@ -214,7 +173,6 @@ def score_enumerators(
             else:
                 p = np.where(valid, 2.0 * t.sf(np.abs(z), df=df_t), np.nan)
         else:
-            # v1 code path: normal (with optional empirical_null fallback)
             if empirical_null and not no_shrinkage:
                 vz = z[valid]
                 if len(vz) > 1:

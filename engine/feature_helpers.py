@@ -1,8 +1,9 @@
 """Mathematical and statistical helper routines for peer-relative feature extraction."""
 
 import math
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 import numpy as np
+import pandas as pd
 
 
 def haversine_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
@@ -108,3 +109,52 @@ def aggregate_cell_nulls(cells: List[Tuple[float, float]]) -> Tuple[float, float
     val = float(np.average(diffs, weights=weights))
     null_sd = float(np.average(sds, weights=weights))
     return val, null_sd
+
+
+def compute_shrunk_peer_rate(k_peer: float, n_peer: float, p_s: float, M: float = 50.0) -> float:
+    """Shrink cell peer rate toward survey rate: (k_peer + M * p_s) / (n_peer + M)."""
+    return float((k_peer + M * p_s) / max(1.0, n_peer + M))
+
+
+def compute_f1_duration_resid(df: pd.DataFrame, enum_ids: List[str]) -> Tuple[Dict[str, Tuple[float, float, int]], float]:
+    log_dur = np.log(df["duration_min"].clip(lower=1.0))
+    if len(df) < 2 or df["hh_size"].nunique() < 2:
+        slope, intercept = 0.0, float(np.mean(log_dur)) if len(df) > 0 else 0.0
+    else:
+        slope, intercept = np.polyfit(df["hh_size"], log_dur, 1)
+    df_temp = df[["enumerator_id", "village_id"]].copy()
+    resids = log_dur - (intercept + slope * df["hh_size"])
+    df_temp["resid"] = resids
+    sigma_r = float(1.4826 * np.median(np.abs(resids - np.median(resids)))) if len(resids) > 0 else 0.25
+
+    res: Dict[str, Tuple[float, float, int]] = {}
+    for e_id in enum_ids:
+        e_rows = df_temp[df_temp["enumerator_id"] == e_id]
+        val = float(e_rows["resid"].median()) if len(e_rows) > 0 else 0.0
+        weights, peer_meds = [], []
+        for vid, ev_rows in e_rows.groupby("village_id"):
+            p_rows = df_temp[(df_temp["village_id"] == vid) & (df_temp["enumerator_id"] != e_id)]
+            if len(p_rows) > 0:
+                weights.append(len(ev_rows))
+                peer_meds.append(float(p_rows["resid"].median()))
+        peer_val = float(np.average(peer_meds, weights=weights)) if weights else val
+        res[e_id] = (round(val, 4), round(peer_val, 4), len(e_rows))
+    return res, sigma_r
+
+
+def compute_f2_throughput(df: pd.DataFrame, enum_ids: List[str]) -> Dict[str, Tuple[float, float, int]]:
+    start_dt = pd.to_datetime(df["start_time"], utc=True, format="ISO8601")
+    dates = (start_dt + pd.Timedelta(hours=6)).dt.date
+    df_temp = pd.DataFrame({"enumerator_id": df["enumerator_id"], "work_date": dates})
+    daily = df_temp.groupby(["enumerator_id", "work_date"]).size().reset_index(name="counts")
+    means = daily.groupby("enumerator_id")["counts"].mean().to_dict()
+    counts = df_temp.groupby("enumerator_id").size().to_dict()
+
+    res: Dict[str, Tuple[float, float, int]] = {}
+    for e_id in enum_ids:
+        val = means.get(e_id, 0.0)
+        others = [means[o] for o in means if o != e_id]
+        peer_val = float(np.median(others)) if others else val
+        res[e_id] = (round(val, 4), round(peer_val, 4), counts.get(e_id, 0))
+    return res
+
