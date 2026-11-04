@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 
 from generator.geography import Geography, _meters_to_deg
+from generator.households import generate_age_roster
 
 
 ACTIVE_FRAUD_MODES = [
@@ -190,16 +191,18 @@ def inject_fraud_into_submissions(
                     modal_val = 1 - modal_val
                 row["assets"][k] = modal_val
 
-            # Household size close to village mean
+            # Household size close to village mean with consistent age roster
             v_mean_sz = round(v_model["mean_hh_size"])
             sz_noise = int(round(fraud_rng.normal(0.0, hh_noise_sd)))
             new_sz = max(1, v_mean_sz + sz_noise)
             row["hh_size"] = new_sz
-            if new_sz < len(row["roster_ages"]):
-                row["roster_ages"] = row["roster_ages"][:new_sz]
-            elif new_sz > len(row["roster_ages"]):
-                tail_age = row["roster_ages"][-1] if row["roster_ages"] else row["head_age"]
-                row["roster_ages"].extend([tail_age] * (new_sz - len(row["roster_ages"])))
+            _, new_roster = generate_age_roster(
+                hh_size=new_sz,
+                care_effect=row.get("care_effect", 0.0),
+                rng=fraud_rng,
+                fixed_head_age=row["head_age"],
+            )
+            row["roster_ages"] = new_roster
 
     elif mode == "copy_paste":
         edit_rate = params["edit_rate"]
@@ -228,10 +231,18 @@ def inject_fraud_into_submissions(
             row["roster_ages"] = list(source_row["roster_ages"])
             row["assets"] = dict(source_row["assets"])
 
-            # Re-draw with prob edit_rate from honest village model
+            # Re-draw hh_size and roster together with prob edit_rate from honest village model
             v_model = village_models[vid]
             if fraud_rng.uniform(0.0, 1.0) < edit_rate:
-                row["hh_size"] = max(1, int(fraud_rng.poisson(v_model["mean_hh_size"] - 1.0) + 1))
+                new_sz = max(1, int(fraud_rng.poisson(v_model["mean_hh_size"] - 1.0) + 1))
+                row["hh_size"] = new_sz
+                new_head_age, new_roster = generate_age_roster(
+                    hh_size=new_sz,
+                    care_effect=row.get("care_effect", 0.0),
+                    rng=fraud_rng,
+                )
+                row["head_age"] = new_head_age
+                row["roster_ages"] = new_roster
             for k in list(row["assets"].keys()):
                 if fraud_rng.uniform(0.0, 1.0) < edit_rate:
                     row["assets"][k] = 1 if fraud_rng.uniform(0.0, 1.0) < v_model["probs"][k] else 0
@@ -254,27 +265,23 @@ def build_truth_label_dataframes(
     enumerator_fabricated_counts: Dict[str, int],
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """Assemble separate ground-truth label tables (dgp §6)."""
-    sub_rows = []
-    for rec in submission_records:
-        sub_rows.append({
+    sub_rows = [
+        {
             "submission_id": rec["submission_id"],
             "is_fabricated": bool(rec["is_fabricated"]),
             "fraud_mode": rec["fraud_mode"],
-        })
+        }
+        for rec in submission_records
+    ]
     df_sub = pd.DataFrame(sub_rows)
 
     enum_rows = []
     for e_id, n_total in sorted(enumerator_interview_counts.items()):
         n_fab = enumerator_fabricated_counts.get(e_id, 0)
         prof = enumerator_profiles.get(e_id)
-        if prof is not None:
-            primary_mode = prof.primary_mode
-            param_name = prof.intensity_name
-            param_val = prof.intensity_value
-        else:
-            primary_mode = None
-            param_name = None
-            param_val = None
+        primary_mode = prof.primary_mode if prof else None
+        param_name = prof.intensity_name if prof else None
+        param_val = prof.intensity_value if prof else None
 
         fab_share_realized = round(n_fab / max(1, n_total), 4)
         enum_rows.append({

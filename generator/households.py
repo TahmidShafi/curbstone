@@ -149,13 +149,17 @@ def generate_age_roster(
     head_age_min: int = 25,
     head_age_max: int = 70,
     heaping_base_prob: float = 0.10,
+    fixed_head_age: Optional[int] = None,
 ) -> Tuple[int, List[int]]:
     """Generate age roster and apply honest terminal-digit heaping (dgp §3.3).
 
     Returns:
         (head_age, roster_ages)
     """
-    head_age_raw = int(rng.integers(head_age_min, head_age_max + 1))
+    if fixed_head_age is not None:
+        head_age_raw = fixed_head_age
+    else:
+        head_age_raw = int(rng.integers(head_age_min, head_age_max + 1))
     raw_ages: List[int] = [head_age_raw]
 
     if hh_size >= 2:
@@ -173,8 +177,10 @@ def generate_age_roster(
     h_e = min(1.0, max(0.0, heaping_base_prob * math.exp(care_effect)))
 
     roster_ages: List[int] = []
-    for age in raw_ages:
-        if rng.uniform(0.0, 1.0) < h_e:
+    for idx, age in enumerate(raw_ages):
+        if idx == 0 and fixed_head_age is not None:
+            roster_ages.append(fixed_head_age)
+        elif rng.uniform(0.0, 1.0) < h_e:
             heaped_age = int(round(age / 5.0) * 5)
             roster_ages.append(heaped_age)
         else:

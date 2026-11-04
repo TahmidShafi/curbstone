@@ -34,13 +34,7 @@ def get_next_working_day(dt: datetime, start_hour: int = 9) -> datetime:
     while next_date.weekday() in (4, 5):  # Friday (4) or Saturday (5)
         next_date += timedelta(days=1)
     return datetime(
-        next_date.year,
-        next_date.month,
-        next_date.day,
-        start_hour,
-        0,
-        0,
-        tzinfo=dt.tzinfo,
+        next_date.year, next_date.month, next_date.day, start_hour, 0, 0, tzinfo=dt.tzinfo
     )
 
 
@@ -210,6 +204,7 @@ def generate_submissions_for_round(
                     "gps_lon": round(gps_lon, 7),
                     "gps_accuracy": round(gps_acc, 2),
                     "gap_after": gap_after,
+                    "care_effect": enum.care_effect,
                 })
 
         w_e = len(raw_interviews)
@@ -273,11 +268,7 @@ def generate_submissions_for_round(
                 row[a_name] = item["assets"][a_name]
 
             final_rows.append(row)
-            truth_records.append({
-                "submission_id": sub_id,
-                "is_fabricated": is_fab,
-                "fraud_mode": f_mode,
-            })
+            truth_records.append({"submission_id": sub_id, "is_fabricated": is_fab, "fraud_mode": f_mode})
 
             # Advance current time with honest gap
             if item["gap_after"] > 0:
@@ -289,10 +280,7 @@ def generate_submissions_for_round(
 
     df = pd.DataFrame(final_rows)
     df_labels_sub, df_labels_enum = build_truth_label_dataframes(
-        truth_records,
-        fab_profiles,
-        enum_n_interviews,
-        enum_n_fabricated,
+        truth_records, fab_profiles, enum_n_interviews, enum_n_fabricated
     )
 
     meta = {

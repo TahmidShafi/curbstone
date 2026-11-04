@@ -270,3 +270,30 @@ def test_stratified_mode_assignment(config):
     assert len(profs_8) == 8
     assigned_8 = [p.primary_mode for p in profs_8.values()]
     assert set(assigned_8[:5]) == set(ACTIVE_FRAUD_MODES)
+
+
+def test_roster_ages_len_equals_hh_size(config):
+    """Every record in honest and fraud rounds must satisfy len(roster_ages) == hh_size."""
+    for seed in [0, 1, 2, 42]:
+        seq = np.random.SeedSequence(seed)
+        h_seq, f_seq = seq.spawn(2)
+        geo = build_geography(config, np.random.default_rng(h_seq))
+        enums = build_enumerators(config, list(geo.villages.keys()), np.random.default_rng(h_seq))
+
+        # Honest round
+        df_h, _ = generate_submissions_for_round(
+            config, geo, enums, "medium", 1, np.random.default_rng(h_seq), enable_fraud=False
+        )
+        assert (df_h["roster_ages"].apply(len) == df_h["hh_size"]).all(), (
+            f"Honest round seed {seed} has len(roster_ages) != hh_size"
+        )
+
+        # Fraud round
+        df_f, _ = generate_submissions_for_round(
+            config, geo, enums, "medium", 1, np.random.default_rng(h_seq),
+            fraud_rng=np.random.default_rng(f_seq), enable_fraud=True, prevalence=0.125
+        )
+        assert (df_f["roster_ages"].apply(len) == df_f["hh_size"]).all(), (
+            f"Fraud round seed {seed} has len(roster_ages) != hh_size"
+        )
+
