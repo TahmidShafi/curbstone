@@ -276,4 +276,15 @@ Reason: honest-only calibration failure (20/20 null rounds flagged), caused by (
 - **B3 Skipped cells:** Skipped cells for F5, F6, and F7 must evaluate to NaN, never 0; enumerators with NaN for a feature simply have fewer tests ($m_e$).
 - **B4 Survey-wide baseline floor:** Count features floor local peer expectation at the survey-wide mean: $p_{\text{floor}} = \max(10^{-4}, \sum k_{\text{exp}} / \sum n)$, $p0_e = \max(k_{\text{exp}} / n, p_{\text{floor}})$.
 
+#### Amendment 2 (2026-11-04)
+Reason: Amendment 1 failed honest-only acceptance.
+Diagnosis: (a) trimming before DerSimonian–Laird truncates the honest distribution and underestimates tau^2; (b) pooled rho for F3 is inflated by fabricators and ignores pairing of near-duplicates; (c) the survey-wide floor replaced local rates with the survey mean, not only zero rates; (d) acceptance was checked at p<0.05 while flags occur near p<0.001, and its lower bound wrongly penalised discrete conservativeness. All changes evaluated on honest-only data only.
+Stopping rule: this is the final design amendment. If acceptance fails, the pre-specified fallback (empirical-null recalibration) is applied and reported.
+
+- **C1 Continuous features (F1, F2, F5, F6, F7, F10):** No trimming. $\tau^2 = \max(0, (1.4826 \cdot \text{MAD}(d))^2 - \text{median}(s_e^2))$ per feature per round. $z_e = d_e / \sqrt{\tau^2 + s_e^2}$. Shrunk estimate $= d_e \cdot \tau^2 / (\tau^2 + s_e^2)$ and 90% interval as in Amendment 1.
+- **C2 F3 (`near_dup`):** Increase workload-matched null draws to $B = 200$. From the null draws take mean $\mu_e$ and variance $v_e$ of $k$. Fit a beta-binomial for $e$ by moments (mean $\mu_e / n$, variance $v_e$); if $v_e \le \text{binomial variance}$, use plain binomial. $p = P(K \ge k_{\text{obs}})$. No pooled $\rho$ for F3.
+- **C3 F4, F8, F9:** Remove the floor. Smoothed $p0_e = (k_{\text{exp}} + p_s) / (n + 1)$, where $p_s = \sum k_{\text{exp}} / \sum n$ (one pseudo-observation). Retain the B2 trimmed $\rho$.
+- **C4 Skipped cells:** Ensure skipped cells are NaN for F5, F6, and F7 (B3).
+
+
 

@@ -63,7 +63,7 @@ def compute_f2_throughput(df: pd.DataFrame, enum_ids: List[str]) -> Dict[str, Tu
     return res
 
 
-def compute_f3_near_dup(df: pd.DataFrame, enum_ids: List[str], rng: np.random.Generator, B: int = 50) -> Dict[str, Tuple[int, float, int, bool]]:
+def compute_f3_near_dup(df: pd.DataFrame, enum_ids: List[str], rng: np.random.Generator, B: int = 200) -> Dict[str, Tuple[int, float, float, int, bool]]:
     recs = [
         (row["hh_size"], row["head_age"], tuple(row["roster_ages"].tolist() if hasattr(row["roster_ages"], "tolist") else row["roster_ages"]), *[row[a] for a in ASSET_COLS])
         for _, row in df.iterrows()
@@ -71,10 +71,11 @@ def compute_f3_near_dup(df: pd.DataFrame, enum_ids: List[str], rng: np.random.Ge
     df_temp = df[["enumerator_id", "village_id"]].copy()
     df_temp["rec"] = recs
 
-    res: Dict[str, Tuple[int, float, int, bool]] = {}
+    res: Dict[str, Tuple[int, float, float, int, bool]] = {}
     for e_id in enum_ids:
         e_rows = df_temp[df_temp["enumerator_id"] == e_id]
-        k_sum, k_exp_sum, null_limited = 0, 0.0, False
+        k_sum, null_limited = 0, False
+        null_draws = np.zeros(B)
         for vid, ev_rows in e_rows.groupby("village_id"):
             n_ev = len(ev_rows)
             k_sum += count_near_dups(ev_rows["rec"].tolist())
@@ -82,11 +83,14 @@ def compute_f3_near_dup(df: pd.DataFrame, enum_ids: List[str], rng: np.random.Ge
             n_peer, p_recs = len(p_rows), p_rows["rec"].tolist()
             if n_peer < n_ev:
                 null_limited = True
-                k_exp_sum += count_near_dups(p_recs)
+                null_draws += count_near_dups(p_recs)
             else:
-                sims = [count_near_dups([p_recs[i] for i in rng.choice(n_peer, size=n_ev, replace=False)]) for _ in range(B)]
-                k_exp_sum += float(np.mean(sims))
-        res[e_id] = (k_sum, round(k_exp_sum, 4), len(e_rows), null_limited)
+                for b in range(B):
+                    samp = [p_recs[i] for i in rng.choice(n_peer, size=n_ev, replace=False)]
+                    null_draws[b] += count_near_dups(samp)
+        mu_e = float(np.mean(null_draws))
+        v_e = float(np.var(null_draws, ddof=1)) if B > 1 else 0.0
+        res[e_id] = (k_sum, round(mu_e, 4), round(v_e, 4), len(e_rows), null_limited)
     return res
 
 
@@ -264,12 +268,8 @@ def build_feature_table(
     """Build peer-relative feature table with one row per enumerator."""
     df = pd.read_parquet(submissions) if isinstance(submissions, (str, Path)) else submissions.copy()
     if seed is None:
-        cfg_file = config_path or (Path(__file__).resolve().parent.parent / "config" / "params.yaml")
-        if Path(cfg_file).is_file():
-            with open(cfg_file, "r", encoding="utf-8") as f:
-                seed = int(yaml.safe_load(f).get("engine", {}).get("seed", 12345))
-        else:
-            seed = 12345
+        cfg = config_path or (Path(__file__).resolve().parent.parent / "config" / "params.yaml")
+        seed = int(yaml.safe_load(open(cfg, "r", encoding="utf-8")).get("engine", {}).get("seed", 12345)) if Path(cfg).is_file() else 12345
 
     rng = np.random.default_rng(seed)
     enum_ids = sorted([str(x) for x in df["enumerator_id"].unique()])
@@ -288,7 +288,7 @@ def build_feature_table(
             "enumerator_id": e, "n_e": f1[e][2], "f1_sigma_r": round(sigma_r, 4),
             "f1_value": f1[e][0], "f1_peer_value": f1[e][1], "f1_n": f1[e][2],
             "f2_value": f2[e][0], "f2_peer_value": f2[e][1], "f2_n": f2[e][2],
-            "f3_k": f3[e][0], "f3_k_exp": f3[e][1], "f3_n": f3[e][2], "f3_null_limited": f3[e][3],
+            "f3_k": f3[e][0], "f3_k_exp": f3[e][1], "f3_var": f3[e][2], "f3_n": f3[e][3], "f3_null_limited": f3[e][4],
             "f4_k": f4[e][0], "f4_k_exp": f4[e][1], "f4_n": f4[e][2],
             "f5_value": f5[e][0], "f5_peer_value": f5[e][1], "f5_null_sd": f5[e][2], "f5_n": f5[e][3],
             "f6_value": f6[e][0], "f6_peer_value": f6[e][1], "f6_null_sd": f6[e][2], "f6_n": f6[e][3],
