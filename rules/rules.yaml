@@ -1,0 +1,9 @@
+# Rule format:
+# - id: unique rule identifier (e.g., 'R001')
+#   description: explanation of what curbstoning anomaly the rule flags
+#   severity: severity level (e.g., 'low', 'medium', 'high', 'critical')
+#   sql: DuckDB SQL query computing rule violation flags or metrics
+#   version: rule schema / version string (e.g., '1.0.0')
+
+[]
+

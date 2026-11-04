@@ -1,0 +1,77 @@
+seed: 42  # ASSUMPTION – verify
+
+geography:
+  n_upazilas: 3  # [DESIGN] dgp §1
+  villages_per_upazila: 12  # [DESIGN] dgp §1
+  households_per_village: [100, 300]  # ASSUMPTION – typical rural village size; verify
+  upazila_codes: ["UPA01", "UPA02", "UPA03"]  # [DESIGN] placeholder codes
+  village_min_separation_km: 1.5  # [DESIGN] dgp §1
+
+village_effects:
+  icc_levels:
+    low: 0.05  # [ASSUMPTION] dgp §2.2
+    medium: 0.15  # [ASSUMPTION] dgp §2.2
+    high: 0.30  # [ASSUMPTION] dgp §2.2
+  beta: 0.8  # [ASSUMPTION] dgp §2.2
+  sigma_w: 0.15  # [ASSUMPTION] dgp §2.1
+
+household:
+  hh_size:
+    dist: "poisson"  # [DATA] dgp §3.1
+    lambda_base: 3.30  # [DATA] dgp §3.1
+    max_size: 15  # [DESIGN] dgp §3.1
+    mean: 4.30  # [DATA] HIES 2022 rural average (verify)
+  assets:
+    - name: "asset_mobile"
+      base_prob: 0.974  # [DATA] BBS ICT Use and Access Survey 2022, households with a mobile phone (secondary report; verify)
+    - name: "asset_tv"
+      base_prob: 0.568  # [DATA] same survey, rural households with a television (secondary report; verify)
+    - name: "asset_internet"
+      base_prob: 0.381  # [DATA] same survey, households with home internet access, national (rural value to be confirmed)
+    - name: "asset_radio"
+      base_prob: 0.128  # [DATA] same survey, households with a radio, national
+    - name: "asset_computer"
+      base_prob: 0.087  # [DATA] same survey, households with a computer, national
+
+enumerators:
+  n_enumerators: 40  # [DESIGN] dgp §4
+  villages_per_enumerator: [1, 3]  # [DESIGN] dgp §4
+  workload: [5, 60]  # [DESIGN] dgp §4
+  speed_sd: 0.20  # [ASSUMPTION] dgp §4
+  care_sd: 0.30  # [ASSUMPTION] dgp §4
+  min_enumerators_per_village: 2  # [DESIGN] dgp §4
+
+interview:
+  duration_lognormal:
+    mu: 3.355  # [ASSUMPTION] dgp §3.5 ln(35) - 4*0.05
+    sigma: 0.25  # [ASSUMPTION] dgp §3.5
+  per_member_minutes: 0.05  # [ASSUMPTION] dgp §3.5 gamma
+  work_hours: [9, 17]  # [ASSUMPTION] dgp §3.6
+  start_date: "2026-11-01"  # [DESIGN] Sunday start
+  round_working_days: 10  # [ASSUMPTION] dgp §3.6
+  timezone: "Asia/Dhaka"  # [ASSUMPTION] dgp §3.6
+  gap_same_village_min: [5, 20]  # [ASSUMPTION] dgp §3.6
+  gap_change_village_min: [30, 90]  # [ASSUMPTION] dgp §3.6
+  item_nonresponse_base_rate: 0.01  # [ASSUMPTION] dgp §3.4
+  age_heaping_base_rate: 0.10  # [ASSUMPTION] dgp §3.3
+
+gps:
+  scatter_m: 300.0  # [ASSUMPTION] dgp §3.7
+  device_error_sd_m: 10.0  # [ASSUMPTION] dgp §3.7
+  accuracy_range_m: [3.0, 25.0]  # [ASSUMPTION] dgp §3.7
+
+fraud:
+  prevalence: 0.10  # ASSUMPTION – verify
+  share_range: [0.30, 0.90]  # ASSUMPTION – verify
+  modes:
+    copy_paste:
+      intensity: 0.7  # ASSUMPTION – verify
+    straight_lining:
+      intensity: 0.8  # ASSUMPTION – verify
+    rushed:
+      intensity: 0.5  # ASSUMPTION – verify
+    invented_gps:
+      intensity: 0.6  # ASSUMPTION – verify
+    too_average:
+      intensity: 0.5  # ASSUMPTION – verify
+  holdout_mode: "partial_section"  # ASSUMPTION – verify
