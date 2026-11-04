@@ -21,3 +21,4 @@ Hard rules:
   `villages(village_id, upazila_code, ref_lat, ref_lon)` written by the generator to
   data/reference/villages.parquet (real MIS systems hold village reference locations).
 - Every number reported in README or docs must be produced by a committed script under eval/. No inline ad-hoc reporting.
+- SCORING FROZEN at 327e03989cfa22e6bad4152ea0b13236e80b031c
