@@ -286,5 +286,46 @@ Stopping rule: this is the final design amendment. If acceptance fails, the pre-
 - **C3 F4, F8, F9:** Remove the floor. Smoothed $p0_e = (k_{\text{exp}} + p_s) / (n + 1)$, where $p_s = \sum k_{\text{exp}} / \sum n$ (one pseudo-observation). Retain the B2 trimmed $\rho$.
 - **C4 Skipped cells:** Ensure skipped cells are NaN for F5, F6, and F7 (B3).
 
+### 10.2 Results — Scoring v1
+
+Under the pre-registered stopping rule, calibrated FDR flagging was not achieved. v1 is retained for reference; v2 is a post-hoc track.
+
+#### Acceptance Check: Amendment 2 Baseline (`empirical_null=False`)
+Evaluation across honest-only rounds (seeds 0..19, medium ICC):
+
+| Feature | Non-NaN Tests | Share $p < 0.05$ (target $\le 0.08$) | Share $p < 0.01$ (target $\le 0.02$) | Share $p < 0.001$ (target $\le 0.004$) | Status |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **F1** | 800 | 0.0425 | 0.0112 | 0.0050 | FAIL |
+| **F2** | 800 | 0.0325 | 0.0050 | 0.0000 | PASS |
+| **F3** | 800 | 0.1787 | 0.1713 | 0.1650 | FAIL |
+| **F4** | 800 | 0.2238 | 0.0887 | 0.0138 | FAIL |
+| **F5** | 484 | 0.0455 | 0.0124 | 0.0021 | PASS |
+| **F6** | 484 | 0.0372 | 0.0083 | 0.0000 | PASS |
+| **F7** | 775 | 0.0594 | 0.0258 | 0.0103 | FAIL |
+| **F8** | 800 | 0.0725 | 0.0288 | 0.0125 | FAIL |
+| **F9** | 800 | 0.2188 | 0.1350 | 0.0725 | FAIL |
+| **F10** | 800 | 0.0488 | 0.0225 | 0.0075 | FAIL |
+
+- Rounds with $\ge 1$ BH flag: 20 / 20 (target $\le 4$). Decision: REJECT.
+
+#### Acceptance Check: Amendment 2 + Empirical-Null Fallback (`empirical_null=True`)
+Evaluation across honest-only rounds (seeds 0..19, medium ICC):
+
+| Feature | Non-NaN Tests | Share $p < 0.05$ (target $\le 0.08$) | Share $p < 0.01$ (target $\le 0.02$) | Share $p < 0.001$ (target $\le 0.004$) | Status |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **F1** | 800 | 0.0462 | 0.0125 | 0.0050 | FAIL |
+| **F2** | 800 | 0.0425 | 0.0088 | 0.0013 | PASS |
+| **F3** | 800 | 0.1787 | 0.1713 | 0.1650 | FAIL |
+| **F4** | 800 | 0.2238 | 0.0887 | 0.0138 | FAIL |
+| **F5** | 484 | 0.0413 | 0.0103 | 0.0083 | FAIL |
+| **F6** | 484 | 0.0847 | 0.0372 | 0.0165 | FAIL |
+| **F7** | 775 | 0.0581 | 0.0258 | 0.0090 | FAIL |
+| **F8** | 800 | 0.0725 | 0.0288 | 0.0125 | FAIL |
+| **F9** | 800 | 0.2188 | 0.1350 | 0.0725 | FAIL |
+| **F10** | 800 | 0.0612 | 0.0275 | 0.0125 | FAIL |
+
+- Rounds with $\ge 1$ BH flag: 20 / 20 (target $\le 4$). Decision: REJECT.
+
+
 
 
