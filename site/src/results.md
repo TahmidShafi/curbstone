@@ -7,8 +7,7 @@ Performance evaluation across 72 factorial configurations (1,440 rounds, seeds 1
 ## 1. Headline Findings
 
 - **Risk Ranking vs Deterministic Rules:** Scoring v3 achieves a +0.1307 [+0.1191, +0.1422] precision@4 advantage over deterministic rule filtering, and +0.1946 [+0.1783, +0.2110] higher average precision. In relative precision (precision / max achievable), v3 achieves 49.4%–80.2% across medium-to-high prevalence settings compared to rules' 25.0%–61.3%.
-- **Empirical Bayes Shrinkage Effect:** Shrinkage strongly protects small-workload honest enumerators. Under Low Workload [5, 15], shrinkage yields a +0.0693 [+0.0521, +0.0865] precision@4 boost over raw un-shrunk estimation and reduces small-$n$ honest false flags by 5.3 percentage points (-0.0531 [-0.0708, -0.0359]).
-- **The Straight-Lining Cost:** Shrinkage is not a free lunch. On the `straight_lining` mode, shrinking asset dispersion estimates toward peer expectations lowers average precision by -0.1152 [-0.1417, -0.0886] compared to un-shrunk estimators, because low within-record variance is partially dampened by cell shrinkage.
+- **Shrinkage Effect:** Shrinkage effect depends on workload. In low-workload rounds (all enumerators n < 15), shrinkage improved precision@4 by +0.069 [+0.052, +0.087]. In mixed-workload rounds it did not change precision but shifted false flags onto small-sample honest enumerators: they took 196/1,920 top-4 slots with shrinkage vs 66/1,920 without (+0.068 [+0.055, +0.081]). It also reduced straight-lining detection (average precision −0.115 [−0.142, −0.089]). Scoring is frozen; ranking by posterior probability of a material effect is the planned next step.
 - **Rule Engine Scale Benchmark (1M rows):** [to be measured in browser] (evaluated live in DuckDB-Wasm on the Rules page).
 
 ---
@@ -16,7 +15,7 @@ Performance evaluation across 72 factorial configurations (1,440 rounds, seeds 1
 ## 2. Precision@k by Workload Profile and Prevalence
 
 | Workload | Prevalence | Max Achievable | Scoring v3 (Mean) | v3 Rel. Prec. | v3 10th–90th | No-Shrink (Mean) | No-Shrink Rel. | Rules (Mean) | Rules Rel. |
-| :--- | ---: | ---: | ---: | ---: | :--- | ---: | ---: | ---: | ---: |
+| :--- | ---: | ---: | ---: | ---: | ---: | :--- | ---: | ---: | ---: | ---: |
 | **Low** [5, 15] | 0.02 | 0.25 | 0.0979 | 0.3917 | [0.00, 0.25] | 0.0979 | 0.3917 | 0.0625 | 0.2500 |
 | **Low** [5, 15] | 0.05 | 0.50 | 0.2854 | 0.5708 | [0.00, 0.50] | 0.2812 | 0.5625 | 0.1417 | 0.2833 |
 | **Low** [5, 15] | 0.10 | 1.00 | 0.4938 | 0.4938 | [0.25, 0.75] | 0.3792 | 0.3792 | 0.3563 | 0.3563 |
@@ -34,7 +33,7 @@ Performance evaluation across 72 factorial configurations (1,440 rounds, seeds 1
 
 ## 3. Per-Mode Recall@k with Wilson 95% CIs and Counts
 
-| Mode | Type | Rounds | Scoring v3 ($x/n$ [95% CI]) | No-Shrinkage ($x/n$ [95% CI]) | Rules Baseline ($x/n$ [95% CI]) |
+| Mode | Type | Rounds | Scoring v3 (x/n [95% CI]) | No-Shrinkage (x/n [95% CI]) | Rules Baseline (x/n [95% CI]) |
 | :--- | :--- | ---: | :--- | :--- | :--- |
 | **copy_paste** | Standard Active | 756 | 950/990 (0.9596) [0.9454, 0.9702] | 741/990 (0.7485) [0.7205, 0.7745] | 817/990 (0.8253) [0.8004, 0.8476] |
 | **straight_lining** | Standard Active | 900 | 411/1116 (0.3683) [0.3405, 0.3970] | 630/1116 (0.5645) [0.5353, 0.5933] | 85/1116 (0.0762) [0.0620, 0.0932] |
@@ -43,13 +42,13 @@ Performance evaluation across 72 factorial configurations (1,440 rounds, seeds 1
 | **too_average** | Standard Active | 972 | 131/1278 (0.1025) [0.0870, 0.1203] | 60/1278 (0.0469) [0.0366, 0.0600] | 48/1278 (0.0376) [0.0284, 0.0494] |
 | **partial_section** | Held-Out (OOD) | 15 | 11/15 (0.7333) [0.4805, 0.8910] | 7/15 (0.4667) [0.2481, 0.6988] | 1/15 (0.0667) [0.0119, 0.2982] |
 
-> **Held-Out Mode Caveat:** `partial_section` fabricates only `roster_ages` with age heaping ($U[0.5, 0.8]$ to multiples of 5). Scoring v3 detected 11 of 15 fabricators (73.3% recall vs 6.7% for rules). Feature attribution: F8 (age heaping) appeared in 10/11 detections, and F7 (GPS dispersion) appeared in 1/11. While detection succeeded, real-world partial fabricators may fabricate non-numeric sections or adopt heaping patterns that do not align with multiples of 5.
+> **Held-Out Mode Caveat:** `partial_section` fabricates only `roster_ages` with age heaping (U[0.5, 0.8] to multiples of 5). Scoring v3 detected 11 of 15 fabricators (73.3% recall vs 6.7% for rules). Feature attribution: F8 (age heaping) appeared in 10/11 detections, and F7 (GPS dispersion) appeared in 1/11. While detection succeeded, real-world partial fabricators may fabricate non-numeric sections or adopt heaping patterns that do not align with multiples of 5.
 
 ---
 
 ## 4. Detection Over Time and Small-Sample Protection
 
-### Detection Rate by Working Day (Prevalence 0.10, $k=4$)
+### Detection Rate by Working Day (Prevalence 0.10, k = 4)
 
 | Mode | Day 2 | Day 4 | Day 6 | Day 8 | Day 10 |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -59,11 +58,11 @@ Performance evaluation across 72 factorial configurations (1,440 rounds, seeds 1
 | **invented_gps** | 7/15 [0.248, 0.699] | 11/15 [0.480, 0.891] | 12/15 [0.548, 0.930] | 12/15 [0.548, 0.930] | 12/15 [0.548, 0.930] |
 | **too_average** | 1/16 [0.011, 0.283] | 1/16 [0.011, 0.283] | 1/16 [0.011, 0.283] | 1/16 [0.011, 0.283] | 1/16 [0.011, 0.283] |
 
-### Small-$n$ Protection (Honest False Flags with $n < 15$ in Top-4)
+### Small-n Protection (Honest False Flags with n < 15 in Top-4)
 
-| Workload Profile | Total Slots | Scoring v3 ($x/\text{Total}$) | No-Shrinkage ($x/\text{Total}$) | Rules Baseline ($x/\text{Total}$) | v3 − No-Shrink (Paired 95% CI) |
+| Workload Profile | Total Slots | Scoring v3 (x/Total) | No-Shrinkage (x/Total) | Rules Baseline (x/Total) | v3 − No-Shrink (Paired 95% CI) |
 | :--- | ---: | :--- | :--- | :--- | :--- |
-| **Low** [5, 15] (all enumerators have $n < 15$ in this profile; this equals the false-positive share ($1 - \text{precision}$)) | 1920 | 1037/1920 (0.5401) | 1139/1920 (0.5932) | 1198/1920 (0.6240) | -0.0531 [-0.0708, -0.0359] |
+| **Low** [5, 15] (all enumerators have n < 15 in this profile; this equals the false-positive share (1 - precision)) | 1920 | 1037/1920 (0.5401) | 1139/1920 (0.5932) | 1198/1920 (0.6240) | -0.0531 [-0.0708, -0.0359] |
 | **Mixed** [5, 60] | 1920 | 196/1920 (0.1021) | 66/1920 (0.0344) | 53/1920 (0.0276) | +0.0677 [+0.0552, +0.0807] |
 | **High** [40, 60] | 1920 | 0/1920 (0.0000) | 0/1920 (0.0000) | 0/1920 (0.0000) | +0.0000 [+0.0000, +0.0000] |
 | **Overall** (72 Configs) | 5760 | 1233/5760 (0.2141) | 1205/5760 (0.2092) | 1251/5760 (0.2172) | +0.0049 [-0.0026, +0.0127] |
@@ -74,12 +73,12 @@ Performance evaluation across 72 factorial configurations (1,440 rounds, seeds 1
 
 <div class="grid grid-cols-2" style="gap: 16px; margin: 16px 0;">
   <div class="card" style="padding: 12px; text-align: center;">
-    <strong>Figure 1: Small-Workload Honest False Flags</strong>
-    ${FileAttachment("./results/small_n_honest.png").image({alt: "Small-workload honest false-flag counts", style: "max-width: 100%; height: auto; margin-top: 8px; border-radius: 4px;"})}
+    <strong>Figure 1: Small-Workload Honest False Flags</strong><br/>
+    <img src="./results/small_n_honest.png" alt="Small-workload honest false-flag counts" style="max-width: 100%; height: auto; margin-top: 8px; border-radius: 4px;" />
   </div>
   <div class="card" style="padding: 12px; text-align: center;">
-    <strong>Figure 2: Detection Rate Over Working Days (Wilson 95% CIs)</strong>
-    ${FileAttachment("./results/detection_by_day.png").image({alt: "Fabricator detection rate over time", style: "max-width: 100%; height: auto; margin-top: 8px; border-radius: 4px;"})}
+    <strong>Figure 2: Detection Rate Over Working Days (Wilson 95% CIs)</strong><br/>
+    <img src="./results/detection_by_day.png" alt="Fabricator detection rate over time" style="max-width: 100%; height: auto; margin-top: 8px; border-radius: 4px;" />
   </div>
 </div>
 
@@ -101,6 +100,6 @@ Performance evaluation across 72 factorial configurations (1,440 rounds, seeds 1
 
 ## 7. Methods History
 
-- **Scoring v1 (Pre-registered):** Planned Benjamini–Hochberg FDR control at $q=0.10$. Under honest null testing (seeds 0..19), 20 of 20 rounds yielded false flags due to between-enumerator heterogeneity and count dispersion. Amendment 1 (trimming, DSL) and Amendment 2 (MAD-based $\tau^2$, beta-binomial $B=200$, empirical-null fallback) both failed honest acceptance.
-- **Scoring v2 (Post-hoc Track):** Shifted primary deliverable from binary hypothesis tests to risk ranking (precision@$k$, recall@$k$ for $k=10\%$). Evaluated on held-out seeds 100..119 (honest) and 200..219 (fraud). Fixed F3 within-cell pairing and Student-t degrees of freedom, but count features still over-flagged rare events due to un-shrunk cell peer expectations.
-- **Scoring v3 (Post-hoc, Final & Frozen):** Introduced Bayesian shrinkage on cell-level peer rates toward survey-wide averages with $M=50$ pseudo-trials prior to seeing evaluation outcomes. Evaluated on strictly fresh seeds 300..319 (honest) and 400..419 (fraud). Calibrated FDR control was permanently abandoned under the pre-specified stopping rule, and the engine was permanently frozen. The delivered system operates strictly as risk ranking paired with field back-check allocation.
+- **Scoring v1 (Pre-registered):** Planned Benjamini–Hochberg FDR control at q = 0.10. Under honest null testing (seeds 0..19), 20 of 20 rounds yielded false flags due to between-enumerator heterogeneity and count dispersion. Amendment 1 (trimming, DSL) and Amendment 2 (MAD-based tau^2, beta-binomial B = 200, empirical-null fallback) both failed honest acceptance.
+- **Scoring v2 (Post-hoc Track):** Shifted primary deliverable from binary hypothesis tests to risk ranking (precision@k, recall@k for k = 10%). Evaluated on held-out seeds 100..119 (honest) and 200..219 (fraud). Fixed F3 within-cell pairing and Student-t degrees of freedom, but count features still over-flagged rare events due to un-shrunk cell peer expectations.
+- **Scoring v3 (Post-hoc, Final & Frozen):** Introduced Bayesian shrinkage on cell-level peer rates toward survey-wide averages with M = 50 pseudo-trials prior to seeing evaluation outcomes. Evaluated on strictly fresh seeds 300..319 (honest) and 400..419 (fraud). Calibrated FDR control was permanently abandoned under the pre-specified stopping rule, and the engine was permanently frozen. The delivered system operates strictly as risk ranking paired with field back-check allocation.

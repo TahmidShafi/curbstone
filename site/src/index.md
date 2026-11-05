@@ -35,25 +35,25 @@ const lowData = {
 };
 ```
 
-<div class="grid grid-cols-2" style="margin-top: 16px;">
-  <div>
 ```js
-const scenario = view(Inputs.radio(["mixed", "low"], {
+const scenarioInput = Inputs.radio(["mixed", "low"], {
   value: "mixed",
   label: "Workload Scenario:",
   format: (x) => x === "mixed" ? "Mixed Workload [5, 60] (Seed 5000)" : "Low Workload [5, 15] (Seed 5001)"
-}));
-```
-  </div>
-  <div>
-```js
-const shrinkageOn = view(Inputs.toggle({
+});
+const shrinkageInput = Inputs.toggle({
   value: true,
   label: "Empirical Bayes Shrinkage (Scoring v3):"
-}));
+});
+
+display(html`<div class="grid grid-cols-2" style="margin-top: 16px;">
+  <div>${scenarioInput}</div>
+  <div>${shrinkageInput}</div>
+</div>`);
+
+const scenario = Generators.input(scenarioInput);
+const shrinkageOn = Generators.input(shrinkageInput);
 ```
-  </div>
-</div>
 
 ```js
 const activeData = scenario === "mixed" ? mixedData : lowData;
@@ -65,6 +65,8 @@ const submissions = activeData.submissions;
 const villages = activeData.villages;
 ```
 
+```js
+display(html`
 <div class="card" style="padding: 14px 18px; margin: 16px 0; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;">
   <div style="font-size: 0.9rem; color: #334155;">
     <strong>Design Parameters:</strong> Seed: <code>${design.seed}</code> &bull; Workload: <code>${design.workload_profile} [${design.workload_range.join(", ")}]</code> &bull; Enumerators: <code>${design.n_enumerators}</code> &bull; Prevalence: <code>${design.prevalence}</code> (12.5% fabricators) &bull; ICC: <code>${design.icc_level}</code> (0.15) &bull; Active modes: <code>${design.active_fraud_modes.join(", ")}</code>
@@ -74,32 +76,38 @@ const villages = activeData.villages;
     <strong>Round Performance:</strong> Precision@4 = <code>${shrinkageOn ? roundMetrics.round_precision_v3 : roundMetrics.round_precision_noshrinkage}</code>. Study average for ${design.workload_profile} workload: <code>${shrinkageOn ? roundMetrics.study_average.v3_mean : roundMetrics.study_average.noshrink_mean} [${(shrinkageOn ? roundMetrics.study_average.v3_ci_95 : roundMetrics.study_average.noshrink_ci_95).join(", ")}]</code>.
   </div>
 </div>
-
-<div class="grid grid-cols-4" style="gap: 12px; margin-bottom: 12px;">
-```js
-const budget = view(Inputs.range([10, 200], {value: 60, step: 5, label: "Back-check Budget (interviews):"}));
-const floorShare = view(Inputs.range([0, 50], {value: 20, step: 5, label: "Random Floor Share (%):"}));
-const allocSeed = view(Inputs.number({value: 42, step: 1, label: "Allocator Seed:"}));
-const revealCount = view(Inputs.button("Reveal Ground Truth"));
+`);
 ```
-</div>
+
+```js
+const budgetInput = Inputs.range([10, 200], {value: 60, step: 5, label: "Back-check Budget (interviews):"});
+const floorShareInput = Inputs.range([0, 50], {value: 20, step: 5, label: "Random Floor Share (%):"});
+const allocSeedInput = Inputs.number({value: 42, step: 1, label: "Allocator Seed:"});
+const revealButton = Inputs.button("Reveal Ground Truth");
+
+display(html`<div class="grid grid-cols-4" style="gap: 12px; margin-bottom: 12px;">
+  <div>${budgetInput}</div>
+  <div>${floorShareInput}</div>
+  <div>${allocSeedInput}</div>
+  <div>${revealButton}</div>
+</div>`);
+
+const budget = Generators.input(budgetInput);
+const floorShare = Generators.input(floorShareInput);
+const allocSeed = Generators.input(allocSeedInput);
+const revealCount = Generators.input(revealButton);
+```
 
 ```js
 // Reveal state tracking (only fetch truth.json when clicked)
 const isRevealed = revealCount > 0;
-const truthLabels = Mutable(null);
+const truthData = isRevealed
+  ? await (scenario === "mixed" ? FileAttachment("./data/mixed/truth.json").json() : FileAttachment("./data/low/truth.json").json())
+  : null;
 
-if (isRevealed && truthLabels.value == null) {
-  const attachment = scenario === "mixed"
-    ? FileAttachment("./data/mixed/truth.json")
-    : FileAttachment("./data/low/truth.json");
-  truthLabels.value = await attachment.json();
-}
-
-// Map ground truth labels if revealed
 const truthMap = new Map();
-if (truthLabels.value) {
-  for (const t of truthLabels.value) {
+if (truthData) {
+  for (const t of truthData) {
     truthMap.set(t.enumerator_id, t);
   }
 }
@@ -176,7 +184,7 @@ const tableRows = sortedScores.map((r, idx) => {
     strongest_est: strongestEst,
     strongest_ci_low: ciLo,
     strongest_ci_high: ciHi,
-    rule_hits: Number(r.by_flag ? 1 : 0), // fallback or count
+    rule_hits: Number(r.by_flag ? 1 : 0),
     allocated_backchecks: allocation.allocatedCounts[eId] || 0,
     truth_label: truthLabel,
   };
@@ -185,18 +193,22 @@ const tableRows = sortedScores.map((r, idx) => {
 
 ```js
 // Selection state for evidence drawer
-const selectedEnumId = Mutable("enum_27");
+const selectedEnumInput = Inputs.input("enum_27");
+const selectedEnumId = Generators.input(selectedEnumInput);
 function setSelected(id) {
-  selectedEnumId.value = id;
+  selectedEnumInput.value = id;
+  selectedEnumInput.dispatchEvent(new Event("input", { bubbles: true }));
 }
 ```
 
-${renderRiskTable({
+```js
+display(renderRiskTable({
   rows: tableRows,
-  selectedId: selectedEnumId.value,
+  selectedId: selectedEnumId,
   onSelect: setSelected,
   isRevealed: isRevealed,
-})}
+}));
+```
 
 ```js
 function downloadCsv() {
@@ -215,7 +227,11 @@ function downloadCsv() {
 const staticCsvHref = scenario === "mixed" ? mixedData.flagsCsvHref : lowData.flagsCsvHref;
 const staticDtaHref = scenario === "mixed" ? mixedData.flagsDtaHref : lowData.flagsDtaHref;
 
-const downloadActions = html`
+display(html`
+<div class="grid grid-cols-2" style="align-items: center; margin: 12px 0;">
+  <div>
+    <strong>Total Allocated Interviews:</strong> ${allocation.totalAllocated} / ${submissions.length} (${allocation.floorAllocated} random floor, ${allocation.riskAllocated} risk-weighted)
+  </div>
   <div style="text-align: right;">
     <button class="btn" onclick=${() => downloadCsv()} style="padding: 6px 12px; font-weight: 600; cursor: pointer; border-radius: 4px; background: #2563eb; color: #fff; border: none;">
       Download Current Allocation (CSV)
@@ -223,21 +239,16 @@ const downloadActions = html`
     <a href="${staticCsvHref}" download style="margin-left: 8px; font-size: 0.85rem; color: #2563eb;">Static flags.csv</a>
     <a href="${staticDtaHref}" download style="margin-left: 8px; font-size: 0.85rem; color: #2563eb;">Static flags.dta</a>
   </div>
-`;
+</div>
+`);
 ```
 
-<div class="grid grid-cols-2" style="align-items: center; margin: 12px 0;">
-  <div>
-    <strong>Total Allocated Interviews:</strong> ${allocation.totalAllocated} / ${submissions.length} (${allocation.floorAllocated} random floor, ${allocation.riskAllocated} risk-weighted)
-  </div>
-  ${downloadActions}
-</div>
-
-<!-- Evidence Drawer Component -->
-${renderEvidenceDrawer({
-  enumeratorId: selectedEnumId.value,
-  enumEvidence: evidenceDict[selectedEnumId.value],
+```js
+display(renderEvidenceDrawer({
+  enumeratorId: selectedEnumId,
+  enumEvidence: evidenceDict[selectedEnumId],
   allSubmissions: submissions,
   villages: villages,
   onClose: () => setSelected(null),
-})}
+}));
+```

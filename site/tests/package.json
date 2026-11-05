@@ -3,3 +3,4 @@
   "type": "module",
   "main": "allocator.test.js"
 }
+

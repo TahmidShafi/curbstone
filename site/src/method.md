@@ -43,7 +43,7 @@ flowchart TD
 ### 1. Synthetic Data Generator
 Generates realistic multi-stage cluster survey datasets mimicking household surveys in rural Bangladesh:
 - **Population & Geography:** Upazilas, villages, households with intra-cluster correlation (ICC) across assets.
-- **Enumerator Behavior:** Honest enumerators vary along latent speed and care traits ($s_e \sim \mathcal{N}(0, 0.20^2)$).
+- **Enumerator Behavior:** Honest enumerators vary along latent speed and care traits (s_e ~ Normal(0, 0.20^2)).
 - **Fraud Mechanisms:** 5 standard active fabrication modes (`copy_paste`, `straight_lining`, `rushed`, `invented_gps`, `too_average`) plus 1 held-out out-of-distribution mode (`partial_section`).
 - Detailed documentation: [docs/dgp.md §1–§5](https://github.com/curbstone/curbstone/blob/main/docs/dgp.md).
 
@@ -68,18 +68,18 @@ Constructs 10 paradata and survey response metrics per enumerator:
 
 ### 4. Scoring v3 Engine (Empirical Bayes Shrinkage)
 Computes shrinkage-adjusted risk scores for each enumerator:
-- **Cell Shrinkage ($M = 50$):** Rare count features shrink village cell expectations toward the survey-wide mean:
-  $$\hat{p}_{\text{peer}} = \frac{k_{\text{peer}} + M \cdot p_s}{n_{\text{peer}} + M}$$
-- **Heterogeneity & Overdispersion:** Continuous features estimate between-enumerator variance $\tau^2$ using MAD-based estimators and test against Student-t reference distributions; count features fit beta-binomial dispersion.
+- **Cell Shrinkage (M = 50):** Rare count features shrink village cell expectations toward the survey-wide mean:
+  `p_peer = (k_peer + M * p_s) / (n_peer + M)`
+- **Heterogeneity & Overdispersion:** Continuous features estimate between-enumerator variance tau^2 using MAD-based estimators and test against Student-t reference distributions; count features fit beta-binomial dispersion.
 - Full mathematical derivation: [docs/dgp.md §12](https://github.com/curbstone/curbstone/blob/main/docs/dgp.md#12-scoring-v3-post-hoc-final).
 
 ### 5. Risk Ranking
 Orders enumerators by composite risk score:
-$$\text{Risk Score} = -\log_{10} p_e$$
-Where $p_e$ is the Bonferroni-corrected minimum $p$-value across valid features. Targeted back-check audits inspect the highest-ranked enumerators (Precision@$k$).
+`Risk Score = -log10(p_e)`
+Where p_e is the Bonferroni-corrected minimum p-value across valid features. Targeted back-check audits inspect the highest-ranked enumerators (Precision@k).
 
 ### 6. Back-Check Allocator
 A two-stage stratified allocation algorithm implemented as a pure function:
 1. **Random Floor:** Allocates a guaranteed fraction (e.g., 20%) of total budget uniformly across all enumerators using a seeded Mulberry32 PRNG.
-2. **Risk-Weighted Allocation:** Distributes remaining budget in proportion to $\max(\text{Risk Score}, 0)$ with largest-remainder integer rounding.
+2. **Risk-Weighted Allocation:** Distributes remaining budget in proportion to max(Risk Score, 0) with largest-remainder integer rounding.
 3. **Evidence-First Selection:** Selects specific interviews flagged by statistical evidence (near-duplicate pairs, straight-lined submissions, clustered GPS coordinates) before choosing random interviews.

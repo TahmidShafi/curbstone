@@ -19,15 +19,15 @@ const lowRulesYaml = await FileAttachment("./data/low/rules.yaml").text();
 const lowExpectedHits = await FileAttachment("./data/low/rule_hits_expected.json").json();
 ```
 
-<div class="grid grid-cols-2" style="margin-top: 16px;">
 ```js
-const scenario = view(Inputs.radio(["mixed", "low"], {
+const scenarioInput = Inputs.radio(["mixed", "low"], {
   value: "mixed",
   label: "Active Scenario:",
   format: (x) => x === "mixed" ? "Mixed Workload (Seed 5000)" : "Low Workload (Seed 5001)"
-}));
+});
+display(html`<div style="margin-top: 16px;">${scenarioInput}</div>`);
+const scenario = Generators.input(scenarioInput);
 ```
-</div>
 
 ```js
 const isMixed = scenario === "mixed";
@@ -78,6 +78,8 @@ const totalExpected = Object.values(expectedHits).reduce((acc, v) => acc + v, 0)
 const totalMs = ruleExecutionResults.reduce((acc, r) => acc + r.ms, 0);
 ```
 
+```js
+display(html`
 <div class="card" style="padding: 16px; margin: 16px 0; background: ${allPassed ? '#f0fdf4' : '#fef2f2'}; border: 1px solid ${allPassed ? '#86efac' : '#fca5a5'}; border-radius: 6px;">
   <div style="display: flex; justify-content: space-between; align-items: center;">
     <div>
@@ -93,9 +95,13 @@ const totalMs = ruleExecutionResults.reduce((acc, r) => acc + r.ms, 0);
     </div>
   </div>
 </div>
+`);
+```
 
-### Executed Rules (${parsedRules.length})
+### Executed Rules
 
+```js
+display(html`
 <div style="overflow-x: auto; margin-bottom: 24px;">
   <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
     <thead>
@@ -135,6 +141,8 @@ const totalMs = ruleExecutionResults.reduce((acc, r) => acc + r.ms, 0);
     </tbody>
   </table>
 </div>
+`);
+```
 
 ---
 
@@ -147,12 +155,7 @@ const runBenchmark = view(Inputs.button("Benchmark 1M rows"));
 ```
 
 ```js
-const benchResult = Mutable(null);
-
-if (runBenchmark > 0) {
-  benchResult.value = { running: true };
-  
-  // Replicate to 1,000,000 rows while preserving enumerator-day and village structures
+async function executeBenchmark() {
   const t0 = performance.now();
   const demoCountRes = await db.query("SELECT count(*)::INT AS cnt FROM submissions;");
   const demoSubmissionsCount = demoCountRes.toArray()[0].cnt;
@@ -186,10 +189,9 @@ if (runBenchmark > 0) {
     JOIN (SELECT *, row_number() OVER () - 1 AS rn FROM submissions) s
       ON s.rn = r.i % ${demoSubmissionsCount};
   `);
-  
-  // Replace view temporarily for benchmark
+
   await db.query("CREATE OR REPLACE VIEW submissions AS SELECT * FROM _bench_submissions;");
-  
+
   let ruleTotalMs = 0;
   let benchHits = 0;
   for (const rule of parsedRules) {
@@ -198,14 +200,12 @@ if (runBenchmark > 0) {
     ruleTotalMs += (performance.now() - tb0);
     benchHits += res.numRows;
   }
-  
-  // Restore original submissions view
+
   await db.query(activeViewSql);
   const totalElapsed = performance.now() - t0;
   const benchRate = (benchHits / 1000).toFixed(2);
 
-  benchResult.value = {
-    running: false,
+  return {
     rows: 1000000,
     ruleTotalMs: ruleTotalMs,
     totalElapsed: totalElapsed,
@@ -216,41 +216,38 @@ if (runBenchmark > 0) {
     userAgent: typeof navigator !== 'undefined' ? (navigator.userAgent || "Unknown") : "Node.js",
   };
 }
+
+const benchResult = runBenchmark > 0 ? await executeBenchmark() : null;
+
+if (benchResult) {
+  display(html`
+    <div class="card" style="padding: 16px; margin-top: 16px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px;">
+      <h4 style="margin: 0 0 10px 0; color: #1e293b;">1,000,000-Row Benchmark Results</h4>
+      <div class="grid grid-cols-3" style="gap: 12px; margin-bottom: 12px;">
+        <div style="background: #fff; padding: 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
+          <div style="font-size: 0.8rem; color: #64748b;">12-Rule Evaluation Time</div>
+          <div style="font-size: 1.25rem; font-weight: bold; color: #0284c7;">${benchResult.ruleTotalMs.toFixed(1)} ms</div>
+          <div style="font-size: 0.75rem; color: #64748b; margin-top: 4px;">measured in this browser (DuckDB-Wasm)</div>
+        </div>
+        <div style="background: #fff; padding: 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
+          <div style="font-size: 0.8rem; color: #64748b;">Processing Throughput</div>
+          <div style="font-size: 1.25rem; font-weight: bold; color: #16a34a;">
+            ${(1000000 / (benchResult.ruleTotalMs / 1000)).toLocaleString(undefined, {maximumFractionDigits: 0})} rows/sec
+          </div>
+          <div style="font-size: 0.75rem; color: #64748b; margin-top: 4px;">in-memory streaming SQL</div>
+        </div>
+        <div style="background: #fff; padding: 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
+          <div style="font-size: 0.8rem; color: #64748b;">Violations per 1,000 Submissions</div>
+          <div style="font-size: 1.25rem; font-weight: bold; color: #c2410c;">
+            ${benchResult.benchRate} <span style="font-size: 0.85rem; font-weight: normal; color: #64748b;">(demo: ${benchResult.demoRate})</span>
+          </div>
+          <div style="font-size: 0.75rem; color: #64748b; margin-top: 4px;">${benchResult.benchHits.toLocaleString()} total violations detected</div>
+        </div>
+      </div>
+      <div style="font-size: 0.825rem; color: #64748b; font-family: monospace;">
+        <strong>Stated Hardware:</strong> CPU Concurrency: ${benchResult.cores} threads &bull; User Agent: ${benchResult.userAgent}
+      </div>
+    </div>
+  `);
+}
 ```
-
-${benchResult.value && benchResult.value.running ? html`
-  <div class="card" style="padding: 16px; margin-top: 16px; background: #fffbeb; border: 1px solid #fde68a;">
-    Synthesizing 1,000,000 rows in DuckDB-Wasm and running all 12 rules...
-  </div>
-` : ""}
-
-${benchResult.value && !benchResult.value.running ? html`
-  <div class="card" style="padding: 16px; margin-top: 16px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px;">
-    <h4 style="margin: 0 0 10px 0; color: #1e293b;">1,000,000-Row Benchmark Results</h4>
-    <div class="grid grid-cols-3" style="gap: 12px; margin-bottom: 12px;">
-      <div style="background: #fff; padding: 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
-        <div style="font-size: 0.8rem; color: #64748b;">12-Rule Evaluation Time</div>
-        <div style="font-size: 1.25rem; font-weight: bold; color: #0284c7;">${benchResult.value.ruleTotalMs.toFixed(1)} ms</div>
-        <div style="font-size: 0.75rem; color: #64748b; margin-top: 4px;">measured in this browser (DuckDB-Wasm)</div>
-      </div>
-      <div style="background: #fff; padding: 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
-        <div style="font-size: 0.8rem; color: #64748b;">Processing Throughput</div>
-        <div style="font-size: 1.25rem; font-weight: bold; color: #16a34a;">
-          ${(1000000 / (benchResult.value.ruleTotalMs / 1000)).toLocaleString(undefined, {maximumFractionDigits: 0})} rows/sec
-        </div>
-        <div style="font-size: 0.75rem; color: #64748b; margin-top: 4px;">in-memory streaming SQL</div>
-      </div>
-      <div style="background: #fff; padding: 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
-        <div style="font-size: 0.8rem; color: #64748b;">Violations per 1,000 Submissions</div>
-        <div style="font-size: 1.25rem; font-weight: bold; color: #c2410c;">
-          ${benchResult.value.benchRate} <span style="font-size: 0.85rem; font-weight: normal; color: #64748b;">(demo: ${benchResult.value.demoRate})</span>
-        </div>
-        <div style="font-size: 0.75rem; color: #64748b; margin-top: 4px;">${benchResult.value.benchHits.toLocaleString()} total violations detected</div>
-      </div>
-    </div>
-    <div style="font-size: 0.825rem; color: #64748b; font-family: monospace;">
-      <strong>Stated Hardware:</strong> CPU Concurrency: ${benchResult.value.cores} threads &bull; User Agent: ${benchResult.value.userAgent}
-    </div>
-  </div>
-` : ""}
-

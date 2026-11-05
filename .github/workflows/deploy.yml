@@ -32,12 +32,17 @@ jobs:
         working-directory: site
         run: npm ci
 
-      - name: Run allocator tests
-        run: node --test site/tests/
+      - name: Run Markdown and allocator tests
+        working-directory: site
+        run: npm test
 
       - name: Build static site
         working-directory: site
         run: npm run build
+
+      - name: Verify build output
+        working-directory: site
+        run: node scripts/check_md.mjs
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
@@ -54,4 +59,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
