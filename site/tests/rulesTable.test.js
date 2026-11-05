@@ -39,6 +39,21 @@ test("renderRuleTableRow returns HTMLTableRowElement with exactly 8 cells in cor
   const tableContainer = renderExecutedRulesTable([sampleRule, { ...sampleRule, id: "RULE_02", pass: false }]);
   const table = tableContainer.querySelector("table");
   assert.ok(table, "table must exist");
+  assert.strictEqual(table.style.width, "100%", "table width must be 100%");
+  assert.strictEqual(table.style.tableLayout, "fixed", "table layout must be fixed");
+
+  // Check colgroup widths: Rule 56, Level 96, Severity 80, Description (no width), Browser 72, Python 72, Parity 56, Time 80
+  const cols = table.querySelectorAll("colgroup col");
+  assert.strictEqual(cols.length, 8, "colgroup must have 8 col elements");
+  assert.ok(cols[0].style.width.includes("56px"), "col 0 (Rule) must be 56px");
+  assert.ok(cols[1].style.width.includes("96px"), "col 1 (Level) must be 96px");
+  assert.ok(cols[2].style.width.includes("80px"), "col 2 (Severity) must be 80px");
+  assert.strictEqual(cols[3].style.width, "", "col 3 (Description) must have no width to take remaining space");
+  assert.ok(cols[4].style.width.includes("72px"), "col 4 (Browser) must be 72px");
+  assert.ok(cols[5].style.width.includes("72px"), "col 5 (Python) must be 72px");
+  assert.ok(cols[6].style.width.includes("56px"), "col 6 (Parity) must be 56px");
+  assert.ok(cols[7].style.width.includes("80px"), "col 7 (Time) must be 80px");
+
   assert.strictEqual(table.rows.length, 3, "table.rows.length must be 3 (1 thead + 2 tbody)");
 
   const ths = table.querySelectorAll("thead th");
@@ -51,3 +66,4 @@ test("renderRuleTableRow returns HTMLTableRowElement with exactly 8 cells in cor
     assert.strictEqual(tr.cells.length, 8, "each tbody row must have exactly 8 cells");
   }
 });
+

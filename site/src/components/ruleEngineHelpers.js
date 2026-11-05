@@ -113,52 +113,52 @@ export function renderRuleTableRow(r) {
   // 1. Rule
   const tdRule = document.createElement("td");
   tdRule.className = "enum-id";
-  tdRule.style.cssText = "padding: 8px 8px; width: 56px; box-sizing: border-box; font-weight: 600; color: var(--accent);";
+  tdRule.style.cssText = "padding: 8px 8px; box-sizing: border-box; font-weight: 600; color: var(--accent);";
   tdRule.textContent = r.id;
   tr.appendChild(tdRule);
 
   // 2. Level
   const tdLevel = document.createElement("td");
-  tdLevel.style.cssText = "padding: 8px 8px; width: 112px; box-sizing: border-box; color: var(--muted);";
+  tdLevel.style.cssText = "padding: 8px 8px; box-sizing: border-box; color: var(--muted);";
   tdLevel.textContent = r.level;
   tr.appendChild(tdLevel);
 
   // 3. Severity
   const tdSeverity = document.createElement("td");
-  tdSeverity.style.cssText = "padding: 8px 8px; width: 80px; box-sizing: border-box; color: var(--muted);";
+  tdSeverity.style.cssText = "padding: 8px 8px; box-sizing: border-box; color: var(--muted);";
   tdSeverity.textContent = r.severity;
   tr.appendChild(tdSeverity);
 
   // 4. Description
   const tdDesc = document.createElement("td");
-  tdDesc.style.cssText = "padding: 8px 8px; width: auto; min-width: 280px; box-sizing: border-box;";
+  tdDesc.style.cssText = "padding: 8px 8px; box-sizing: border-box;";
   tdDesc.textContent = r.description;
   tr.appendChild(tdDesc);
 
   // 5. Browser Hits
   const tdHits = document.createElement("td");
   tdHits.className = "tabular-nums";
-  tdHits.style.cssText = "padding: 8px 8px; width: 72px; box-sizing: border-box; text-align: right; font-weight: 600;";
+  tdHits.style.cssText = "padding: 8px 8px; box-sizing: border-box; text-align: right; font-weight: 600;";
   tdHits.textContent = String(r.hits);
   tr.appendChild(tdHits);
 
   // 6. Python Expected
   const tdExp = document.createElement("td");
   tdExp.className = "tabular-nums";
-  tdExp.style.cssText = "padding: 8px 8px; width: 72px; box-sizing: border-box; text-align: right; color: var(--muted);";
+  tdExp.style.cssText = "padding: 8px 8px; box-sizing: border-box; text-align: right; color: var(--muted);";
   tdExp.textContent = String(r.expected);
   tr.appendChild(tdExp);
 
   // 7. Parity
   const tdParity = document.createElement("td");
-  tdParity.style.cssText = `padding: 8px 8px; width: 56px; box-sizing: border-box; text-align: center; font-weight: 600; color: ${r.pass ? 'var(--accent)' : 'var(--fab)'};`;
+  tdParity.style.cssText = `padding: 8px 8px; box-sizing: border-box; text-align: center; font-weight: 600; color: ${r.pass ? 'var(--accent)' : 'var(--fab)'};`;
   tdParity.textContent = r.pass ? "✓" : "✗";
   tr.appendChild(tdParity);
 
   // 8. Time ("7.5 ms" with white-space: nowrap)
   const tdTime = document.createElement("td");
   tdTime.className = "tabular-nums";
-  tdTime.style.cssText = "padding: 8px 8px; width: 72px; box-sizing: border-box; text-align: right; color: var(--muted); white-space: nowrap;";
+  tdTime.style.cssText = "padding: 8px 8px; box-sizing: border-box; text-align: right; color: var(--muted); white-space: nowrap;";
   tdTime.textContent = `${r.ms.toFixed(1)} ms`;
   tr.appendChild(tdTime);
 
@@ -176,17 +176,30 @@ export function renderExecutedRulesTable(results = []) {
   const table = document.createElement("table");
   table.style.cssText = "width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; table-layout: fixed;";
 
+  const colgroup = document.createElement("colgroup");
+  colgroup.innerHTML = `
+    <col style="width: 56px;">
+    <col style="width: 96px;">
+    <col style="width: 80px;">
+    <col>
+    <col style="width: 72px;">
+    <col style="width: 72px;">
+    <col style="width: 56px;">
+    <col style="width: 80px;">
+  `;
+  table.appendChild(colgroup);
+
   const thead = document.createElement("thead");
   thead.innerHTML = `
     <tr style="background: var(--surface); border-bottom: 1px solid var(--line); color: var(--ink); font-weight: 600;">
-      <th style="padding: 10px 8px; width: 56px; box-sizing: border-box; white-space: nowrap;">Rule</th>
-      <th style="padding: 10px 8px; width: 112px; box-sizing: border-box; white-space: nowrap;">Level</th>
-      <th style="padding: 10px 8px; width: 80px; box-sizing: border-box; white-space: nowrap;">Severity</th>
-      <th style="padding: 10px 8px; width: auto; min-width: 280px; box-sizing: border-box;">Description</th>
-      <th style="padding: 10px 8px; width: 72px; box-sizing: border-box; text-align: right; white-space: nowrap;">Browser</th>
-      <th style="padding: 10px 8px; width: 72px; box-sizing: border-box; text-align: right; white-space: nowrap;">Python</th>
-      <th style="padding: 10px 8px; width: 56px; box-sizing: border-box; text-align: center; white-space: nowrap;">Parity</th>
-      <th style="padding: 10px 8px; width: 72px; box-sizing: border-box; text-align: right; white-space: nowrap;">Time</th>
+      <th style="padding: 10px 8px; box-sizing: border-box; white-space: nowrap;">Rule</th>
+      <th style="padding: 10px 8px; box-sizing: border-box; white-space: nowrap;">Level</th>
+      <th style="padding: 10px 8px; box-sizing: border-box; white-space: nowrap;">Severity</th>
+      <th style="padding: 10px 8px; box-sizing: border-box;">Description</th>
+      <th style="padding: 10px 8px; box-sizing: border-box; text-align: right; white-space: nowrap;">Browser</th>
+      <th style="padding: 10px 8px; box-sizing: border-box; text-align: right; white-space: nowrap;">Python</th>
+      <th style="padding: 10px 8px; box-sizing: border-box; text-align: center; white-space: nowrap;">Parity</th>
+      <th style="padding: 10px 8px; box-sizing: border-box; text-align: right; white-space: nowrap;">Time</th>
     </tr>
   `;
   table.appendChild(thead);
