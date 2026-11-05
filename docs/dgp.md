@@ -426,3 +426,4 @@ Total: **72 configurations × 20 seeds = 1,440 simulated rounds** using fresh se
 ## 14. Change log
 
 - 2026-11-05 rules view: offset-free timestamp parsing after browser parity check found a cross-engine difference (R07).
+- 2026-11-05 site: the browser cache stored partial (byte-range) responses from DuckDB-Wasm's HTTP reader and later served them zero-filled, breaking parquet reads. Fixed by loading full files via FileAttachment.parquet() and passing Arrow tables to DuckDBClient (no range requests).
