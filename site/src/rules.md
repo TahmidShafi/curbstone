@@ -49,29 +49,33 @@ await db.query(activeViewSql);
 ```
 
 ```js
-// Execute each rule and measure latency
-const ruleExecutionResults = [];
-for (const rule of parsedRules) {
-  const t0 = performance.now();
-  const res = await db.query(rule.sql);
-  const elapsedMs = performance.now() - t0;
-  const actualHits = res.numRows;
-  const expected = expectedHits[rule.id] ?? 0;
-  const pass = actualHits === expected;
+// Helper async function to safely await SQL execution inside loop
+async function executeRules() {
+  const results = [];
+  for (const rule of parsedRules) {
+    const t0 = performance.now();
+    const res = await db.query(rule.sql);
+    const elapsedMs = performance.now() - t0;
+    const actualHits = res.numRows;
+    const expected = expectedHits[rule.id] ?? 0;
+    const pass = actualHits === expected;
 
-  ruleExecutionResults.push({
-    id: rule.id,
-    level: rule.level,
-    severity: rule.severity,
-    description: rule.description,
-    hits: actualHits,
-    expected: expected,
-    pass: pass,
-    ms: elapsedMs,
-    sql: rule.sql,
-  });
+    results.push({
+      id: rule.id,
+      level: rule.level,
+      severity: rule.severity,
+      description: rule.description,
+      hits: actualHits,
+      expected: expected,
+      pass: pass,
+      ms: elapsedMs,
+      sql: rule.sql,
+    });
+  }
+  return results;
 }
 
+const ruleExecutionResults = await executeRules();
 const allPassed = ruleExecutionResults.every(r => r.pass);
 const totalHits = ruleExecutionResults.reduce((acc, r) => acc + r.hits, 0);
 const totalExpected = Object.values(expectedHits).reduce((acc, v) => acc + v, 0);

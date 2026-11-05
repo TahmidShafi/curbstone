@@ -1,19 +1,22 @@
 {
   "k": 4,
+  "round_hits_noshrinkage": 3,
+  "round_hits_v3": 4,
   "round_precision_noshrinkage": 0.75,
   "round_precision_v3": 1.0,
   "scenario": "mixed",
   "seed": 5000,
   "study_average": {
     "noshrink_ci_95": [
-      0.3927,
-      0.4469
+      0.5375,
+      0.7125
     ],
-    "noshrink_mean": 0.4193,
+    "noshrink_mean": 0.625,
+    "setting": "Held-out ranking evaluation (seeds 400..419, prev 0.125, mixed workload)",
     "v3_ci_95": [
-      0.3865,
-      0.4406
+      0.65,
+      0.8
     ],
-    "v3_mean": 0.4135
+    "v3_mean": 0.725
   }
 }

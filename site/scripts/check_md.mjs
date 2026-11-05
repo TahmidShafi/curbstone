@@ -1,5 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
+import os from "node:os";
+import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -87,13 +89,11 @@ for (const file of mdFiles) {
       }
 
       if (isClosing) {
-        // Pop matching tag or nearest matching from stack
         const idx = tagStack.lastIndexOf(tagName);
         if (idx !== -1) {
           tagStack.splice(idx, 1);
         }
       } else {
-        // Opening tag: verify it's not closed on the same line
         const closingTag = `</${tagName}>`;
         const restOfLine = line.slice(match.index + match[0].length);
         if (!restOfLine.includes(closingTag)) {
@@ -104,12 +104,43 @@ for (const file of mdFiles) {
   }
 }
 
-// 2. Check built HTML files for literal "```js"
+// 2. Check built HTML files for literal "```js" and syntax-check module scripts
 const htmlFiles = getHtmlFiles(distDir);
+let moduleScriptCount = 0;
 for (const file of htmlFiles) {
   const content = fs.readFileSync(file, "utf-8");
   if (content.includes("```js") || content.includes("```javascript")) {
     logError(file, null, "Built HTML contains literal '```js' text indicating an unparsed fence.");
+  }
+
+  // Extract each compiled <script type="module"> and run node --check
+  const scriptRegex = /<script\s+type=["']module["']>([\s\S]*?)<\/script>/gi;
+  let match;
+  let fileScriptIdx = 0;
+  while ((match = scriptRegex.exec(content)) !== null) {
+    fileScriptIdx++;
+    moduleScriptCount++;
+    const scriptCode = match[1];
+    const tempFile = path.join(
+      os.tmpdir(),
+      `obs_check_${path.basename(file, ".html")}_${fileScriptIdx}_${Date.now()}.mjs`
+    );
+    try {
+      fs.writeFileSync(tempFile, scriptCode, "utf-8");
+      execFileSync(process.execPath, ["--check", tempFile], { stdio: "pipe" });
+    } catch (err) {
+      logError(
+        file,
+        null,
+        `Compiled <script type="module"> #${fileScriptIdx} failed node --check:\n${err.stderr?.toString() || err.message}`
+      );
+    } finally {
+      if (fs.existsSync(tempFile)) {
+        try {
+          fs.unlinkSync(tempFile);
+        } catch {}
+      }
+    }
   }
 }
 
@@ -117,6 +148,8 @@ if (errorCount > 0) {
   console.error(`\ncheck_md: FAILED with ${errorCount} error(s).`);
   process.exit(1);
 } else {
-  console.log(`check_md: PASSED. Scanned ${mdFiles.length} markdown file(s) and ${htmlFiles.length} built HTML file(s).`);
+  console.log(
+    `check_md: PASSED. Scanned ${mdFiles.length} markdown file(s), ${htmlFiles.length} built HTML file(s), verified ${moduleScriptCount} module script(s).`
+  );
   process.exit(0);
 }

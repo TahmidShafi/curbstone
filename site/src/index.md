@@ -7,16 +7,31 @@ import { allocateBackChecks } from "./components/allocator.js";
 import { renderRiskTable } from "./components/riskTable.js";
 import { renderEvidenceDrawer } from "./components/evidenceDrawer.js";
 
+// Helper to convert Apache Arrow tables to plain objects with number types and plain arrays
+const toRows = (t) => Array.from(t, (r) => {
+  const o = r.toJSON();
+  for (const k in o) {
+    if (typeof o[k] === "bigint") {
+      o[k] = Number(o[k]);
+    } else if (Array.isArray(o[k])) {
+      o[k] = o[k].map(v => typeof v === "bigint" ? Number(v) : v);
+    } else if (o[k] != null && typeof o[k] === "object" && typeof o[k][Symbol.iterator] === "function") {
+      o[k] = Array.from(o[k], v => typeof v === "bigint" ? Number(v) : v);
+    }
+  }
+  return o;
+});
+
 // Static file attachments across scenarios
 const mixedData = {
   design: await FileAttachment("./data/mixed/design.json").json(),
   roundMetrics: await FileAttachment("./data/mixed/round_metrics.json").json(),
-  scoresShrinkage: await FileAttachment("./data/mixed/scores_shrinkage.parquet").parquet(),
-  scoresNoshrinkage: await FileAttachment("./data/mixed/scores_noshrinkage.parquet").parquet(),
+  scoresShrinkage: toRows(await FileAttachment("./data/mixed/scores_shrinkage.parquet").parquet()),
+  scoresNoshrinkage: toRows(await FileAttachment("./data/mixed/scores_noshrinkage.parquet").parquet()),
   evidenceShrinkage: await FileAttachment("./data/mixed/evidence.json").json(),
   evidenceNoshrinkage: await FileAttachment("./data/mixed/evidence_noshrinkage.json").json(),
-  submissions: await FileAttachment("./data/mixed/submissions.parquet").parquet(),
-  villages: await FileAttachment("./data/mixed/villages.parquet").parquet(),
+  submissions: toRows(await FileAttachment("./data/mixed/submissions.parquet").parquet()),
+  villages: toRows(await FileAttachment("./data/mixed/villages.parquet").parquet()),
   flagsCsvHref: await FileAttachment("./data/mixed/flags.csv").href,
   flagsDtaHref: await FileAttachment("./data/mixed/flags.dta").href,
 };
@@ -24,12 +39,12 @@ const mixedData = {
 const lowData = {
   design: await FileAttachment("./data/low/design.json").json(),
   roundMetrics: await FileAttachment("./data/low/round_metrics.json").json(),
-  scoresShrinkage: await FileAttachment("./data/low/scores_shrinkage.parquet").parquet(),
-  scoresNoshrinkage: await FileAttachment("./data/low/scores_noshrinkage.parquet").parquet(),
+  scoresShrinkage: toRows(await FileAttachment("./data/low/scores_shrinkage.parquet").parquet()),
+  scoresNoshrinkage: toRows(await FileAttachment("./data/low/scores_noshrinkage.parquet").parquet()),
   evidenceShrinkage: await FileAttachment("./data/low/evidence.json").json(),
   evidenceNoshrinkage: await FileAttachment("./data/low/evidence_noshrinkage.json").json(),
-  submissions: await FileAttachment("./data/low/submissions.parquet").parquet(),
-  villages: await FileAttachment("./data/low/villages.parquet").parquet(),
+  submissions: toRows(await FileAttachment("./data/low/submissions.parquet").parquet()),
+  villages: toRows(await FileAttachment("./data/low/villages.parquet").parquet()),
   flagsCsvHref: await FileAttachment("./data/low/flags.csv").href,
   flagsDtaHref: await FileAttachment("./data/low/flags.dta").href,
 };
@@ -66,6 +81,26 @@ const villages = activeData.villages;
 ```
 
 ```js
+function formatComparison(rm, isShrink) {
+  const roundHits = isShrink ? rm.round_hits_v3 : rm.round_hits_noshrinkage;
+  const comp = rm.study_average;
+  if (!comp) return `This round: ${roundHits} of 4.`;
+
+  if (rm.scenario === "mixed") {
+    const mean = isShrink ? comp.v3_mean : comp.noshrink_mean;
+    const ci = isShrink ? comp.v3_ci_95 : comp.noshrink_ci_95;
+    return `This round: ${roundHits} of 4. Study average at comparable settings: ${mean.toFixed(3)} [${ci[0].toFixed(3)}, ${ci[1].toFixed(3)}]`;
+  } else {
+    const p10 = comp.prev_0_10;
+    const p20 = comp.prev_0_20;
+    const m10 = isShrink ? p10.v3_mean : p10.noshrink_mean;
+    const ci10 = isShrink ? p10.v3_ci_95 : p10.noshrink_ci_95;
+    const m20 = isShrink ? p20.v3_mean : p20.noshrink_mean;
+    const ci20 = isShrink ? p20.v3_ci_95 : p20.noshrink_ci_95;
+    return `This round: ${roundHits} of 4. Study average at comparable settings: prev 0.10 = ${m10.toFixed(3)} [${ci10[0].toFixed(3)}, ${ci10[1].toFixed(3)}], prev 0.20 = ${m20.toFixed(3)} [${ci20[0].toFixed(3)}, ${ci20[1].toFixed(3)}]`;
+  }
+}
+
 display(html`
 <div class="card" style="padding: 14px 18px; margin: 16px 0; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;">
   <div style="font-size: 0.9rem; color: #334155;">
@@ -73,7 +108,7 @@ display(html`
   </div>
   <div style="font-size: 0.85rem; color: #64748b; margin-top: 6px;">
     <em>Seeds were fixed before results were viewed.</em> &bull;
-    <strong>Round Performance:</strong> Precision@4 = <code>${shrinkageOn ? roundMetrics.round_precision_v3 : roundMetrics.round_precision_noshrinkage}</code>. Study average for ${design.workload_profile} workload: <code>${shrinkageOn ? roundMetrics.study_average.v3_mean : roundMetrics.study_average.noshrink_mean} [${(shrinkageOn ? roundMetrics.study_average.v3_ci_95 : roundMetrics.study_average.noshrink_ci_95).join(", ")}]</code>.
+    <strong>Round Performance:</strong> ${formatComparison(roundMetrics, shrinkageOn)}.
   </div>
 </div>
 `);

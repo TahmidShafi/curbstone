@@ -1,19 +1,38 @@
 {
   "k": 4,
+  "round_hits_noshrinkage": 3,
+  "round_hits_v3": 2,
   "round_precision_noshrinkage": 0.75,
   "round_precision_v3": 0.5,
   "scenario": "low",
   "seed": 5001,
   "study_average": {
-    "noshrink_ci_95": [
-      0.3021,
-      0.3505
-    ],
-    "noshrink_mean": 0.326,
-    "v3_ci_95": [
-      0.3682,
-      0.4224
-    ],
-    "v3_mean": 0.3953
+    "prev_0_10": {
+      "noshrink_ci_95": [
+        0.3375,
+        0.4188
+      ],
+      "noshrink_mean": 0.3792,
+      "prevalence": 0.1,
+      "v3_ci_95": [
+        0.4542,
+        0.5333
+      ],
+      "v3_mean": 0.4938
+    },
+    "prev_0_20": {
+      "noshrink_ci_95": [
+        0.4896,
+        0.6
+      ],
+      "noshrink_mean": 0.5458,
+      "prevalence": 0.2,
+      "v3_ci_95": [
+        0.6583,
+        0.75
+      ],
+      "v3_mean": 0.7042
+    },
+    "setting": "Robustness results for low workload [5, 15]"
   }
 }
