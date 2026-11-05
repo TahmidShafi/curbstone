@@ -35,9 +35,9 @@ export function renderIntervalBar(est, ciLow, ciHigh, width = 120, height = 20) 
     <line x1="${xLow}" y1="${yMid}" x2="${xHigh}" y2="${yMid}" stroke="#4682b4" stroke-width="3" stroke-linecap="round" />
     <line x1="${xLow}" y1="${yMid - 4}" x2="${xLow}" y2="${yMid + 4}" stroke="#4682b4" stroke-width="2" />
     <line x1="${xHigh}" y1="${yMid - 4}" x2="${xHigh}" y2="${yMid + 4}" stroke="#4682b4" stroke-width="2" />
-    <!-- Point estimate -->
+    <!-- Observed point -->
     <circle cx="${xEst}" cy="${yMid}" r="3.5" fill="#d95f02" stroke="#fff" stroke-width="1" />
-    <title>Estimate: ${est.toFixed(3)} [${ciLow.toFixed(3)}, ${ciHigh.toFixed(3)}]</title>
+    <title>Observed: ${est.toFixed(3)}, Honest 90% range: [${ciLow.toFixed(3)}, ${ciHigh.toFixed(3)}]</title>
   </svg>`;
 }
 

@@ -52,12 +52,30 @@ export function renderEvidenceDrawer({
   </div>`;
 }
 
+function formatPValue(p) {
+  if (p == null) return "—";
+  if (p < 1e-16) return "< 1e-16";
+  return p.toExponential(3);
+}
+
 function renderFeatureCard(fKey, fData, enumeratorId, allSubmissions, villages) {
   const explanation = FEATURE_EXPLANATIONS[fKey] || fData.feature_name;
-  const pValStr = fData.p_value != null ? fData.p_value.toExponential(3) : "—";
-  const estStr = fData.feature_estimate != null ? fData.feature_estimate.toFixed(3) : "—";
+  const isCount = ["F3", "F4", "F8", "F9"].includes(fKey);
+  const pValStr = formatPValue(fData.p_value);
   const shrunkStr = fData.shrunk_estimate != null ? fData.shrunk_estimate.toFixed(3) : "—";
-  const ciStr = fData.ci_90 ? `[${fData.ci_90[0].toFixed(3)}, ${fData.ci_90[1].toFixed(3)}]` : "—";
+
+  // Continuous features
+  const d = fData.feature_estimate;
+  const dStr = d != null ? d.toFixed(3) : "—";
+  const h = fData.honest_halfwidth ?? (fData.ci_90 ? (fData.ci_90[1] - fData.ci_90[0]) / 2 : null);
+  const contRangeStr = h != null ? `[${(-h).toFixed(3)}, +${h.toFixed(3)}]` : "—";
+
+  // Count features
+  const rate = fData.observed_rate ?? (fData.k != null && fData.n ? fData.k / fData.n : fData.feature_estimate);
+  const rateStr = rate != null ? rate.toFixed(3) : "—";
+  const countsStr = fData.k != null && fData.n != null ? ` (${fData.k}/${fData.n})` : "";
+  const countRange = fData.honest_range_90 ?? fData.ci_90;
+  const countRangeStr = countRange ? `[${countRange[0].toFixed(3)}, ${countRange[1].toFixed(3)}]` : "—";
 
   return htl.html`<div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px; margin-bottom: 16px;">
     <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
@@ -70,12 +88,23 @@ function renderFeatureCard(fKey, fData, enumeratorId, allSubmissions, villages) 
 
     <p style="margin: 0 0 12px 0; font-size: 0.9rem; color: #334155;">${explanation}</p>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; background: #f8fafc; padding: 10px; border-radius: 4px; font-size: 0.85rem; margin-bottom: 14px;">
-      <div><strong>Raw Estimate:</strong> ${estStr}</div>
-      <div><strong>Shrunk Estimate:</strong> ${shrunkStr}</div>
-      <div><strong>90% Interval:</strong> ${ciStr}</div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; background: #f8fafc; padding: 10px; border-radius: 4px; font-size: 0.85rem; margin-bottom: 8px;">
+      ${isCount
+        ? htl.html`<div><strong>Observed rate:</strong> ${rateStr}${countsStr}</div><div><strong>Honest 90% range:</strong> ${countRangeStr}</div>`
+        : htl.html`<div><strong>Observed:</strong> ${dStr}</div><div><strong>Honest 90% range:</strong> ${contRangeStr}</div>`
+      }
       <div><strong>Contributing Records:</strong> ${fData.submission_ids ? fData.submission_ids.length : 0}</div>
     </div>
+
+    <details style="margin-bottom: 14px; font-size: 0.8rem; color: #64748b;">
+      <summary style="cursor: pointer; color: #475569;">Model details</summary>
+      <div style="margin-top: 4px;">
+        ${isCount
+          ? htl.html`Posterior mean: <strong>${shrunkStr}</strong>`
+          : htl.html`Posterior mean (complete pooling when tau^2 = 0): <strong>${shrunkStr}</strong>`
+        }
+      </div>
+    </details>
 
     <!-- Feature-specific visualizations -->
     ${fKey === "F7" ? renderGpsScatter(fData, enumeratorId, allSubmissions, villages) : ""}

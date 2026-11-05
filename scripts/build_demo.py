@@ -119,9 +119,9 @@ def build_single_scenario(
         scores_noshrinkage.to_parquet(output_dir / "scores_noshrinkage.parquet", engine="pyarrow", index=False)
 
         # Evidence
-        ev_dict_shrink = build_evidence(df_sub, df_vil, scores_shrinkage, df_feat)
+        ev_dict_shrink = build_evidence(df_sub, df_vil, scores_shrinkage, df_feat, no_shrinkage=False)
         export_evidence_json(ev_dict_shrink, output_dir / "evidence.json")
-        ev_dict_noshrink = build_evidence(df_sub, df_vil, scores_noshrinkage, df_feat)
+        ev_dict_noshrink = build_evidence(df_sub, df_vil, scores_noshrinkage, df_feat, no_shrinkage=True)
         export_evidence_json(ev_dict_noshrink, output_dir / "evidence_noshrinkage.json")
 
         # Design parameters
@@ -169,6 +169,9 @@ def build_single_scenario(
             e = sub_to_enum.get(u_id) if row["level"] == "submission" else "_".join(u_id.split("_")[:2])
             if e in enum_hits:
                 enum_hits[e] += 1
+
+        with open(output_dir / "rule_hits_by_enumerator.json", "w", encoding="utf-8") as f:
+            json.dump(enum_hits, f, indent=2, sort_keys=True)
 
         df_flags = scores_shrinkage.sort_values(by=["risk_score", "enumerator_id"], ascending=[False, True]).reset_index(drop=True)
         df_flags["rank"] = (np.arange(len(df_flags)) + 1).astype("int32")

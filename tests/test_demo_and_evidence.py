@@ -2,6 +2,7 @@
 
 from datetime import datetime
 import hashlib
+import json
 from pathlib import Path
 import numpy as np
 import pandas as pd
@@ -72,12 +73,16 @@ def test_evidence_structure(tmp_path):
     assert "feature_estimate" in f3
     assert "shrunk_estimate" in f3
     assert "ci_90" in f3 and len(f3["ci_90"]) == 2
+    assert "honest_range_90" in f3 and len(f3["honest_range_90"]) == 2
+    assert "observed_rate" in f3
     assert "pairs" in f3 and len(f3["pairs"]) > 0
     assert len(f3["submission_ids"]) > 0
 
     f7 = e27["features"]["F7"]
     assert "points" in f7 and len(f7["points"]) > 0
     assert "village_references" in f7 and len(f7["village_references"]) > 0
+    assert "honest_range_90" in f7 and len(f7["honest_range_90"]) == 2
+    assert "honest_halfwidth" in f7 and f7["honest_halfwidth"] > 0
 
 
 @pytest.mark.parametrize("scenario", ["mixed", "low"])
@@ -129,3 +134,23 @@ def test_demo_build_deterministic(tmp_path):
             h1 = hashlib.sha256(open(sc_dir1 / fname, "rb").read()).hexdigest()
             h2 = hashlib.sha256(open(sc_dir2 / fname, "rb").read()).hexdigest()
             assert h1 == h2, f"Scenario {scenario} file {fname} hash mismatch between runs: {h1} != {h2}"
+
+
+@pytest.mark.parametrize("scenario", ["mixed", "low"])
+def test_rule_hits_identical_between_variants(scenario):
+    """Verify that rule hits are identical between shrinkage and no-shrinkage variants and match flags.csv."""
+    root = Path(__file__).resolve().parent.parent
+    data_dir = root / "site" / "src" / "data" / scenario
+
+    rule_hits_path = data_dir / "rule_hits_by_enumerator.json"
+    assert rule_hits_path.is_file(), f"rule_hits_by_enumerator.json not found in site/src/data/{scenario}"
+
+    with open(rule_hits_path, "r", encoding="utf-8") as f:
+        enum_hits = json.load(f)
+
+    csv_path = data_dir / "flags.csv"
+    df_csv = pd.read_csv(csv_path)
+    for _, row in df_csv.iterrows():
+        eid = str(row["enumerator_id"])
+        assert eid in enum_hits
+        assert int(row["rule_hits"]) == int(enum_hits[eid])

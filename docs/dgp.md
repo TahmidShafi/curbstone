@@ -235,6 +235,7 @@ Labels are written to a **separate file** (`truth/labels_round{r}.parquet`) that
 7. **Modal knowledge in too_average.** too_average fabricators use the exact village modal values from the full frame; real fabricators know local norms only approximately, so this mode may be easier to detect than its real-world counterpart.
 8. F3 treats roster_ages as one field; honest households with common sizes and asset profiles can match as near-duplicates.
 9. Calibrated FDR control was not achieved (Scoring v1–v3); the delivered method is risk ranking with a fixed back-check budget.
+10. Scoring v3 stores, for continuous features, shrunk ± 1.645·sqrt(tau^2 + s^2); this is a predictive range for honest enumerators, not a posterior credible interval. For F3 the posterior mean uses the pooled prior while the test uses the workload-matched null. The site displays observed values against honest ranges.
 
 ---
 

@@ -3,7 +3,7 @@
 Execute all 12 pre-registered Data Quality Assurance (DQA) rules in DuckDB-Wasm in real time directly within your browser.
 
 ```js
-import yaml from "npm:js-yaml";
+import {load} from "npm:js-yaml";
 
 // Load scenario files
 const mixedSubmissions = FileAttachment("./data/mixed/submissions.parquet");
@@ -36,7 +36,7 @@ const activeVillages = isMixed ? mixedVillages : lowVillages;
 const activeViewSql = isMixed ? mixedViewSql : lowViewSql;
 const activeRulesYaml = isMixed ? mixedRulesYaml : lowRulesYaml;
 const expectedHits = isMixed ? mixedExpectedHits : lowExpectedHits;
-const parsedRules = yaml.load(activeRulesYaml);
+const parsedRules = load(activeRulesYaml);
 
 // Initialize DuckDBClient with raw tables
 const db = await DuckDBClient.of({

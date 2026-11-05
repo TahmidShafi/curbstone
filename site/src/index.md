@@ -26,6 +26,7 @@ const toRows = (t) => Array.from(t, (r) => {
 const mixedData = {
   design: await FileAttachment("./data/mixed/design.json").json(),
   roundMetrics: await FileAttachment("./data/mixed/round_metrics.json").json(),
+  ruleHitsByEnum: await FileAttachment("./data/mixed/rule_hits_by_enumerator.json").json(),
   scoresShrinkage: toRows(await FileAttachment("./data/mixed/scores_shrinkage.parquet").parquet()),
   scoresNoshrinkage: toRows(await FileAttachment("./data/mixed/scores_noshrinkage.parquet").parquet()),
   evidenceShrinkage: await FileAttachment("./data/mixed/evidence.json").json(),
@@ -39,6 +40,7 @@ const mixedData = {
 const lowData = {
   design: await FileAttachment("./data/low/design.json").json(),
   roundMetrics: await FileAttachment("./data/low/round_metrics.json").json(),
+  ruleHitsByEnum: await FileAttachment("./data/low/rule_hits_by_enumerator.json").json(),
   scoresShrinkage: toRows(await FileAttachment("./data/low/scores_shrinkage.parquet").parquet()),
   scoresNoshrinkage: toRows(await FileAttachment("./data/low/scores_noshrinkage.parquet").parquet()),
   evidenceShrinkage: await FileAttachment("./data/low/evidence.json").json(),
@@ -109,6 +111,7 @@ display(html`
   <div style="font-size: 0.85rem; color: #64748b; margin-top: 6px;">
     <em>Seeds were fixed before results were viewed.</em> &bull;
     <strong>Round Performance:</strong> ${formatComparison(roundMetrics, shrinkageOn)}.
+    <div style="margin-top: 4px;">Single rounds vary. Toggle shrinkage and reveal ground truth to see this round's trade-off; study-level effects are on the Results page.</div>
   </div>
 </div>
 `);
@@ -145,6 +148,13 @@ if (truthData) {
   for (const t of truthData) {
     truthMap.set(t.enumerator_id, t);
   }
+}
+if (isRevealed) {
+  display(html`<div class="card" style="padding: 10px 14px; margin: 10px 0; background: #fdf2f8; border: 1px solid #fbcfe8; border-radius: 6px; font-size: 0.875rem;">
+    <strong>Revealed Precision@4:</strong>
+    <span style="margin-left: 8px;">Scoring v3 (Shrinkage): <strong>${(roundMetrics.round_precision_v3 * 100).toFixed(0)}%</strong> (${roundMetrics.round_hits_v3} of 4)</span>
+    <span style="margin-left: 16px;">No-Shrinkage: <strong>${(roundMetrics.round_precision_noshrinkage * 100).toFixed(0)}%</strong> (${roundMetrics.round_hits_noshrinkage} of 4)</span>
+  </div>`);
 }
 ```
 
@@ -192,22 +202,17 @@ const tableRows = sortedScores.map((r, idx) => {
   let strongestEst = null, ciLo = null, ciHi = null;
   if (evFeatures.length > 0) {
     const fData = evInfo.features[evFeatures[0]];
-    strongestEst = fData.shrunk_estimate ?? fData.feature_estimate;
-    if (fData.ci_90) {
-      ciLo = fData.ci_90[0];
-      ciHi = fData.ci_90[1];
-    }
+    const isCount = ["F3", "F4", "F8", "F9"].includes(evFeatures[0]);
+    strongestEst = isCount ? (fData.observed_rate ?? fData.feature_estimate) : (fData.feature_estimate ?? fData.shrunk_estimate);
+    const rng = fData.honest_range_90 ?? (fData.honest_halfwidth != null ? [-fData.honest_halfwidth, fData.honest_halfwidth] : fData.ci_90);
+    if (rng) [ciLo, ciHi] = rng;
   }
 
   // Determine ground truth status if revealed
   let truthLabel = "TN";
   if (isRevealed) {
     const isFab = Boolean(truthMap.get(eId)?.is_fabricator);
-    const inTop4 = idx < 4;
-    if (inTop4 && isFab) truthLabel = "TP";
-    else if (inTop4 && !isFab) truthLabel = "FP";
-    else if (!inTop4 && isFab) truthLabel = "FN";
-    else truthLabel = "TN";
+    truthLabel = idx < 4 ? (isFab ? "TP" : "FP") : (isFab ? "FN" : "TN");
   }
 
   return {
@@ -219,7 +224,7 @@ const tableRows = sortedScores.map((r, idx) => {
     strongest_est: strongestEst,
     strongest_ci_low: ciLo,
     strongest_ci_high: ciHi,
-    rule_hits: Number(r.by_flag ? 1 : 0),
+    rule_hits: Number(activeData.ruleHitsByEnum[eId] ?? 0),
     allocated_backchecks: allocation.allocatedCounts[eId] || 0,
     truth_label: truthLabel,
   };

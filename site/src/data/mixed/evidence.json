@@ -112,6 +112,11 @@
           "sub_01_00148",
           "sub_01_00149"
         ],
+        "honest_halfwidth": 3.404,
+        "honest_range_90": [
+          -3.404,
+          3.404
+        ],
         "daily_counts": [
           {
             "date": "2026-11-01",
@@ -260,6 +265,14 @@
           "sub_01_00235",
           "sub_01_00237"
         ],
+        "k": 14,
+        "n": 21,
+        "observed_rate": 0.6667,
+        "honest_halfwidth": null,
+        "honest_range_90": [
+          0.0,
+          0.1905
+        ],
         "straight_records": [
           {
             "submission_id": "sub_01_00217",
@@ -388,6 +401,11 @@
           "sub_01_00309",
           "sub_01_00310"
         ],
+        "honest_halfwidth": 0.4194,
+        "honest_range_90": [
+          -0.4194,
+          0.4194
+        ],
         "durations": [
           {
             "submission_id": "sub_01_00299",
@@ -499,6 +517,14 @@
           "sub_01_00404",
           "sub_01_00408",
           "sub_01_00420"
+        ],
+        "k": 6,
+        "n": 55,
+        "observed_rate": 0.1091,
+        "honest_halfwidth": null,
+        "honest_range_90": [
+          0.0,
+          0.0727
         ],
         "pairs": [
           {
@@ -678,6 +704,14 @@
           "sub_01_00765",
           "sub_01_00766"
         ],
+        "k": 5,
+        "n": 125,
+        "observed_rate": 0.04,
+        "honest_halfwidth": null,
+        "honest_range_90": [
+          0.0,
+          0.016
+        ],
         "missing_count": 4
       }
     }
@@ -714,6 +748,14 @@
           "sub_01_00778",
           "sub_01_00779",
           "sub_01_00780"
+        ],
+        "k": 9,
+        "n": 14,
+        "observed_rate": 0.6429,
+        "honest_halfwidth": null,
+        "honest_range_90": [
+          0.0,
+          0.1429
         ],
         "pairs": [
           {
@@ -857,6 +899,11 @@
           "sub_01_00779",
           "sub_01_00780"
         ],
+        "honest_halfwidth": 1.3754,
+        "honest_range_90": [
+          -1.3754,
+          1.3754
+        ],
         "hh_size_variance": 0.6429
       },
       "F7": {
@@ -885,104 +932,95 @@
           "sub_01_00779",
           "sub_01_00780"
         ],
+        "honest_halfwidth": 0.6603,
+        "honest_range_90": [
+          -0.6603,
+          0.6603
+        ],
         "points": [
           {
             "submission_id": "sub_01_00767",
             "village_id": "VIL025",
             "lat": 24.581908,
-            "lon": 90.11611,
-            "accuracy": 16.52
+            "lon": 90.11611
           },
           {
             "submission_id": "sub_01_00768",
             "village_id": "VIL025",
             "lat": 24.581977,
-            "lon": 90.116053,
-            "accuracy": 18.33
+            "lon": 90.116053
           },
           {
             "submission_id": "sub_01_00769",
             "village_id": "VIL025",
             "lat": 24.582012,
-            "lon": 90.116429,
-            "accuracy": 21.86
+            "lon": 90.116429
           },
           {
             "submission_id": "sub_01_00770",
             "village_id": "VIL025",
             "lat": 24.581937,
-            "lon": 90.116001,
-            "accuracy": 11.13
+            "lon": 90.116001
           },
           {
             "submission_id": "sub_01_00771",
             "village_id": "VIL011",
             "lat": 24.544722,
-            "lon": 89.898356,
-            "accuracy": 3.54
+            "lon": 89.898356
           },
           {
             "submission_id": "sub_01_00772",
             "village_id": "VIL011",
             "lat": 24.544816,
-            "lon": 89.898162,
-            "accuracy": 15.87
+            "lon": 89.898162
           },
           {
             "submission_id": "sub_01_00773",
             "village_id": "VIL011",
             "lat": 24.54316,
-            "lon": 89.899403,
-            "accuracy": 10.57
+            "lon": 89.899403
           },
           {
             "submission_id": "sub_01_00774",
             "village_id": "VIL011",
             "lat": 24.537044,
-            "lon": 89.902295,
-            "accuracy": 5.63
+            "lon": 89.902295
           },
           {
             "submission_id": "sub_01_00775",
             "village_id": "VIL035",
             "lat": 24.581986,
-            "lon": 90.116065,
-            "accuracy": 11.0
+            "lon": 90.116065
           },
           {
             "submission_id": "sub_01_00776",
             "village_id": "VIL035",
             "lat": 24.582085,
-            "lon": 90.11598,
-            "accuracy": 17.57
+            "lon": 90.11598
           },
           {
             "submission_id": "sub_01_00777",
             "village_id": "VIL035",
             "lat": 24.581899,
-            "lon": 90.115751,
-            "accuracy": 15.04
+            "lon": 90.115751
           },
           {
             "submission_id": "sub_01_00778",
             "village_id": "VIL035",
             "lat": 24.581893,
-            "lon": 90.115933,
-            "accuracy": 5.6
+            "lon": 90.115933
           },
           {
             "submission_id": "sub_01_00779",
             "village_id": "VIL035",
             "lat": 24.582015,
-            "lon": 90.116402,
-            "accuracy": 11.9
+            "lon": 90.116402
           },
           {
             "submission_id": "sub_01_00780",
             "village_id": "VIL035",
             "lat": 24.581819,
-            "lon": 90.116028,
-            "accuracy": 21.35
+            "lon": 90.116028
           }
         ],
         "village_references": [
@@ -1107,314 +1145,275 @@
           "sub_01_00964",
           "sub_01_00965"
         ],
+        "honest_halfwidth": 0.5574,
+        "honest_range_90": [
+          -0.5574,
+          0.5574
+        ],
         "points": [
           {
             "submission_id": "sub_01_00922",
             "village_id": "VIL027",
             "lat": 24.383297,
-            "lon": 89.916713,
-            "accuracy": 24.39
+            "lon": 89.916713
           },
           {
             "submission_id": "sub_01_00923",
             "village_id": "VIL027",
             "lat": 24.379057,
-            "lon": 89.91482,
-            "accuracy": 9.49
+            "lon": 89.91482
           },
           {
             "submission_id": "sub_01_00924",
             "village_id": "VIL027",
             "lat": 24.378723,
-            "lon": 89.914685,
-            "accuracy": 15.39
+            "lon": 89.914685
           },
           {
             "submission_id": "sub_01_00925",
             "village_id": "VIL027",
             "lat": 24.377107,
-            "lon": 89.915224,
-            "accuracy": 6.14
+            "lon": 89.915224
           },
           {
             "submission_id": "sub_01_00926",
             "village_id": "VIL027",
             "lat": 24.378729,
-            "lon": 89.914559,
-            "accuracy": 16.6
+            "lon": 89.914559
           },
           {
             "submission_id": "sub_01_00927",
             "village_id": "VIL027",
             "lat": 24.377105,
-            "lon": 89.915288,
-            "accuracy": 13.68
+            "lon": 89.915288
           },
           {
             "submission_id": "sub_01_00928",
             "village_id": "VIL027",
             "lat": 24.378666,
-            "lon": 89.91455,
-            "accuracy": 24.36
+            "lon": 89.91455
           },
           {
             "submission_id": "sub_01_00929",
             "village_id": "VIL027",
             "lat": 24.375119,
-            "lon": 89.914224,
-            "accuracy": 7.02
+            "lon": 89.914224
           },
           {
             "submission_id": "sub_01_00930",
             "village_id": "VIL027",
             "lat": 24.37907,
-            "lon": 89.914763,
-            "accuracy": 22.7
+            "lon": 89.914763
           },
           {
             "submission_id": "sub_01_00931",
             "village_id": "VIL027",
             "lat": 24.378609,
-            "lon": 89.914635,
-            "accuracy": 7.17
+            "lon": 89.914635
           },
           {
             "submission_id": "sub_01_00932",
             "village_id": "VIL027",
             "lat": 24.376153,
-            "lon": 89.91273,
-            "accuracy": 7.95
+            "lon": 89.91273
           },
           {
             "submission_id": "sub_01_00933",
             "village_id": "VIL027",
             "lat": 24.378691,
-            "lon": 89.914615,
-            "accuracy": 17.19
+            "lon": 89.914615
           },
           {
             "submission_id": "sub_01_00934",
             "village_id": "VIL027",
             "lat": 24.378255,
-            "lon": 89.920974,
-            "accuracy": 7.42
+            "lon": 89.920974
           },
           {
             "submission_id": "sub_01_00935",
             "village_id": "VIL027",
             "lat": 24.378915,
-            "lon": 89.914729,
-            "accuracy": 9.25
+            "lon": 89.914729
           },
           {
             "submission_id": "sub_01_00936",
             "village_id": "VIL027",
             "lat": 24.377167,
-            "lon": 89.915231,
-            "accuracy": 9.97
+            "lon": 89.915231
           },
           {
             "submission_id": "sub_01_00937",
             "village_id": "VIL027",
             "lat": 24.377199,
-            "lon": 89.915214,
-            "accuracy": 20.25
+            "lon": 89.915214
           },
           {
             "submission_id": "sub_01_00938",
             "village_id": "VIL027",
             "lat": 24.378995,
-            "lon": 89.91477,
-            "accuracy": 9.87
+            "lon": 89.91477
           },
           {
             "submission_id": "sub_01_00939",
             "village_id": "VIL027",
             "lat": 24.377193,
-            "lon": 89.915226,
-            "accuracy": 24.09
+            "lon": 89.915226
           },
           {
             "submission_id": "sub_01_00940",
             "village_id": "VIL027",
             "lat": 24.37715,
-            "lon": 89.915297,
-            "accuracy": 12.08
+            "lon": 89.915297
           },
           {
             "submission_id": "sub_01_00941",
             "village_id": "VIL027",
             "lat": 24.379009,
-            "lon": 89.914759,
-            "accuracy": 14.45
+            "lon": 89.914759
           },
           {
             "submission_id": "sub_01_00942",
             "village_id": "VIL027",
             "lat": 24.378986,
-            "lon": 89.914707,
-            "accuracy": 22.39
+            "lon": 89.914707
           },
           {
             "submission_id": "sub_01_00943",
             "village_id": "VIL027",
             "lat": 24.377168,
-            "lon": 89.915303,
-            "accuracy": 10.45
+            "lon": 89.915303
           },
           {
             "submission_id": "sub_01_00944",
             "village_id": "VIL027",
             "lat": 24.378922,
-            "lon": 89.914782,
-            "accuracy": 6.52
+            "lon": 89.914782
           },
           {
             "submission_id": "sub_01_00945",
             "village_id": "VIL027",
             "lat": 24.377116,
-            "lon": 89.915299,
-            "accuracy": 3.12
+            "lon": 89.915299
           },
           {
             "submission_id": "sub_01_00946",
             "village_id": "VIL027",
             "lat": 24.3772,
-            "lon": 89.91528,
-            "accuracy": 21.72
+            "lon": 89.91528
           },
           {
             "submission_id": "sub_01_00947",
             "village_id": "VIL027",
             "lat": 24.377084,
-            "lon": 89.915268,
-            "accuracy": 18.63
+            "lon": 89.915268
           },
           {
             "submission_id": "sub_01_00948",
             "village_id": "VIL027",
             "lat": 24.378684,
-            "lon": 89.91454,
-            "accuracy": 9.06
+            "lon": 89.91454
           },
           {
             "submission_id": "sub_01_00949",
             "village_id": "VIL027",
             "lat": 24.376899,
-            "lon": 89.917116,
-            "accuracy": 16.75
+            "lon": 89.917116
           },
           {
             "submission_id": "sub_01_00950",
             "village_id": "VIL027",
             "lat": 24.377174,
-            "lon": 89.915199,
-            "accuracy": 21.94
+            "lon": 89.915199
           },
           {
             "submission_id": "sub_01_00951",
             "village_id": "VIL034",
             "lat": 24.624004,
-            "lon": 89.856038,
-            "accuracy": 18.29
+            "lon": 89.856038
           },
           {
             "submission_id": "sub_01_00952",
             "village_id": "VIL034",
             "lat": 24.624159,
-            "lon": 89.854672,
-            "accuracy": 13.42
+            "lon": 89.854672
           },
           {
             "submission_id": "sub_01_00953",
             "village_id": "VIL034",
             "lat": 24.624186,
-            "lon": 89.85483,
-            "accuracy": 5.67
+            "lon": 89.85483
           },
           {
             "submission_id": "sub_01_00954",
             "village_id": "VIL034",
             "lat": 24.62414,
-            "lon": 89.854715,
-            "accuracy": 18.31
+            "lon": 89.854715
           },
           {
             "submission_id": "sub_01_00955",
             "village_id": "VIL034",
             "lat": 24.625284,
-            "lon": 89.854106,
-            "accuracy": 17.06
+            "lon": 89.854106
           },
           {
             "submission_id": "sub_01_00956",
             "village_id": "VIL034",
             "lat": 24.624109,
-            "lon": 89.854833,
-            "accuracy": 8.23
+            "lon": 89.854833
           },
           {
             "submission_id": "sub_01_00957",
             "village_id": "VIL034",
             "lat": 24.617631,
-            "lon": 89.855319,
-            "accuracy": 11.51
+            "lon": 89.855319
           },
           {
             "submission_id": "sub_01_00958",
             "village_id": "VIL034",
             "lat": 24.624081,
-            "lon": 89.854717,
-            "accuracy": 5.57
+            "lon": 89.854717
           },
           {
             "submission_id": "sub_01_00959",
             "village_id": "VIL034",
             "lat": 24.624167,
-            "lon": 89.854765,
-            "accuracy": 13.8
+            "lon": 89.854765
           },
           {
             "submission_id": "sub_01_00960",
             "village_id": "VIL034",
             "lat": 24.627875,
-            "lon": 89.856441,
-            "accuracy": 22.58
+            "lon": 89.856441
           },
           {
             "submission_id": "sub_01_00961",
             "village_id": "VIL034",
             "lat": 24.625219,
-            "lon": 89.854128,
-            "accuracy": 4.8
+            "lon": 89.854128
           },
           {
             "submission_id": "sub_01_00962",
             "village_id": "VIL034",
             "lat": 24.623973,
-            "lon": 89.856163,
-            "accuracy": 8.65
+            "lon": 89.856163
           },
           {
             "submission_id": "sub_01_00963",
             "village_id": "VIL034",
             "lat": 24.624103,
-            "lon": 89.854779,
-            "accuracy": 10.74
+            "lon": 89.854779
           },
           {
             "submission_id": "sub_01_00964",
             "village_id": "VIL034",
             "lat": 24.624142,
-            "lon": 89.854753,
-            "accuracy": 23.34
+            "lon": 89.854753
           },
           {
             "submission_id": "sub_01_00965",
             "village_id": "VIL034",
             "lat": 24.625199,
-            "lon": 89.854121,
-            "accuracy": 11.92
+            "lon": 89.854121
           }
         ],
         "village_references": [

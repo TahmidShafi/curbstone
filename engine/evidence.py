@@ -6,6 +6,9 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple, Union
 import numpy as np
 import pandas as pd
+from scipy.stats import betabinom, binom
+
+from engine.scoring_helpers import estimate_beta_binomial_rho
 
 ASSET_COLS = ["asset_mobile", "asset_tv", "asset_internet", "asset_radio", "asset_computer"]
 CANONICAL_FIELDS = ["hh_size", "head_age", "roster_ages"] + ASSET_COLS
@@ -62,79 +65,38 @@ def _extract_f3_pairs(df_e: pd.DataFrame) -> Tuple[List[Dict[str, Any]], List[st
 
 def _extract_f4_straight(df_e: pd.DataFrame) -> Tuple[List[Dict[str, Any]], List[str]]:
     """Identify straight-lined asset submissions (all non-missing asset items equal)."""
-    records: List[Dict[str, Any]] = []
-    contributing_ids: List[str] = []
-
+    records, contributing_ids = [], []
     for _, row in df_e.iterrows():
         vals = [row[a] for a in ASSET_COLS]
         if all(v != -8 for v in vals) and len(set(vals)) == 1:
             sid = str(row["submission_id"])
             contributing_ids.append(sid)
-            records.append({
-                "submission_id": sid,
-                "village_id": str(row["village_id"]),
-                "straight_value": int(vals[0]),
-            })
-
+            records.append({"submission_id": sid, "village_id": str(row["village_id"]), "straight_value": int(vals[0])})
     return records, contributing_ids
 
 
 def _extract_f7_gps(df_e: pd.DataFrame, df_vil: pd.DataFrame) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]], List[str]]:
     """Extract enumerator GPS coordinates and associated village reference locations."""
-    points = [
-        {
-            "submission_id": str(row["submission_id"]),
-            "village_id": str(row["village_id"]),
-            "lat": round(float(row["gps_lat"]), 6),
-            "lon": round(float(row["gps_lon"]), 6),
-            "accuracy": round(float(row["gps_accuracy"]), 2) if "gps_accuracy" in row else None,
-        }
-        for _, row in df_e.iterrows()
-    ]
-    unique_vids = df_e["village_id"].unique()
-    vil_refs = []
-    for vid in unique_vids:
-        v_match = df_vil[df_vil["village_id"] == vid]
-        if not v_match.empty:
-            vil_refs.append({
-                "village_id": str(vid),
-                "ref_lat": round(float(v_match["ref_lat"].iloc[0]), 6),
-                "ref_lon": round(float(v_match["ref_lon"].iloc[0]), 6),
-            })
-    contributing_ids = [str(r["submission_id"]) for _, r in df_e.iterrows()]
-    return points, vil_refs, contributing_ids
+    points = [{"submission_id": str(r["submission_id"]), "village_id": str(r["village_id"]), "lat": round(float(r["gps_lat"]), 6), "lon": round(float(r["gps_lon"]), 6)} for _, r in df_e.iterrows()]
+    vil_refs = [{"village_id": str(v), "ref_lat": round(float(m["ref_lat"].iloc[0]), 6), "ref_lon": round(float(m["ref_lon"].iloc[0]), 6)} for v in df_e["village_id"].unique() if not (m := df_vil[df_vil["village_id"] == v]).empty]
+    return points, vil_refs, [str(r["submission_id"]) for _, r in df_e.iterrows()]
 
 
 def _extract_f8_heaping(df_e: pd.DataFrame) -> Tuple[List[Dict[str, Any]], List[str]]:
     """Identify submissions containing ages >= 20 ending in 0 or 5."""
-    records: List[Dict[str, Any]] = []
-    contributing_ids: List[str] = []
-
+    records, contributing_ids = [], []
     for _, row in df_e.iterrows():
         roster = row["roster_ages"].tolist() if hasattr(row["roster_ages"], "tolist") else row["roster_ages"]
-        heaped = [int(a) for a in roster if a >= 20 and a % 5 == 0]
-        if heaped:
+        if heaped := [int(a) for a in roster if a >= 20 and a % 5 == 0]:
             sid = str(row["submission_id"])
             contributing_ids.append(sid)
-            records.append({
-                "submission_id": sid,
-                "village_id": str(row["village_id"]),
-                "heaped_ages": heaped,
-            })
-
+            records.append({"submission_id": sid, "village_id": str(row["village_id"]), "heaped_ages": heaped})
     return records, contributing_ids
 
 
 def _extract_f1_durations(df_e: pd.DataFrame) -> Tuple[List[Dict[str, Any]], List[str]]:
     """Extract submission durations and household sizes."""
-    records = [
-        {
-            "submission_id": str(row["submission_id"]),
-            "duration_min": round(float(row["duration_min"]), 2),
-            "hh_size": int(row["hh_size"]),
-        }
-        for _, row in df_e.iterrows()
-    ]
+    records = [{"submission_id": str(r["submission_id"]), "duration_min": round(float(r["duration_min"]), 2), "hh_size": int(r["hh_size"])} for _, r in df_e.iterrows()]
     return records, [r["submission_id"] for r in records]
 
 
@@ -142,14 +104,8 @@ def _extract_f2_throughput(df_e: pd.DataFrame) -> Tuple[List[Dict[str, Any]], Li
     """Extract daily interview volume and submission counts."""
     by_date: Dict[str, List[str]] = {}
     for _, row in df_e.iterrows():
-        d_str = str(row["start_time"])[:10]
-        by_date.setdefault(d_str, []).append(str(row["submission_id"]))
-
-    daily_list = [
-        {"date": d, "count": len(subs), "submission_ids": subs}
-        for d, subs in sorted(by_date.items())
-    ]
-    return daily_list, [str(r["submission_id"]) for _, r in df_e.iterrows()]
+        by_date.setdefault(str(row["start_time"])[:10], []).append(str(row["submission_id"]))
+    return [{"date": d, "count": len(subs), "submission_ids": subs} for d, subs in sorted(by_date.items())], [str(r["submission_id"]) for _, r in df_e.iterrows()]
 
 
 def build_evidence(
@@ -157,10 +113,31 @@ def build_evidence(
     villages: Union[pd.DataFrame, str, Path],
     scores: pd.DataFrame,
     features: Optional[pd.DataFrame] = None,
+    no_shrinkage: Optional[bool] = None,
 ) -> Dict[str, Any]:
     """Assemble per-enumerator evidence for features satisfying p < 0.05 / m_e without mutating scores."""
     df_sub = pd.read_parquet(submissions) if isinstance(submissions, (str, Path)) else submissions
     df_vil = pd.read_parquet(villages) if isinstance(villages, (str, Path)) else villages
+
+    if no_shrinkage is None:
+        if features is not None and "f1_value" in features and "f1_peer_value" in features and "f1_est" in scores:
+            d1 = features["f1_value"] - features["f1_peer_value"]
+            diff = np.abs(scores["f1_est"].values - d1.values)
+            no_shrinkage = bool(np.all(diff[~np.isnan(diff)] < 1e-4))
+        else:
+            no_shrinkage = False
+
+    rho_dict: Dict[str, float] = {}
+    if features is not None and not no_shrinkage:
+        for f_id in ["f4", "f8", "f9"]:
+            k_col, n_col = f"{f_id}_k", f"{f_id}_n"
+            exp_col = f"{f_id}_k_exp_v3" if f"{f_id}_k_exp_v3" in features else f"{f_id}_k_exp"
+            if k_col in features and n_col in features and exp_col in features:
+                k_arr = features[k_col].values.astype(int)
+                n_arr = np.maximum(1, features[n_col].values.astype(int))
+                k_exp_arr = features[exp_col].values.astype(float)
+                p0_arr = np.clip(k_exp_arr / n_arr, 1e-6, 1.0 - 1e-6)
+                rho_dict[f_id] = estimate_beta_binomial_rho(k_arr, n_arr, k_exp_arr, p0_arr)
 
     evidence_dict: Dict[str, Any] = {}
 
@@ -192,6 +169,9 @@ def build_evidence(
             ci_high = float(sc_row[f"{fid_lower}_ci_high"]) if f"{fid_lower}_ci_high" in sc_row else None
 
             feat_est = None
+            h_halfwidth = None
+            h_range = None
+
             if f_row is not None:
                 if fid == "F1" and "f1_value" in f_row and "f1_peer_value" in f_row:
                     feat_est = round(float(f_row["f1_value"] - f_row["f1_peer_value"]), 4)
@@ -199,7 +179,7 @@ def build_evidence(
                     feat_est = round(float(f_row["f2_value"] - f_row["f2_peer_value"]), 4)
                 elif fid in ["F3", "F4", "F8", "F9"] and f"{fid_lower}_k" in f_row and f"{fid_lower}_n" in f_row:
                     k_val = float(f_row[f"{fid_lower}_k"])
-                    n_val = max(1.0, float(f_row[f"{fid_lower}_n"]))
+                    n_val = max(1, int(f_row[f"{fid_lower}_n"]))
                     feat_est = round(k_val / n_val, 4)
                 elif f"{fid_lower}_value" in f_row:
                     v = f_row[f"{fid_lower}_value"]
@@ -214,6 +194,48 @@ def build_evidence(
                 "ci_90": [ci_low, ci_high] if ci_low is not None and ci_high is not None else None,
                 "submission_ids": [],
             }
+
+            if fid in ["F3", "F4", "F8", "F9"] and f_row is not None:
+                k_val = float(f_row[f"{fid_lower}_k"])
+                n_val = max(1, int(f_row[f"{fid_lower}_n"]))
+                f_data["k"] = int(k_val)
+                f_data["n"] = n_val
+                f_data["observed_rate"] = round(k_val / n_val, 4)
+                if fid == "F3":
+                    exp_col = "f3_k_exp_v3" if "f3_k_exp_v3" in f_row else "f3_k_exp"
+                    var_col = "f3_var_v3" if "f3_var_v3" in f_row else "f3_var"
+                    mu3 = float(f_row[exp_col]) if exp_col in f_row else 0.0
+                    v3 = float(f_row[var_col]) if var_col in f_row else mu3
+                    p0_3 = min(max(mu3 / n_val, 1e-6), 1.0 - 1e-6)
+                    vb_3 = n_val * p0_3 * (1.0 - p0_3)
+                    veff_3 = max(v3, vb_3)
+                    if no_shrinkage or veff_3 <= vb_3 + 1e-9:
+                        k_lo, k_hi = float(binom.ppf(0.05, n_val, p0_3)), float(binom.ppf(0.95, n_val, p0_3))
+                    else:
+                        rho_i = min(0.999, max(1e-4, (veff_3 - vb_3) / ((n_val - 1) * vb_3)))
+                        M_i = (1.0 - rho_i) / rho_i
+                        a_i, b_i = max(1e-6, p0_3 * M_i), max(1e-6, (1.0 - p0_3) * M_i)
+                        k_lo, k_hi = float(betabinom.ppf(0.05, n_val, a_i, b_i)), float(betabinom.ppf(0.95, n_val, a_i, b_i))
+                    h_range = [round(k_lo / n_val, 4), round(k_hi / n_val, 4)]
+                else:
+                    exp_col = f"{fid_lower}_k_exp_v3" if f"{fid_lower}_k_exp_v3" in f_row else f"{fid_lower}_k_exp"
+                    k_exp = float(f_row[exp_col]) if exp_col in f_row else 0.0
+                    p0 = min(max(k_exp / n_val, 1e-6), 1.0 - 1e-6)
+                    rho = rho_dict.get(fid_lower, 0.0)
+                    if no_shrinkage or rho <= 1e-6:
+                        k_lo, k_hi = float(binom.ppf(0.05, n_val, p0)), float(binom.ppf(0.95, n_val, p0))
+                    else:
+                        M = (1.0 - rho) / rho
+                        a_p, b_p = max(1e-6, p0 * M), max(1e-6, (1.0 - p0) * M)
+                        k_lo, k_hi = float(betabinom.ppf(0.05, n_val, a_p, b_p)), float(betabinom.ppf(0.95, n_val, a_p, b_p))
+                    h_range = [round(k_lo / n_val, 4), round(k_hi / n_val, 4)]
+            else:
+                if ci_low is not None and ci_high is not None:
+                    h_halfwidth = round((ci_high - ci_low) / 2.0, 4)
+                    h_range = [-h_halfwidth, h_halfwidth]
+
+            f_data["honest_halfwidth"] = h_halfwidth
+            f_data["honest_range_90"] = h_range
 
             if fid == "F1":
                 durations, sids = _extract_f1_durations(e_rows)
@@ -237,37 +259,22 @@ def build_evidence(
                 f_data["submission_ids"] = sids
             elif fid == "F5":
                 f_data["submission_ids"] = [str(s) for s in e_rows["submission_id"]]
-                f_data["asset_variances"] = {
-                    a: round(float(e_rows[e_rows[a] != -8][a].var(ddof=1)), 4) if len(e_rows[e_rows[a] != -8]) > 1 else 0.0
-                    for a in ASSET_COLS
-                }
+                f_data["asset_variances"] = {a: round(float(e_rows[e_rows[a] != -8][a].var(ddof=1)), 4) if len(e_rows[e_rows[a] != -8]) > 1 else 0.0 for a in ASSET_COLS}
             elif fid == "F6":
                 f_data["submission_ids"] = [str(s) for s in e_rows["submission_id"]]
                 f_data["hh_size_variance"] = round(float(e_rows["hh_size"].var(ddof=1)), 4) if len(e_rows) > 1 else 0.0
             elif fid == "F7":
                 points, vil_refs, sids = _extract_f7_gps(e_rows, df_vil)
-                f_data["points"] = points
-                f_data["village_references"] = vil_refs
-                f_data["submission_ids"] = sids
+                f_data["points"], f_data["village_references"], f_data["submission_ids"] = points, vil_refs, sids
             elif fid == "F8":
                 records, sids = _extract_f8_heaping(e_rows)
-                f_data["heaped_records"] = records
-                f_data["heaped_count"] = len(records)
-                f_data["submission_ids"] = sids
+                f_data["heaped_records"], f_data["heaped_count"], f_data["submission_ids"] = records, len(records), sids
             elif fid == "F9":
-                missing_sids = [
-                    str(r["submission_id"])
-                    for _, r in e_rows.iterrows()
-                    if any(r[a] == -8 for a in ASSET_COLS)
-                ]
-                f_data["submission_ids"] = missing_sids
-                f_data["missing_count"] = len(missing_sids)
+                missing_sids = [str(r["submission_id"]) for _, r in e_rows.iterrows() if any(r[a] == -8 for a in ASSET_COLS)]
+                f_data["submission_ids"], f_data["missing_count"] = missing_sids, len(missing_sids)
             elif fid == "F10":
                 f_data["submission_ids"] = [str(s) for s in e_rows["submission_id"]]
-                f_data["records"] = [
-                    {"submission_id": str(r["submission_id"]), "duration_min": round(float(r["duration_min"]), 2), "hh_size": int(r["hh_size"])}
-                    for _, r in e_rows.iterrows()
-                ]
+                f_data["records"] = [{"submission_id": str(r["submission_id"]), "duration_min": round(float(r["duration_min"]), 2), "hh_size": int(r["hh_size"])} for _, r in e_rows.iterrows()]
 
             enum_evidence["features"][fid] = f_data
 

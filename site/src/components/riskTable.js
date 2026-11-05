@@ -19,7 +19,7 @@ export function renderRiskTable({
           <th style="padding: 10px 12px; text-align: right;">N</th>
           <th style="padding: 10px 12px; text-align: right;">Risk Score</th>
           <th style="padding: 10px 12px;">Top Evidence</th>
-          <th style="padding: 10px 12px; text-align: center;">90% CI (Primary)</th>
+          <th style="padding: 10px 12px; text-align: center;">Observed vs honest range</th>
           <th style="padding: 10px 12px; text-align: right;">Rule Hits</th>
           <th style="padding: 10px 12px; text-align: right; background: #eff6ff;">Back-checks</th>
           ${isRevealed ? htl.html`<th style="padding: 10px 12px; background: #fdf2f8;">Ground Truth</th>` : ""}
