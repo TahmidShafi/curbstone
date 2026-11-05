@@ -420,3 +420,9 @@ Total: **72 configurations × 20 seeds = 1,440 simulated rounds** using fresh se
    - Configuration: mixed workload [5, 60], medium ICC (0.15), prevalence 0.10, 20 fresh seeds (3000..3019).
    - Evaluates scoring using only cumulative submissions up to the end of working day d in {2, 4, 6, 8, 10}.
    - Reports, per fabricator mode, the share of fabricators flagged in the top-k by day d.
+
+---
+
+## 14. Change log
+
+- 2026-11-05 rules view: offset-free timestamp parsing after browser parity check found a cross-engine difference (R07).

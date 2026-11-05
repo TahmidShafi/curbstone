@@ -1,15 +1,6 @@
-CREATE VIEW submissions AS
+-- Standard submissions view with offset-free local timestamp derivations
+CREATE OR REPLACE VIEW submissions AS
 SELECT *,
-    CASE
-        WHEN CAST(start_time AS VARCHAR) LIKE '%+06:00%' THEN CAST(start_time AS TIMESTAMP)
-        WHEN CAST(start_time AS VARCHAR) LIKE '%Z%' OR CAST(start_time AS VARCHAR) LIKE '%+00:00%'
-            THEN CAST(start_time AS TIMESTAMP) + INTERVAL 6 HOUR
-        ELSE CAST(start_time AS TIMESTAMP)
-    END AS start_local,
-    CASE
-        WHEN CAST(end_time AS VARCHAR) LIKE '%+06:00%' THEN CAST(end_time AS TIMESTAMP)
-        WHEN CAST(end_time AS VARCHAR) LIKE '%Z%' OR CAST(end_time AS VARCHAR) LIKE '%+00:00%'
-            THEN CAST(end_time AS TIMESTAMP) + INTERVAL 6 HOUR
-        ELSE CAST(end_time AS TIMESTAMP)
-    END AS end_local
+    CAST(substr(start_time, 1, 19) AS TIMESTAMP) AS start_local,
+    CAST(substr(end_time, 1, 19) AS TIMESTAMP) AS end_local
 FROM _raw_submissions;

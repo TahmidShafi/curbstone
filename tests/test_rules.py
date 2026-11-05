@@ -53,20 +53,30 @@ def test_honest_round_start_local_hours(tmp_path):
     p = run_generation("medium", 42, tmp_path / "data", round_num=1, no_fraud=True)
     df = pd.read_parquet(p)
     con = duckdb.connect(":memory:")
-    con.register("_raw", df)
-    con.sql("""
-        CREATE VIEW sub AS
-        SELECT *,
-            CASE
-                WHEN CAST(start_time AS VARCHAR) LIKE '%+06:00%' THEN CAST(start_time AS TIMESTAMP)
-                WHEN CAST(start_time AS VARCHAR) LIKE '%Z%' OR CAST(start_time AS VARCHAR) LIKE '%+00:00%'
-                    THEN CAST(start_time AS TIMESTAMP) + INTERVAL 6 HOUR
-                ELSE CAST(start_time AS TIMESTAMP)
-            END AS start_local
-        FROM _raw
-    """)
-    hours = con.sql("SELECT hour(start_local) AS hr FROM sub").df()["hr"]
+    con.register("_raw_submissions", df)
+    view_sql_path = Path(__file__).resolve().parent.parent / "rules" / "submissions_view.sql"
+    con.sql(view_sql_path.read_text(encoding="utf-8"))
+    hours = con.sql("SELECT hour(start_local) AS hr FROM submissions").df()["hr"]
     assert hours.between(9, 17).all(), f"Found hours outside 9-17: min={hours.min()}, max={hours.max()}"
+
+
+def test_guard_timestamps_end_with_dhaka_offset(tmp_path):
+    """Guard rule: every start_time and end_time must end with '+06:00' (fails loudly otherwise)."""
+    p = run_generation("medium", 42, tmp_path / "data", round_num=1, no_fraud=True)
+    df = pd.read_parquet(p)
+    assert df["start_time"].str.endswith("+06:00").all()
+    assert df["end_time"].str.endswith("+06:00").all()
+
+    # Fail loudly when offset differs
+    df_bad_start = df.copy()
+    df_bad_start.loc[0, "start_time"] = "2026-11-01T10:00:00Z"
+    with pytest.raises(ValueError, match="Every start_time must end with '\\+06:00'"):
+        run_rules(df_bad_start, _REF_VIL)
+
+    df_bad_end = df.copy()
+    df_bad_end.loc[0, "end_time"] = "2026-11-01T10:35:00+00:00"
+    with pytest.raises(ValueError, match="Every end_time must end with '\\+06:00'"):
+        run_rules(df_bad_end, _REF_VIL)
 
 
 def _make_clean_row(**kwargs):
@@ -182,3 +192,22 @@ def test_honest_round_hit_counts(tmp_path):
     by_rule = hits["rule_id"].value_counts().to_dict() if not hits.empty else {}
     for r in ["R01", "R02", "R03", "R04", "R05", "R06", "R07", "R08", "R09", "R10", "R11"]:
         assert by_rule.get(r, 0) == 0, f"Honest round unexpectedly flagged {r}: {by_rule.get(r)}"
+
+
+def test_offset_free_timestamp_rule_hit_parity(tmp_path):
+    """Verify Python rule hit counts for seeds 0..4 and demo scenarios match exact historical counts."""
+    rules = load_rules(Path(__file__).resolve().parent.parent / "rules" / "rules.yaml")
+    expected_seed_hits = {0: 23, 1: 25, 2: 3, 3: 1, 4: 60}
+    for seed, exp_hits in expected_seed_hits.items():
+        sub_p = run_generation("medium", seed, tmp_path / f"s{seed}", round_num=1, verbose=False)
+        vil_p = tmp_path / f"s{seed}" / "reference" / "villages.parquet"
+        hits = run_rules(sub_p, vil_p, rules=rules)
+        assert len(hits) == exp_hits, f"Seed {seed} rule hits mismatch: {len(hits)} != {exp_hits}"
+
+    data_dir = Path(__file__).resolve().parent.parent / "site" / "src" / "data"
+    for sc, exp_hits in [("mixed", 22), ("low", 7)]:
+        sub_p = data_dir / sc / "submissions.parquet"
+        vil_p = data_dir / sc / "villages.parquet"
+        if sub_p.is_file() and vil_p.is_file():
+            hits = run_rules(sub_p, vil_p, rules=rules)
+            assert len(hits) == exp_hits, f"Scenario {sc} rule hits mismatch: {len(hits)} != {exp_hits}"

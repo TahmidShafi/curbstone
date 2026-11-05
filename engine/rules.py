@@ -110,28 +110,23 @@ def run_rules(
     else:
         df_sub = submissions
 
-    # Portable local-time derivation without ICU extension: UTC instant -> Asia/Dhaka (UTC+6)
+    # Guard: every start_time and end_time must end with '+06:00'
+    if "start_time" in df_sub.columns:
+        bad_start = ~df_sub["start_time"].astype(str).str.endswith("+06:00")
+        if bad_start.any():
+            raise ValueError(f"Every start_time must end with '+06:00', got: {df_sub.loc[bad_start, 'start_time'].iloc[0]!r}")
+    if "end_time" in df_sub.columns:
+        bad_end = ~df_sub["end_time"].astype(str).str.endswith("+06:00")
+        if bad_end.any():
+            raise ValueError(f"Every end_time must end with '+06:00', got: {df_sub.loc[bad_end, 'end_time'].iloc[0]!r}")
+
+    # Canonical local-time derivation using shared rules/submissions_view.sql
+    view_sql_path = Path(__file__).resolve().parent.parent / "rules" / "submissions_view.sql"
     if "start_local" in df_sub.columns and "end_local" in df_sub.columns:
         con.register("submissions", df_sub)
     elif "start_time" in df_sub.columns and "end_time" in df_sub.columns:
         con.register("_raw_submissions", df_sub)
-        con.sql("""
-            CREATE VIEW submissions AS
-            SELECT *,
-                CASE
-                    WHEN CAST(start_time AS VARCHAR) LIKE '%+06:00%' THEN CAST(start_time AS TIMESTAMP)
-                    WHEN CAST(start_time AS VARCHAR) LIKE '%Z%' OR CAST(start_time AS VARCHAR) LIKE '%+00:00%'
-                        THEN CAST(start_time AS TIMESTAMP) + INTERVAL 6 HOUR
-                    ELSE CAST(start_time AS TIMESTAMP)
-                END AS start_local,
-                CASE
-                    WHEN CAST(end_time AS VARCHAR) LIKE '%+06:00%' THEN CAST(end_time AS TIMESTAMP)
-                    WHEN CAST(end_time AS VARCHAR) LIKE '%Z%' OR CAST(end_time AS VARCHAR) LIKE '%+00:00%'
-                        THEN CAST(end_time AS TIMESTAMP) + INTERVAL 6 HOUR
-                    ELSE CAST(end_time AS TIMESTAMP)
-                END AS end_local
-            FROM _raw_submissions
-        """)
+        con.sql(view_sql_path.read_text(encoding="utf-8"))
     else:
         con.register("submissions", df_sub)
 

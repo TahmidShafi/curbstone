@@ -77,9 +77,13 @@ async function executeRules() {
 
 const ruleExecutionResults = await executeRules();
 const allPassed = ruleExecutionResults.every(r => r.pass);
+const matchingRulesCount = ruleExecutionResults.filter(r => r.pass).length;
 const totalHits = ruleExecutionResults.reduce((acc, r) => acc + r.hits, 0);
 const totalExpected = Object.values(expectedHits).reduce((acc, v) => acc + v, 0);
 const totalMs = ruleExecutionResults.reduce((acc, r) => acc + r.ms, 0);
+const badgeMessage = allPassed
+  ? `DuckDB-Wasm matches the Python rule engine: 12 of 12 rules (${totalHits} hits)`
+  : `DuckDB-Wasm does NOT match the Python rule engine: ${matchingRulesCount} of 12 rules match (browser total ${totalHits} vs expected ${totalExpected})`;
 ```
 
 ```js
@@ -88,10 +92,10 @@ display(html`
   <div style="display: flex; justify-content: space-between; align-items: center;">
     <div>
       <span style="display: inline-block; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 0.9rem; background: ${allPassed ? '#16a34a' : '#dc2626'}; color: #fff;">
-        ${allPassed ? "PARITY BADGE: 100% MATCH" : "PARITY MISMATCH"}
+        ${allPassed ? "PARITY MATCH" : "PARITY MISMATCH"}
       </span>
       <span style="margin-left: 12px; font-size: 0.95rem; color: #1e293b; font-weight: 600;">
-        DuckDB-Wasm in browser matches Python rule engine (${totalHits} / ${totalExpected} rule hits)
+        ${badgeMessage}
       </span>
     </div>
     <div style="font-size: 0.85rem; color: #64748b; font-family: monospace;">
@@ -165,47 +169,54 @@ async function executeBenchmark() {
   const demoSubmissionsCount = demoCountRes.toArray()[0].cnt;
   const demoRate = (totalHits / (demoSubmissionsCount / 1000)).toFixed(2);
 
-  await db.query(`
-    CREATE OR REPLACE TABLE _bench_submissions AS
-    SELECT
-      'bench_' || r.i AS submission_id,
-      s.round,
-      s.enumerator_id || '_r' || (r.i // ${demoSubmissionsCount}) AS enumerator_id,
-      s.upazila_code,
-      s.village_id,
-      s.start_time,
-      s.end_time,
-      s.duration_min,
-      s.gps_lat,
-      s.gps_lon,
-      s.gps_accuracy,
-      s.hh_size,
-      s.head_age,
-      s.roster_ages,
-      s.asset_mobile,
-      s.asset_tv,
-      s.asset_internet,
-      s.asset_radio,
-      s.asset_computer,
-      s.start_local,
-      s.end_local
-    FROM range(0, 1000000) r(i)
-    JOIN (SELECT *, row_number() OVER () - 1 AS rn FROM submissions) s
-      ON s.rn = r.i % ${demoSubmissionsCount};
-  `);
-
-  await db.query("CREATE OR REPLACE VIEW submissions AS SELECT * FROM _bench_submissions;");
-
   let ruleTotalMs = 0;
   let benchHits = 0;
-  for (const rule of parsedRules) {
-    const tb0 = performance.now();
-    const res = await db.query(rule.sql);
-    ruleTotalMs += (performance.now() - tb0);
-    benchHits += res.numRows;
+
+  try {
+    await db.query(`
+      CREATE OR REPLACE TABLE bench_submissions AS
+      SELECT
+        'bench_' || r.i AS submission_id,
+        s.round,
+        s.enumerator_id || '_r' || (r.i // ${demoSubmissionsCount}) AS enumerator_id,
+        s.upazila_code,
+        s.village_id,
+        s.start_time,
+        s.end_time,
+        s.duration_min,
+        s.gps_lat,
+        s.gps_lon,
+        s.gps_accuracy,
+        s.hh_size,
+        s.head_age,
+        s.roster_ages,
+        s.asset_mobile,
+        s.asset_tv,
+        s.asset_internet,
+        s.asset_radio,
+        s.asset_computer,
+        s.start_local,
+        s.end_local
+      FROM range(0, 1000000) r(i)
+      JOIN (SELECT *, row_number() OVER () - 1 AS rn FROM submissions) s
+        ON s.rn = r.i % ${demoSubmissionsCount};
+    `);
+
+    await db.query("CREATE OR REPLACE TABLE bench_villages AS SELECT * FROM villages;");
+    await db.query("CREATE OR REPLACE VIEW submissions AS SELECT * FROM bench_submissions;");
+
+    for (const rule of parsedRules) {
+      const tb0 = performance.now();
+      const res = await db.query(rule.sql);
+      ruleTotalMs += (performance.now() - tb0);
+      benchHits += res.numRows;
+    }
+  } finally {
+    await db.query(activeViewSql);
+    await db.query("DROP TABLE IF EXISTS bench_submissions;");
+    await db.query("DROP TABLE IF EXISTS bench_villages;");
   }
 
-  await db.query(activeViewSql);
   const totalElapsed = performance.now() - t0;
   const benchRate = (benchHits / 1000).toFixed(2);
 

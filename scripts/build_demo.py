@@ -24,22 +24,6 @@ from engine.rules import load_rules, run_rules
 from engine.scoring import score_enumerators
 from generator.run import run_generation
 
-SUBMISSIONS_VIEW_SQL = """CREATE VIEW submissions AS
-SELECT *,
-    CASE
-        WHEN CAST(start_time AS VARCHAR) LIKE '%+06:00%' THEN CAST(start_time AS TIMESTAMP)
-        WHEN CAST(start_time AS VARCHAR) LIKE '%Z%' OR CAST(start_time AS VARCHAR) LIKE '%+00:00%'
-            THEN CAST(start_time AS TIMESTAMP) + INTERVAL 6 HOUR
-        ELSE CAST(start_time AS TIMESTAMP)
-    END AS start_local,
-    CASE
-        WHEN CAST(end_time AS VARCHAR) LIKE '%+06:00%' THEN CAST(end_time AS TIMESTAMP)
-        WHEN CAST(end_time AS VARCHAR) LIKE '%Z%' OR CAST(end_time AS VARCHAR) LIKE '%+00:00%'
-            THEN CAST(end_time AS TIMESTAMP) + INTERVAL 6 HOUR
-        ELSE CAST(end_time AS TIMESTAMP)
-    END AS end_local
-FROM _raw_submissions;"""
-
 
 def get_study_average_metrics(scenario_name: str, results_parquet: Path) -> Dict[str, Any]:
     """Compute study-average precision@4 and 95% bootstrap CI matching demo round settings."""
@@ -146,10 +130,9 @@ def build_single_scenario(
         with open(output_dir / "truth.json", "w", encoding="utf-8") as f:
             json.dump(truth_records, f, indent=2)
 
-        # Copy rules.yaml & submissions_view.sql
+        # Copy rules.yaml & submissions_view.sql from rules/
         shutil.copyfile(project_root / "rules" / "rules.yaml", output_dir / "rules.yaml")
-        with open(output_dir / "submissions_view.sql", "w", encoding="utf-8") as f:
-            f.write(SUBMISSIONS_VIEW_SQL.strip() + "\n")
+        shutil.copyfile(project_root / "rules" / "submissions_view.sql", output_dir / "submissions_view.sql")
 
         # Rules execution and expected hits
         rules = load_rules(output_dir / "rules.yaml")
