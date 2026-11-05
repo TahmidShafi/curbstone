@@ -65,17 +65,23 @@ export function renderPrecisionChart(containerWidth = 840) {
     width: width,
     height: 280,
     marginLeft: 50,
-    marginBottom: 40,
+    marginRight: 40,
+    marginBottom: 45,
     grid: true,
     color: {
       domain: ["Scoring v3", "No shrinkage", "Rules"],
       range: ["#2563eb", "#93c5fd", "#6b7280"],
       legend: true,
     },
-    x: { label: "Fraud prevalence (rate)", tickFormat: ".2f", domain: [0, 0.22] },
+    x: {
+      label: "Prevalence (share of enumerators fabricating)",
+      labelAnchor: "center",
+      tickFormat: ".2f",
+      domain: [0, 0.22],
+    },
     y: { label: "Precision@4", domain: [0, 1.05] },
     fx: {
-      label: "Workload profile",
+      label: null,
       domain: ["Low (5–15)", "Mixed (5–60)", "High (40–60)"],
     },
     marks: [

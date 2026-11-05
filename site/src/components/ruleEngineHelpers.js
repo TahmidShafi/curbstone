@@ -101,3 +101,103 @@ export async function run1MBenchmark(db, parsedRules, activeRawTable, activeVilT
     benchRate: (benchHits / 1000).toFixed(2),
   });
 }
+
+/**
+ * Render a single rule table row as a real HTMLTableRowElement with 8 cells.
+ * Order: Rule, Level, Severity, Description, Browser, Python, Parity, Time.
+ */
+export function renderRuleTableRow(r) {
+  const tr = document.createElement("tr");
+  tr.style.cssText = "border-bottom: 1px solid var(--line); color: var(--ink);";
+
+  // 1. Rule
+  const tdRule = document.createElement("td");
+  tdRule.className = "enum-id";
+  tdRule.style.cssText = "padding: 8px 8px; width: 56px; box-sizing: border-box; font-weight: 600; color: var(--accent);";
+  tdRule.textContent = r.id;
+  tr.appendChild(tdRule);
+
+  // 2. Level
+  const tdLevel = document.createElement("td");
+  tdLevel.style.cssText = "padding: 8px 8px; width: 112px; box-sizing: border-box; color: var(--muted);";
+  tdLevel.textContent = r.level;
+  tr.appendChild(tdLevel);
+
+  // 3. Severity
+  const tdSeverity = document.createElement("td");
+  tdSeverity.style.cssText = "padding: 8px 8px; width: 80px; box-sizing: border-box; color: var(--muted);";
+  tdSeverity.textContent = r.severity;
+  tr.appendChild(tdSeverity);
+
+  // 4. Description
+  const tdDesc = document.createElement("td");
+  tdDesc.style.cssText = "padding: 8px 8px; width: auto; min-width: 280px; box-sizing: border-box;";
+  tdDesc.textContent = r.description;
+  tr.appendChild(tdDesc);
+
+  // 5. Browser Hits
+  const tdHits = document.createElement("td");
+  tdHits.className = "tabular-nums";
+  tdHits.style.cssText = "padding: 8px 8px; width: 72px; box-sizing: border-box; text-align: right; font-weight: 600;";
+  tdHits.textContent = String(r.hits);
+  tr.appendChild(tdHits);
+
+  // 6. Python Expected
+  const tdExp = document.createElement("td");
+  tdExp.className = "tabular-nums";
+  tdExp.style.cssText = "padding: 8px 8px; width: 72px; box-sizing: border-box; text-align: right; color: var(--muted);";
+  tdExp.textContent = String(r.expected);
+  tr.appendChild(tdExp);
+
+  // 7. Parity
+  const tdParity = document.createElement("td");
+  tdParity.style.cssText = `padding: 8px 8px; width: 56px; box-sizing: border-box; text-align: center; font-weight: 600; color: ${r.pass ? 'var(--accent)' : 'var(--fab)'};`;
+  tdParity.textContent = r.pass ? "✓" : "✗";
+  tr.appendChild(tdParity);
+
+  // 8. Time ("7.5 ms" with white-space: nowrap)
+  const tdTime = document.createElement("td");
+  tdTime.className = "tabular-nums";
+  tdTime.style.cssText = "padding: 8px 8px; width: 72px; box-sizing: border-box; text-align: right; color: var(--muted); white-space: nowrap;";
+  tdTime.textContent = `${r.ms.toFixed(1)} ms`;
+  tr.appendChild(tdTime);
+
+  return tr;
+}
+
+/**
+ * Render the full executed-rules table container with table, thead, and tbody.
+ */
+export function renderExecutedRulesTable(results = []) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "table-wrapper";
+  wrapper.style.cssText = "overflow-x: auto; max-width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; margin-bottom: 24px; box-sizing: border-box;";
+
+  const table = document.createElement("table");
+  table.style.cssText = "width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; table-layout: fixed;";
+
+  const thead = document.createElement("thead");
+  thead.innerHTML = `
+    <tr style="background: var(--surface); border-bottom: 1px solid var(--line); color: var(--ink); font-weight: 600;">
+      <th style="padding: 10px 8px; width: 56px; box-sizing: border-box; white-space: nowrap;">Rule</th>
+      <th style="padding: 10px 8px; width: 112px; box-sizing: border-box; white-space: nowrap;">Level</th>
+      <th style="padding: 10px 8px; width: 80px; box-sizing: border-box; white-space: nowrap;">Severity</th>
+      <th style="padding: 10px 8px; width: auto; min-width: 280px; box-sizing: border-box;">Description</th>
+      <th style="padding: 10px 8px; width: 72px; box-sizing: border-box; text-align: right; white-space: nowrap;">Browser</th>
+      <th style="padding: 10px 8px; width: 72px; box-sizing: border-box; text-align: right; white-space: nowrap;">Python</th>
+      <th style="padding: 10px 8px; width: 56px; box-sizing: border-box; text-align: center; white-space: nowrap;">Parity</th>
+      <th style="padding: 10px 8px; width: 72px; box-sizing: border-box; text-align: right; white-space: nowrap;">Time</th>
+    </tr>
+  `;
+  table.appendChild(thead);
+
+  const tbody = document.createElement("tbody");
+  for (const r of results) {
+    tbody.appendChild(renderRuleTableRow(r));
+  }
+  table.appendChild(tbody);
+  wrapper.appendChild(table);
+
+  return wrapper;
+}
+
