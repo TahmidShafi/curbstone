@@ -26,12 +26,18 @@ def run_generation(
     prevalence: Optional[float] = None,
     no_fraud: bool = False,
     truth_dir: Optional[Path] = None,
+    include_holdout: bool = False,
+    workload_range: Optional[List[int]] = None,
+    share_range: Optional[List[float]] = None,
+    verbose: bool = True,
 ) -> Path:
     """Run survey generation with separate honest and fraud random streams (R2)."""
     if config_path is None:
         config_path = Path(__file__).resolve().parent.parent / "config" / "params.yaml"
 
     config = load_config(config_path)
+    if workload_range is not None:
+        config["enumerators"]["workload"] = workload_range
 
     # R2: Stream separation via SeedSequence
     seed_seq = np.random.SeedSequence(seed)
@@ -61,6 +67,8 @@ def run_generation(
         fraud_rng=fraud_rng,
         prevalence=prevalence,
         enable_fraud=enable_fraud,
+        include_holdout=include_holdout,
+        share_range=share_range,
     )
 
     # 4. Save survey submissions to Parquet partitioned by round
@@ -103,14 +111,15 @@ def run_generation(
 
     # Log any frame expansion
     expansions = meta.get("frame_expansion_log", [])
-    if expansions:
+    if expansions and verbose:
         print(f"Logged {len(expansions)} village frame expansions:")
         for entry in expansions:
             print(f"  Village {entry['village_id']}: {entry['original_size']} -> {entry['new_size']}")
 
     n_fab = len(meta.get("fabricator_profiles", {}))
-    print(f"Generated {len(df)} submissions for Round {round_num} (ICC: {icc_level}, seed: {seed}, fabricators: {n_fab})")
-    print(f"Output saved to: {parquet_path}")
+    if verbose:
+        print(f"Generated {len(df)} submissions for Round {round_num} (ICC: {icc_level}, seed: {seed}, fabricators: {n_fab})")
+        print(f"Output saved to: {parquet_path}")
     return parquet_path
 
 
@@ -158,6 +167,11 @@ def main():
         action="store_true",
         help="Disable fraud injection completely",
     )
+    parser.add_argument(
+        "--include-holdout",
+        action="store_true",
+        help="Include held-out fraud mode (partial_section) in mode rotation",
+    )
 
     args = parser.parse_args()
     cfg_path = Path(args.config) if args.config else None
@@ -171,6 +185,7 @@ def main():
         config_path=cfg_path,
         prevalence=args.prevalence,
         no_fraud=args.no_fraud,
+        include_holdout=args.include_holdout,
     )
 
 

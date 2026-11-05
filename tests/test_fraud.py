@@ -238,19 +238,6 @@ def test_no_overlaps_and_work_hours_with_fraud(config):
                 prev_end = end_dt
 
 
-def test_held_out_mode_not_implemented():
-    """Held-out mode partial_section raises NotImplementedError until detectors are frozen."""
-    from generator.fraud import FabricatorProfile
-    prof = FabricatorProfile(
-        enumerator_id="enum_01",
-        primary_mode="partial_section",
-        target_share=0.5,
-        intensity_name="heaping_prob",
-        intensity_value=0.6,
-    )
-    with pytest.raises(NotImplementedError, match="held out until detectors are frozen"):
-        inject_fraud_into_submissions([], prof, {0}, None, {}, np.random.default_rng(42))
-
 
 def test_stratified_mode_assignment(config):
     """Primary modes are assigned by cycling through shuffled permutations of the 5 modes."""

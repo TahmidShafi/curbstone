@@ -371,3 +371,51 @@ Scoring v3 (post-hoc, final). Reason: v2 count features failed honest calibratio
 - **Overdispersion and continuous features:**
   - Estimate rho by method of moments across all enumerators untrimmed (as in v2).
   - Continuous features remain unchanged from v2 (robust tau^2 without trimming, Student-t distribution with df = N_d - 1).
+
+
+---
+
+## 13. Robustness study (frozen engine)
+
+Robustness evaluation of the frozen detection methods (Scoring v3, Scoring v3 without shrinkage, and the distinct rules baseline).
+
+### 13.1 Experiment Grid
+
+Full factorial simulation grid across the 4 design factors specified in §7:
+- **Fraud prevalence:** {0.02, 0.05, 0.10, 0.20} (4 levels; at 0.02, >= 1 fabricator is forced per round)
+- **Workload profile:** low [5, 15], mixed [5, 60], high [40, 60] (3 levels)
+- **Latent ICC:** low (0.05), medium (0.15), high (0.30) (3 levels)
+- **Fabrication share:** low U[0.2, 0.4], high U[0.6, 1.0] (2 levels)
+
+Total: **72 configurations × 20 seeds = 1,440 simulated rounds** using fresh seeds 1000..1019.
+
+### 13.2 Evaluated Methods and Primary vs Secondary Metrics
+
+- **Methods evaluated:**
+  1. Scoring v3 (Risk Score from empirical Bayes peer-relative features)
+  2. Scoring v3 (--no-shrinkage) (Risk Score without empirical Bayes shrinkage)
+  3. Rules Baseline (Count of distinct DQA rules triggered per enumerator)
+
+- **Primary metric (pre-specified):**
+  - **Precision@k and Recall@k** at fixed back-check budget k = 10% of enumerators (k = 4 for N = 40 enumerators).
+  - Per-mode recall@k.
+  - Number of top-k slots allocated to small-workload honest enumerators (n < 15).
+  - Paired bootstrap 95% confidence intervals (10,000 seed resamples) for the difference in precision@k (v3 - rules and v3 - no-shrinkage), pooled within each workload profile.
+
+- **Secondary metric (average precision / PR-AUC):**
+  - **Precision–recall AUC (average precision)** per method, overall and per fraud mode (one-vs-honest), computed from the full risk ranking.
+  - Paired bootstrap 95% confidence intervals for v3 - rules and v3 - no-shrinkage.
+  - Precision@k remains the pre-specified primary metric; average precision is secondary.
+
+### 13.3 Specialized Runs
+
+1. **Held-out mode run:**
+   - Evaluates out-of-distribution detection on the held-out partial_section fraud mode (§5).
+   - Configuration: mixed workload [5, 60], medium ICC (0.15), prevalence 0.10, 20 fresh seeds (2000..2019), --include-holdout.
+   - Reports recall@k for partial_section compared to the 5 standard active modes.
+
+2. **Detection-time run:**
+   - Measures how early during data collection fabricators enter the top-k back-check queue.
+   - Configuration: mixed workload [5, 60], medium ICC (0.15), prevalence 0.10, 20 fresh seeds (3000..3019).
+   - Evaluates scoring using only cumulative submissions up to the end of working day d in {2, 4, 6, 8, 10}.
+   - Reports, per fabricator mode, the share of fabricators flagged in the top-k by day d.

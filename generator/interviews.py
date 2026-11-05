@@ -33,24 +33,15 @@ def get_next_working_day(dt: datetime, start_hour: int = 9) -> datetime:
     next_date = dt.date() + timedelta(days=1)
     while next_date.weekday() in (4, 5):  # Friday (4) or Saturday (5)
         next_date += timedelta(days=1)
-    return datetime(
-        next_date.year, next_date.month, next_date.day, start_hour, 0, 0, tzinfo=dt.tzinfo
-    )
+    return datetime(next_date.year, next_date.month, next_date.day, start_hour, 0, 0, tzinfo=dt.tzinfo)
 
 
 def compute_duration_min(
-    hh_size: int,
-    speed_effect: float,
-    mu: float,
-    gamma: float,
-    sigma_eps: float,
-    rng: np.random.Generator,
+    hh_size: int, speed_effect: float, mu: float, gamma: float, sigma_eps: float, rng: np.random.Generator,
 ) -> float:
     """Compute interview duration in minutes according to log-linear model (dgp §3.5)."""
-    eps = float(rng.normal(0.0, sigma_eps))
-    log_dur = mu + (gamma * hh_size) + speed_effect + eps
-    dur_min = math.exp(log_dur)
-    return max(5.0, min(420.0, dur_min))
+    log_dur = mu + (gamma * hh_size) + speed_effect + float(rng.normal(0.0, sigma_eps))
+    return max(5.0, min(420.0, math.exp(log_dur)))
 
 
 def generate_submissions_for_round(
@@ -63,6 +54,8 @@ def generate_submissions_for_round(
     fraud_rng: Optional[np.random.Generator] = None,
     prevalence: Optional[float] = None,
     enable_fraud: bool = True,
+    include_holdout: bool = False,
+    share_range: Optional[List[float]] = None,
 ) -> Tuple[pd.DataFrame, Dict[str, Any]]:
     """Generate all interview submissions for a survey round, optionally injecting fraud."""
     v_eff_cfg = config["village_effects"]
@@ -135,8 +128,10 @@ def generate_submissions_for_round(
     fab_profiles: Dict[str, Any] = {}
     if enable_fraud and fraud_rng is not None:
         p_val = prevalence if prevalence is not None else float(fraud_cfg.get("prevalence", 0.10))
-        share_range = fraud_cfg.get("share_range", [0.30, 0.90])
-        fab_profiles = select_fabricators(enumerators, p_val, share_range, fraud_cfg, fraud_rng)
+        s_range = share_range if share_range is not None else fraud_cfg.get("share_range", [0.30, 0.90])
+        fab_profiles = select_fabricators(
+            enumerators, p_val, s_range, fraud_cfg, fraud_rng, include_holdout=include_holdout
+        )
 
     submission_counter = 0
     final_rows: List[Dict[str, Any]] = []
