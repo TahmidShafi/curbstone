@@ -6,7 +6,7 @@ Range and skip checks pass fabricated interviews, because a careful fabricator e
 
 **All data in this repository is synthetic.** Household-size and asset-ownership marginals are set to published Bangladesh figures (HIES 2022; BBS ICT Use and Access Survey 2022, taken from secondary reports and flagged for verification in `docs/dgp.md`). Paradata parameters (durations, timing, GPS error) are assumptions.
 
-Live demo, in-browser rule engine and full results: <PAGES_URL>
+Live demo, in-browser rule engine and full results: https://tahmidshafi.github.io/curbstone/
 
 ---
 

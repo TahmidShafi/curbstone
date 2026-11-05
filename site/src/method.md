@@ -19,7 +19,7 @@ flowchart TD
   RULES["Rules<br/>(12 SQL DQA Checks)"]:::stage
   HITS["Rule Hits<br/>(Display only)"]:::stage
   FEAT["Features<br/>(10 Paradata & Response Features F1–F10)"]:::stage
-  SCORE["Scoring v3<br/>(Cell Shrinkage M=50, Empirical Bayes)"]:::highlight
+  SCORE["Scoring v3 (frozen)<br/>(empirical-Bayes shrinkage + peer-rate smoothing)"]:::highlight
   RANK["Risk Ranking<br/>(Enumerator Risk Score = -log10 p_e)"]:::stage
   ALLOC["Back-Check Allocator<br/>(Random Floor + Risk Proportional + Evidence First)"]:::highlight
   TAB["Risk Table<br/>(Rule hits and risk ranking both shown)"]:::table
@@ -66,11 +66,11 @@ Constructs 10 paradata and survey response metrics per enumerator:
 - **F10 (Duration-Size Coupling):** Correlation between interview duration and household size.
 - Pre-registered hypothesis directions: [docs/dgp.md §10](https://github.com/curbstone/curbstone/blob/main/docs/dgp.md#10-scoring-plan-pre-registered).
 
-### 4. Scoring v3 Engine (Empirical Bayes Shrinkage)
-Computes shrinkage-adjusted risk scores for each enumerator:
-- **Cell Shrinkage (M = 50):** Rare count features shrink village cell expectations toward the survey-wide mean:
+### 4. Scoring v3 Engine (Empirical-Bayes Shrinkage & Peer-Rate Smoothing)
+Computes risk scores for each enumerator:
+- **Peer-Rate Smoothing ($M = 50$):** Rare count features smooth village peer expectations toward the survey-wide rate ($p_s$) used in both variants:
   `p_peer = (k_peer + M * p_s) / (n_peer + M)`
-- **Heterogeneity & Overdispersion:** Continuous features estimate between-enumerator variance tau^2 using MAD-based estimators and test against Student-t reference distributions; count features fit beta-binomial dispersion.
+- **Empirical-Bayes Shrinkage:** Continuous features estimate between-enumerator variance $\tau^2$ using MAD-based estimators and test against Student-t reference distributions; count features fit beta-binomial overdispersion. The shrinkage toggle switches off empirical-Bayes overdispersion and between-enumerator variance.
 - Full mathematical derivation: [docs/dgp.md §12](https://github.com/curbstone/curbstone/blob/main/docs/dgp.md#12-scoring-v3-post-hoc-final).
 
 ### 5. Risk Ranking

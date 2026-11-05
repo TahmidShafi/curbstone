@@ -8,7 +8,7 @@ Performance evaluation across 72 factorial configurations (1,440 rounds, seeds 1
 
 - **Risk Ranking vs Deterministic Rules:** Scoring v3 achieves a +0.1307 [+0.1191, +0.1422] precision@4 advantage over deterministic rule filtering, and +0.1946 [+0.1783, +0.2110] higher average precision. In relative precision (precision / max achievable), v3 achieves 49.4%–80.2% across medium-to-high prevalence settings compared to rules' 25.0%–61.3%.
 - **Shrinkage Effect:** Shrinkage effect depends on workload. In low-workload rounds (all enumerators n < 15), shrinkage improved precision@4 by +0.069 [+0.052, +0.087]. In mixed-workload rounds it did not change precision but shifted false flags onto small-sample honest enumerators: they took 196/1,920 top-4 slots with shrinkage vs 66/1,920 without (+0.068 [+0.055, +0.081]). It also reduced straight-lining detection (average precision −0.115 [−0.142, −0.089]). Scoring is frozen; ranking by posterior probability of a material effect is the planned next step.
-- **Rule Engine Scale Benchmark (1M rows):** 1M rows, all 12 rules: median 1,712 ms over 3 runs (1,760 / 1,712 / 1,677 ms); single-threaded DuckDB-Wasm; Windows, 16 logical CPUs, Chromium 152; parity with the Python engine 12/12 rules in both scenarios. (Evaluated live in DuckDB-Wasm on the Rules page).
+- **Rule engine scale benchmark (1M rows):** all 12 rules, median 1,712 ms over 3 runs (1,760 / 1,712 / 1,677 ms); single-threaded DuckDB-Wasm; Windows, 16 logical CPUs, Chromium 152; parity with the Python engine 12/12 rules in both scenarios.
 
 ---
 
