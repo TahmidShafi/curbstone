@@ -95,13 +95,62 @@ display(renderShrinkageChart(width));
 
 ### Detection Rate by Working Day (Prevalence 0.10, k = 4)
 
-| Mode | Day 2 | Day 4 | Day 6 | Day 8 | Day 10 |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **copy_paste** | 18/18 [0.824, 1.000] | 18/18 [0.824, 1.000] | 18/18 [0.824, 1.000] | 18/18 [0.824, 1.000] | 18/18 [0.824, 1.000] |
-| **straight_lining** | 12/16 [0.505, 0.898] | 11/16 [0.444, 0.858] | 11/16 [0.444, 0.858] | 11/16 [0.444, 0.858] | 11/16 [0.444, 0.858] |
-| **rushed** | 3/15 [0.070, 0.452] | 5/15 [0.152, 0.583] | 3/15 [0.070, 0.452] | 3/15 [0.070, 0.452] | 3/15 [0.070, 0.452] |
-| **invented_gps** | 7/15 [0.248, 0.699] | 11/15 [0.480, 0.891] | 12/15 [0.548, 0.930] | 12/15 [0.548, 0.930] | 12/15 [0.548, 0.930] |
-| **too_average** | 1/16 [0.011, 0.283] | 1/16 [0.011, 0.283] | 1/16 [0.011, 0.283] | 1/16 [0.011, 0.283] | 1/16 [0.011, 0.283] |
+<div style="overflow-x: auto; max-width: 100%; margin: 16px 0 24px 0; background: var(--surface); border: 1px solid var(--line); border-radius: 8px;">
+  <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+    <thead>
+      <tr style="border-bottom: 1px solid var(--line); color: var(--ink); font-weight: 600;">
+        <th style="padding: 10px 12px; white-space: nowrap;">Mode</th>
+        <th style="padding: 10px 12px; white-space: nowrap; text-align: right;">Day 2</th>
+        <th style="padding: 10px 12px; white-space: nowrap; text-align: right;">Day 4</th>
+        <th style="padding: 10px 12px; white-space: nowrap; text-align: right;">Day 6</th>
+        <th style="padding: 10px 12px; white-space: nowrap; text-align: right;">Day 8</th>
+        <th style="padding: 10px 12px; white-space: nowrap; text-align: right;">Day 10</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom: 1px solid var(--line); color: var(--ink);">
+        <td style="padding: 8px 12px; font-weight: 600; white-space: nowrap;">copy_paste</td>
+        <td style="padding: 8px 12px; white-space: nowrap; text-align: right;" class="tabular-nums">18/18 [0.824, 1.000]</td>
+        <td style="padding: 8px 12px; white-space: nowrap; text-align: right;" class="tabular-nums">18/18 [0.824, 1.000]</td>
+        <td style="padding: 8px 12px; white-space: nowrap; text-align: right;" class="tabular-nums">18/18 [0.824, 1.000]</td>
+        <td style="padding: 8px 12px; white-space: nowrap; text-align: right;" class="tabular-nums">18/18 [0.824, 1.000]</td>
+        <td style="padding: 8px 12px; white-space: nowrap; text-align: right;" class="tabular-nums">18/18 [0.824, 1.000]</td>
+      </tr>
+      <tr style="border-bottom: 1px solid var(--line); color: var(--ink);">
+        <td style="padding: 8px 12px; font-weight: 600; white-space: nowrap;">straight_lining</td>
+        <td style="padding: 8px 12px; white-space: nowrap; text-align: right;" class="tabular-nums">12/16 [0.505, 0.898]</td>
+        <td style="padding: 8px 12px; white-space: nowrap; text-align: right;" class="tabular-nums">11/16 [0.444, 0.858]</td>
+        <td style="padding: 8px 12px; white-space: nowrap; text-align: right;" class="tabular-nums">11/16 [0.444, 0.858]</td>
+        <td style="padding: 8px 12px; white-space: nowrap; text-align: right;" class="tabular-nums">11/16 [0.444, 0.858]</td>
+        <td style="padding: 8px 12px; white-space: nowrap; text-align: right;" class="tabular-nums">11/16 [0.444, 0.858]</td>
+      </tr>
+      <tr style="border-bottom: 1px solid var(--line); color: var(--ink);">
+        <td style="padding: 8px 12px; font-weight: 600; white-space: nowrap;">rushed</td>
+        <td style="padding: 8px 12px; white-space: nowrap; text-align: right;" class="tabular-nums">3/15 [0.070, 0.452]</td>
+        <td style="padding: 8px 12px; white-space: nowrap; text-align: right;" class="tabular-nums">5/15 [0.152, 0.583]</td>
+        <td style="padding: 8px 12px; white-space: nowrap; text-align: right;" class="tabular-nums">3/15 [0.070, 0.452]</td>
+        <td style="padding: 8px 12px; white-space: nowrap; text-align: right;" class="tabular-nums">3/15 [0.070, 0.452]</td>
+        <td style="padding: 8px 12px; white-space: nowrap; text-align: right;" class="tabular-nums">3/15 [0.070, 0.452]</td>
+      </tr>
+      <tr style="border-bottom: 1px solid var(--line); color: var(--ink);">
+        <td style="padding: 8px 12px; font-weight: 600; white-space: nowrap;">invented_gps</td>
+        <td style="padding: 8px 12px; white-space: nowrap; text-align: right;" class="tabular-nums">7/15 [0.248, 0.699]</td>
+        <td style="padding: 8px 12px; white-space: nowrap; text-align: right;" class="tabular-nums">11/15 [0.480, 0.891]</td>
+        <td style="padding: 8px 12px; white-space: nowrap; text-align: right;" class="tabular-nums">12/15 [0.548, 0.930]</td>
+        <td style="padding: 8px 12px; white-space: nowrap; text-align: right;" class="tabular-nums">12/15 [0.548, 0.930]</td>
+        <td style="padding: 8px 12px; white-space: nowrap; text-align: right;" class="tabular-nums">12/15 [0.548, 0.930]</td>
+      </tr>
+      <tr style="border-bottom: 1px solid var(--line); color: var(--ink);">
+        <td style="padding: 8px 12px; font-weight: 600; white-space: nowrap;">too_average</td>
+        <td style="padding: 8px 12px; white-space: nowrap; text-align: right;" class="tabular-nums">1/16 [0.011, 0.283]</td>
+        <td style="padding: 8px 12px; white-space: nowrap; text-align: right;" class="tabular-nums">1/16 [0.011, 0.283]</td>
+        <td style="padding: 8px 12px; white-space: nowrap; text-align: right;" class="tabular-nums">1/16 [0.011, 0.283]</td>
+        <td style="padding: 8px 12px; white-space: nowrap; text-align: right;" class="tabular-nums">1/16 [0.011, 0.283]</td>
+        <td style="padding: 8px 12px; white-space: nowrap; text-align: right;" class="tabular-nums">1/16 [0.011, 0.283]</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 ---
 

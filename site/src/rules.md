@@ -101,30 +101,30 @@ display(html`
 ```js
 display(html`
 <div class="table-wrapper" style="overflow-x: auto; max-width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; margin-bottom: 24px; box-sizing: border-box;">
-  <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+  <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; table-layout: fixed;">
     <thead>
       <tr style="background: var(--surface); border-bottom: 1px solid var(--line); color: var(--ink); font-weight: 600;">
-        <th style="padding: 10px 12px; white-space: nowrap;">Rule ID</th>
-        <th style="padding: 10px 12px; white-space: nowrap;">Level</th>
-        <th style="padding: 10px 12px; white-space: nowrap;">Severity</th>
-        <th style="padding: 10px 12px;">Description</th>
-        <th style="padding: 10px 12px; text-align: right; white-space: nowrap;">Browser Hits</th>
-        <th style="padding: 10px 12px; text-align: right; white-space: nowrap;">Python Expected</th>
-        <th style="padding: 10px 12px; text-align: center; white-space: nowrap;">Parity</th>
-        <th style="padding: 10px 12px; text-align: right; white-space: nowrap;">Latency</th>
+        <th style="padding: 10px 8px; width: 56px; box-sizing: border-box; white-space: nowrap;">Rule</th>
+        <th style="padding: 10px 8px; width: 112px; box-sizing: border-box; white-space: nowrap;">Level</th>
+        <th style="padding: 10px 8px; width: 80px; box-sizing: border-box; white-space: nowrap;">Severity</th>
+        <th style="padding: 10px 8px; width: auto; min-width: 280px; box-sizing: border-box;">Description</th>
+        <th style="padding: 10px 8px; width: 72px; box-sizing: border-box; text-align: right; white-space: nowrap;">Browser</th>
+        <th style="padding: 10px 8px; width: 72px; box-sizing: border-box; text-align: right; white-space: nowrap;">Python</th>
+        <th style="padding: 10px 8px; width: 56px; box-sizing: border-box; text-align: center; white-space: nowrap;">Parity</th>
+        <th style="padding: 10px 8px; width: 72px; box-sizing: border-box; text-align: right; white-space: nowrap;">Time</th>
       </tr>
     </thead>
     <tbody>
       ${ruleExecutionResults.map(r => html`
         <tr style="border-bottom: 1px solid var(--line); color: var(--ink);">
-          <td style="padding: 8px 12px; font-weight: 600; color: var(--accent);" class="enum-id">${r.id}</td>
-          <td style="padding: 8px 12px; color: var(--muted);">${r.level}</td>
-          <td style="padding: 8px 12px; color: var(--muted);">${r.severity}</td>
-          <td style="padding: 8px 12px;">${r.description}</td>
-          <td style="padding: 8px 12px; text-align: right; font-weight: 600;" class="tabular-nums">${r.hits}</td>
-          <td style="padding: 8px 12px; text-align: right; color: var(--muted);" class="tabular-nums">${r.expected}</td>
-          <td style="padding: 8px 12px; text-align: center; font-weight: 600; color: ${r.pass ? 'var(--accent)' : 'var(--fab)'};">${r.pass ? "✓" : "✗"}</td>
-          <td style="padding: 8px 12px; text-align: right; color: var(--muted);" class="tabular-nums">${r.ms.toFixed(1)} ms</td>
+          <td style="padding: 8px 8px; width: 56px; box-sizing: border-box; font-weight: 600; color: var(--accent);" class="enum-id">${r.id}</td>
+          <td style="padding: 8px 8px; width: 112px; box-sizing: border-box; color: var(--muted);">${r.level}</td>
+          <td style="padding: 8px 8px; width: 80px; box-sizing: border-box; color: var(--muted);">${r.severity}</td>
+          <td style="padding: 8px 8px; width: auto; min-width: 280px; box-sizing: border-box;">${r.description}</td>
+          <td style="padding: 8px 8px; width: 72px; box-sizing: border-box; text-align: right; font-weight: 600;" class="tabular-nums">${r.hits}</td>
+          <td style="padding: 8px 8px; width: 72px; box-sizing: border-box; text-align: right; color: var(--muted);" class="tabular-nums">${r.expected}</td>
+          <td style="padding: 8px 8px; width: 56px; box-sizing: border-box; text-align: center; font-weight: 600; color: ${r.pass ? 'var(--accent)' : 'var(--fab)'};">${r.pass ? "✓" : "✗"}</td>
+          <td style="padding: 8px 8px; width: 72px; box-sizing: border-box; text-align: right; color: var(--muted);" class="tabular-nums">${r.ms.toFixed(1)} ms</td>
         </tr>
       `)}
     </tbody>
