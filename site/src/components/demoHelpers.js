@@ -1,3 +1,16 @@
+export const FEATURE_NAMES = {
+  F1: "Fast interviews",
+  F2: "High daily volume",
+  F3: "Near-duplicates",
+  F4: "Straight-lining",
+  F5: "Low asset dispersion",
+  F6: "Low household-size dispersion",
+  F7: "GPS clustering",
+  F8: "Age heaping",
+  F9: "Non-response",
+  F10: "Duration–size coupling",
+};
+
 /**
  * Helper to convert Apache Arrow tables to plain objects with Number conversions
  */
@@ -16,16 +29,15 @@ export const toRows = (t) => Array.from(t, (r) => {
 });
 
 /**
- * Format the Precision@4 stat string
+ * Format the Precision@4 stat label after reveal
  */
 export function formatPrecisionStat(rm, isShrink) {
-  const roundHits = isShrink ? rm.round_hits_v3 : rm.round_hits_noshrinkage;
   const comp = rm.study_average;
-  if (!comp) return `${roundHits} of 4`;
+  if (!comp) return "Precision@4";
   if (rm.scenario === "mixed") {
     const mean = isShrink ? comp.v3_mean : comp.noshrink_mean;
     const ci = isShrink ? comp.v3_ci_95 : comp.noshrink_ci_95;
-    return `${roundHits} of 4 (study avg ${mean.toFixed(3)} [${ci[0].toFixed(3)}, ${ci[1].toFixed(3)}])`;
+    return `Precision@4 (study avg ${mean.toFixed(3)} [${ci[0].toFixed(3)}, ${ci[1].toFixed(3)}])`;
   } else {
     const p10 = comp.prev_0_10;
     const p20 = comp.prev_0_20;
@@ -33,7 +45,7 @@ export function formatPrecisionStat(rm, isShrink) {
     const ci10 = isShrink ? p10.v3_ci_95 : p10.noshrink_ci_95;
     const m20 = isShrink ? p20.v3_mean : p20.noshrink_mean;
     const ci20 = isShrink ? p20.v3_ci_95 : p20.noshrink_ci_95;
-    return `${roundHits} of 4 (study avg prev 0.10: ${m10.toFixed(3)} [${ci10[0].toFixed(3)}, ${ci10[1].toFixed(3)}], prev 0.20: ${m20.toFixed(3)} [${ci20[0].toFixed(3)}, ${ci20[1].toFixed(3)}])`;
+    return `Precision@4 (study avg prev 0.10: ${m10.toFixed(3)} [${ci10[0].toFixed(3)}, ${ci10[1].toFixed(3)}], prev 0.20: ${m20.toFixed(3)} [${ci20[0].toFixed(3)}, ${ci20[1].toFixed(3)}])`;
   }
 }
 

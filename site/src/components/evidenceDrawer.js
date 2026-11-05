@@ -36,36 +36,58 @@ export function renderEvidenceDrawer({
   onClose,
 }) {
   if (!enumeratorId || !enumEvidence) {
-    return htl.html`<div style="padding: 16px; color: var(--muted); font-style: italic;">
-      Select an enumerator row from the risk table above to inspect the audit evidence.
-    </div>`;
+    const empty = document.createElement("div");
+    empty.style.cssText = "padding: 16px; color: var(--muted); font-style: italic;";
+    empty.textContent = "Select an enumerator row from the risk table above to inspect the audit evidence.";
+    return empty;
   }
 
   const features = enumEvidence.features || {};
   const featureKeys = Object.keys(features);
 
-  return htl.html`<div style="background: var(--page); border: 1px solid var(--line); border-radius: 8px; padding: 16px; margin: 4px 0;">
-    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); padding-bottom: 12px; margin-bottom: 16px;">
-      <div>
-        <h3 style="margin: 0; font-size: 18px; color: var(--ink);">
-          Audit Evidence: <span class="enum-id" style="color: var(--accent);">${enumeratorId}</span>
-        </h3>
-        <p style="margin: 4px 0 0 0; font-size: 13px; color: var(--muted);" class="tabular-nums">
-          Risk score: <strong>${enumEvidence.risk_score.toFixed(1)}</strong> &bull;
-          Interviews: <strong>${enumEvidence.n_interviews}</strong> &bull;
-          Flagged features (p &lt; 0.05/m): <strong>${featureKeys.length > 0 ? featureKeys.map(k => FEATURE_NAMES[k] || k).join(", ") : "None"}</strong>
-        </p>
-      </div>
-      ${onClose ? htl.html`<button class="btn-secondary" onclick=${onClose}>Close</button>` : ""}
-    </div>
+  const container = document.createElement("div");
+  container.style.cssText = "background: var(--page); border: 1px solid var(--line); border-radius: 8px; padding: 16px; margin: 4px 0;";
 
-    ${featureKeys.length === 0
-      ? htl.html`<p style="color: var(--muted); font-style: italic; font-size: 13px; margin: 8px 0;">No features met the Bonferroni significance threshold (p &lt; 0.05 / m) for this enumerator.</p>`
-      : htl.html`<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px;">
-          ${featureKeys.map((fKey) => renderFeatureCard(fKey, features[fKey], enumeratorId, allSubmissions, villages))}
-        </div>`
+  const header = document.createElement("div");
+  header.style.cssText = "display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); padding-bottom: 12px; margin-bottom: 16px;";
+
+  const headerLeft = document.createElement("div");
+  headerLeft.innerHTML = `
+    <h3 style="margin: 0; font-size: 18px; color: var(--ink);">
+      Audit Evidence: <span class="enum-id" style="color: var(--accent);">${enumeratorId}</span>
+    </h3>
+    <p style="margin: 4px 0 0 0; font-size: 13px; color: var(--muted);" class="tabular-nums">
+      Risk score: <strong>${enumEvidence.risk_score.toFixed(1)}</strong> &bull;
+      Interviews: <strong>${enumEvidence.n_interviews}</strong> &bull;
+      Flagged features (p &lt; 0.05/m): <strong>${featureKeys.length > 0 ? featureKeys.map((k) => FEATURE_NAMES[k] || k).join(", ") : "None"}</strong>
+    </p>
+  `;
+  header.appendChild(headerLeft);
+
+  if (onClose) {
+    const closeBtn = document.createElement("button");
+    closeBtn.className = "btn-secondary";
+    closeBtn.textContent = "Close";
+    closeBtn.onclick = onClose;
+    header.appendChild(closeBtn);
+  }
+  container.appendChild(header);
+
+  if (featureKeys.length === 0) {
+    const noFeat = document.createElement("p");
+    noFeat.style.cssText = "color: var(--muted); font-style: italic; font-size: 13px; margin: 8px 0;";
+    noFeat.textContent = "No features met the Bonferroni significance threshold (p < 0.05 / m) for this enumerator.";
+    container.appendChild(noFeat);
+  } else {
+    const grid = document.createElement("div");
+    grid.style.cssText = "display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px;";
+    for (const fKey of featureKeys) {
+      grid.appendChild(renderFeatureCard(fKey, features[fKey], enumeratorId, allSubmissions, villages));
     }
-  </div>`;
+    container.appendChild(grid);
+  }
+
+  return container;
 }
 
 function formatPValue(p) {
@@ -94,52 +116,65 @@ function renderFeatureCard(fKey, fData, enumeratorId, allSubmissions, villages) 
 
   const estVal = isCount ? rate : d;
   const [ciLo, ciHi] = isCount ? (countRange || [0, 0]) : [-h, h];
-  const expVal = 0;
 
-  return htl.html`<div style="background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px; box-sizing: border-box;">
-    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
-      <h4 style="margin: 0; font-size: 15px; color: var(--ink);">
-        <span class="evidence-chip" title="${fKey}">${fKey}</span>
-        ${plainName}
-      </h4>
-      <span style="font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums;">p = ${pValStr}</span>
+  const card = document.createElement("div");
+  card.style.cssText = "background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px; box-sizing: border-box;";
+
+  const topRow = document.createElement("div");
+  topRow.style.cssText = "display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;";
+  topRow.innerHTML = `
+    <h4 style="margin: 0; font-size: 15px; color: var(--ink);">
+      <span class="evidence-chip" title="${fKey}">${fKey}</span>
+      ${plainName}
+    </h4>
+    <span style="font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums;">p = ${pValStr}</span>
+  `;
+  card.appendChild(topRow);
+
+  const desc = document.createElement("p");
+  desc.style.cssText = "margin: 0 0 10px 0; font-size: 13px; color: var(--ink); line-height: 18px;";
+  desc.textContent = explanation;
+  card.appendChild(desc);
+
+  const chartWrap = document.createElement("div");
+  chartWrap.style.cssText = "margin: 8px 0 12px 0;";
+  chartWrap.appendChild(renderCardIntervalChart(estVal, ciLo, ciHi, 0, 320, 48));
+  card.appendChild(chartWrap);
+
+  const stats = document.createElement("div");
+  stats.className = "tabular-nums";
+  stats.style.cssText = "display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 6px; background: var(--page); padding: 8px 10px; border-radius: 4px; font-size: 12px; margin-bottom: 8px;";
+  stats.innerHTML = isCount
+    ? `<div><strong>Observed:</strong> ${rateStr}${countsStr}</div><div><strong>Honest 90%:</strong> ${countRangeStr}</div><div><strong>Records:</strong> ${fData.submission_ids ? fData.submission_ids.length : 0}</div>`
+    : `<div><strong>Observed:</strong> ${dStr}</div><div><strong>Honest 90%:</strong> ${contRangeStr}</div><div><strong>Records:</strong> ${fData.submission_ids ? fData.submission_ids.length : 0}</div>`;
+  card.appendChild(stats);
+
+  const details = document.createElement("details");
+  details.style.cssText = "margin-top: 6px; font-size: 12px; color: var(--muted);";
+  details.innerHTML = `
+    <summary style="cursor: pointer; font-weight: 500;">Model details</summary>
+    <div style="margin-top: 4px; color: var(--ink);" class="tabular-nums">
+      ${isCount ? `Posterior mean: <strong>${shrunkStr}</strong>` : `Posterior mean (complete pooling when tau^2 = 0): <strong>${shrunkStr}</strong>`}
     </div>
+  `;
+  card.appendChild(details);
 
-    <p style="margin: 0 0 10px 0; font-size: 13px; color: var(--ink); line-height: 18px;">${explanation}</p>
-
-    <!-- Larger observed vs honest chart -->
-    <div style="margin: 8px 0 12px 0;">
-      ${renderCardIntervalChart(estVal, ciLo, ciHi, expVal, 320, 48)}
-    </div>
-
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 6px; background: var(--page); padding: 8px 10px; border-radius: 4px; font-size: 12px; margin-bottom: 8px;" class="tabular-nums">
-      ${isCount
-        ? htl.html`<div><strong>Observed:</strong> ${rateStr}${countsStr}</div><div><strong>Honest 90%:</strong> ${countRangeStr}</div>`
-        : htl.html`<div><strong>Observed:</strong> ${dStr}</div><div><strong>Honest 90%:</strong> ${contRangeStr}</div>`
-      }
-      <div><strong>Records:</strong> ${fData.submission_ids ? fData.submission_ids.length : 0}</div>
-    </div>
-
-    <details style="margin-top: 6px; font-size: 12px; color: var(--muted);">
-      <summary style="cursor: pointer; font-weight: 500;">Model details</summary>
-      <div style="margin-top: 4px; color: var(--ink);" class="tabular-nums">
-        ${isCount
-          ? htl.html`Posterior mean: <strong>${shrunkStr}</strong>`
-          : htl.html`Posterior mean (complete pooling when tau^2 = 0): <strong>${shrunkStr}</strong>`
-        }
-      </div>
-    </details>
-
-    ${fKey === "F7" ? renderGpsScatter(fData, enumeratorId, allSubmissions, villages) : ""}
-    ${fKey === "F1" ? renderDurationStrip(enumeratorId, allSubmissions) : ""}
-    ${renderContributingDetails(fKey, fData)}
-  </div>`;
+  if (fKey === "F7") {
+    const gpsNode = renderGpsScatter(fData, enumeratorId, allSubmissions, villages);
+    if (gpsNode) card.appendChild(gpsNode);
+  }
+  if (fKey === "F1") {
+    const durNode = renderDurationStrip(enumeratorId, allSubmissions);
+    if (durNode) card.appendChild(durNode);
+  }
+  const contribNode = renderContributingDetails(fKey, fData);
+  if (contribNode) card.appendChild(contribNode);
+  return card;
 }
 
 function renderGpsScatter(fData, enumeratorId, allSubmissions, villages) {
   const points = fData.points || [];
-  if (points.length === 0) return "";
-
+  if (points.length === 0) return null;
   const activeVids = new Set(points.map((p) => p.village_id));
   const peers = allSubmissions.filter((s) => activeVids.has(s.village_id) && s.enumerator_id !== enumeratorId);
   const vilRefs = (villages || []).filter((v) => activeVids.has(v.village_id));
@@ -152,29 +187,9 @@ function renderGpsScatter(fData, enumeratorId, allSubmissions, villages) {
       aspectRatio: 1,
       grid: true,
       marks: [
-        Plot.dot(peers, {
-          x: "gps_lon",
-          y: "gps_lat",
-          fill: "#9ca3af",
-          r: 2.5,
-          title: (d) => `Peer interview (${d.submission_id})`
-        }),
-        Plot.dot(vilRefs, {
-          x: "ref_lon",
-          y: "ref_lat",
-          stroke: "#4b5563",
-          strokeWidth: 2,
-          fill: "none",
-          r: 6,
-          title: (d) => `Village reference point (${d.village_id})`
-        }),
-        Plot.dot(points, {
-          x: "lon",
-          y: "lat",
-          fill: "#1f2937",
-          r: 4,
-          title: (d) => `${enumeratorId} interview (${d.submission_id})`
-        }),
+        Plot.dot(peers, { x: "gps_lon", y: "gps_lat", fill: "#9ca3af", r: 2.5, title: (d) => `Peer interview (${d.submission_id})` }),
+        Plot.dot(vilRefs, { x: "ref_lon", y: "ref_lat", stroke: "#4b5563", strokeWidth: 2, fill: "none", r: 6, title: (d) => `Village reference point (${d.village_id})` }),
+        Plot.dot(points, { x: "lon", y: "lat", fill: "#1f2937", r: 4, title: (d) => `${enumeratorId} interview (${d.submission_id})` }),
       ],
     })}
     <div style="display: flex; gap: 12px; font-size: 11px; color: var(--muted); margin-top: 6px;">
@@ -187,7 +202,7 @@ function renderGpsScatter(fData, enumeratorId, allSubmissions, villages) {
 
 function renderDurationStrip(enumeratorId, allSubmissions) {
   const enumSubs = allSubmissions.filter((s) => s.enumerator_id === enumeratorId);
-  if (enumSubs.length === 0) return "";
+  if (enumSubs.length === 0) return null;
   const vids = new Set(enumSubs.map((s) => s.village_id));
   const peerSubs = allSubmissions.filter((s) => vids.has(s.village_id) && s.enumerator_id !== enumeratorId);
 
@@ -203,18 +218,8 @@ function renderDurationStrip(enumeratorId, allSubmissions) {
       height: 120,
       x: { label: null, domain: [0, 80], grid: true },
       y: { label: null },
-      color: {
-        domain: ["Peers", "Flagged"],
-        range: ["#9ca3af", "#1f2937"],
-      },
-      marks: [
-        Plot.tickX(plotData, {
-          x: "duration",
-          y: "group",
-          stroke: "group",
-          strokeWidth: 2,
-        }),
-      ],
+      color: { domain: ["Peers", "Flagged"], range: ["#9ca3af", "#1f2937"] },
+      marks: [Plot.tickX(plotData, { x: "duration", y: "group", stroke: "group", strokeWidth: 2 })],
     })}
   </div>`;
 }
@@ -255,5 +260,5 @@ function renderContributingDetails(fKey, fData) {
     </details>`;
   }
 
-  return "";
+  return null;
 }

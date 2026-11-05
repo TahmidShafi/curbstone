@@ -13,6 +13,7 @@ Which enumerators should field supervisors back-check first? A risk ranking for 
 ```js
 import { allocateBackChecks } from "./components/allocator.js";
 import { renderRiskTable } from "./components/riskTable.js";
+import { renderEvidenceDrawer } from "./components/evidenceDrawer.js";
 import { toRows, formatPrecisionStat, downloadAllocationCsv } from "./components/demoHelpers.js";
 
 const mixedData = {
@@ -67,7 +68,7 @@ display(html`
   <div class="control-item"><div class="control-label">Shrinkage</div><div>${shrinkageInput}</div></div>
   <div class="control-item"><div class="control-label">Back-check budget: ${budgetValSpan}</div><div>${budgetInput}</div></div>
   <div class="control-item"><div class="control-label">Random floor: ${floorValSpan}</div><div>${floorShareInput}</div></div>
-  <div class="control-item" style="margin-left: auto;"><div class="control-label">&nbsp;</div><div class="reveal-btn">${revealButton}</div></div>
+  <div class="control-item"><div class="control-label">&nbsp;</div><div class="reveal-btn">${revealButton}</div></div>
 </div>
 <details style="margin: 8px 0 16px 0; font-size: 13px;">
   <summary style="cursor: pointer; color: var(--muted); font-weight: 500;">Advanced</summary>
@@ -140,10 +141,12 @@ display(html`
     <div class="stat-label">Back-checks allocated (${allocation.floorAllocated} random + ${allocation.riskAllocated} risk-weighted)</div>
   </div>
   <div class="stat-tile">
-    <div class="stat-value" style="font-size: ${isRevealed ? '16px' : '20px'}; line-height: 28px;">
-      ${!isRevealed ? "Hidden until reveal" : formatPrecisionStat(roundMetrics, shrinkageOn)}
+    <div class="stat-value">
+      ${!isRevealed ? "—" : (shrinkageOn ? roundMetrics.round_hits_v3 : roundMetrics.round_hits_noshrinkage) + " of 4"}
     </div>
-    <div class="stat-label">Precision@4 this round</div>
+    <div class="stat-label">
+      ${!isRevealed ? "Precision@4 — shown after reveal" : formatPrecisionStat(roundMetrics, shrinkageOn)}
+    </div>
   </div>
 </div>
 
@@ -221,6 +224,7 @@ display(renderRiskTable({
   evidenceDict: evidenceDict,
   submissions: submissions,
   villages: villages,
+  drawerRenderer: renderEvidenceDrawer,
 }));
 ```
 

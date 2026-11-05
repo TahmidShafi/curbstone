@@ -35,6 +35,8 @@ h3 { font-size: 18px; line-height: 24px; font-weight: 600; color: var(--ink); ma
 h4 { font-size: 15px; line-height: 20px; font-weight: 600; color: var(--ink); margin: 0; }
 p, li, td, th { font-size: 15px; line-height: 22px; }
 
+thead th { white-space: nowrap; }
+
 .text-meta { font-size: 13px; line-height: 18px; color: var(--muted); }
 .text-meta a { color: var(--accent); text-decoration: underline; }
 .tabular-nums, table, .stat-value { font-variant-numeric: tabular-nums; }
@@ -99,6 +101,10 @@ p, li, td, th { font-size: 15px; line-height: 22px; }
 .control-item form, .control-item .observablehq--input { margin: 0; font-family: var(--font-sans); }
 .observablehq--input label { font-size: 13px; color: var(--muted); text-transform: none !important; font-weight: 500; }
 .control-bar input[type="range"] { height: 36px; margin: 0; }
+
+/* Hide duplicate number input next to range sliders in control-bar */
+.control-bar input[type="number"], .control-item input[type="number"] { display: none !important; }
+details input[type="number"] { display: inline-block !important; }
 
 /* Segmented control for Scenario */
 .segmented-control form {

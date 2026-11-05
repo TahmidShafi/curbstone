@@ -1,5 +1,3 @@
-import * as htl from "npm:htl";
-
 /**
  * Render a mini inline SVG 90% interval bar for the risk table.
  * - grey band = honest 90% range
@@ -8,7 +6,10 @@ import * as htl from "npm:htl";
  */
 export function renderIntervalBar(est, ciLow, ciHigh, width = 110, height = 20, expectedVal = 0) {
   if (est == null || ciLow == null || ciHigh == null || isNaN(est) || isNaN(ciLow) || isNaN(ciHigh)) {
-    return htl.html`<span style="color: var(--muted); font-size: 12px;">—</span>`;
+    const span = document.createElement("span");
+    span.style.cssText = "color: var(--muted); font-size: 12px;";
+    span.textContent = "—";
+    return span;
   }
 
   const exp = expectedVal ?? 0;
@@ -33,15 +34,44 @@ export function renderIntervalBar(est, ciLow, ciHigh, width = 110, height = 20, 
   const dotFill = isOutside ? "var(--ink, #1f2937)" : "var(--surface, #ffffff)";
   const dotStroke = "var(--ink, #1f2937)";
 
-  return htl.html`<svg width="${width}" height="${height}" style="display: inline-block; vertical-align: middle;">
-    <!-- Honest 90% Range Band -->
-    <rect x="${Math.min(xLow, xHigh)}" y="${yMid - 3}" width="${Math.max(2, Math.abs(xHigh - xLow))}" height="6" rx="3" fill="#e5e7eb" />
-    <!-- Expected Rate Tick -->
-    <line x1="${xTick}" y1="${yMid - 6}" x2="${xTick}" y2="${yMid + 6}" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round" />
-    <!-- Observed Dot -->
-    <circle cx="${xEst}" cy="${yMid}" r="3.5" fill="${dotFill}" stroke="${dotStroke}" stroke-width="1.5" />
-    <title>Observed: ${est.toFixed(3)}, Honest 90% range: [${ciLow.toFixed(3)}, ${ciHigh.toFixed(3)}]</title>
-  </svg>`;
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("width", String(width));
+  svg.setAttribute("height", String(height));
+  svg.style.cssText = "display: inline-block; vertical-align: middle;";
+
+  const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  rect.setAttribute("x", String(Math.min(xLow, xHigh)));
+  rect.setAttribute("y", String(yMid - 3));
+  rect.setAttribute("width", String(Math.max(2, Math.abs(xHigh - xLow))));
+  rect.setAttribute("height", "6");
+  rect.setAttribute("rx", "3");
+  rect.setAttribute("fill", "#e5e7eb");
+  svg.appendChild(rect);
+
+  const tick = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  tick.setAttribute("x1", String(xTick));
+  tick.setAttribute("y1", String(yMid - 6));
+  tick.setAttribute("x2", String(xTick));
+  tick.setAttribute("y2", String(yMid + 6));
+  tick.setAttribute("stroke", "#9ca3af");
+  tick.setAttribute("stroke-width", "1.5");
+  tick.setAttribute("stroke-linecap", "round");
+  svg.appendChild(tick);
+
+  const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  circle.setAttribute("cx", String(xEst));
+  circle.setAttribute("cy", String(yMid));
+  circle.setAttribute("r", "3.5");
+  circle.setAttribute("fill", dotFill);
+  circle.setAttribute("stroke", dotStroke);
+  circle.setAttribute("stroke-width", "1.5");
+  svg.appendChild(circle);
+
+  const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
+  title.textContent = `Observed: ${est.toFixed(3)}, Honest 90% range: [${ciLow.toFixed(3)}, ${ciHigh.toFixed(3)}]`;
+  svg.appendChild(title);
+
+  return svg;
 }
 
 /**
@@ -49,7 +79,10 @@ export function renderIntervalBar(est, ciLow, ciHigh, width = 110, height = 20, 
  */
 export function renderCardIntervalChart(est, ciLow, ciHigh, expectedVal = 0, width = 340, height = 48) {
   if (est == null || ciLow == null || ciHigh == null || isNaN(est) || isNaN(ciLow) || isNaN(ciHigh)) {
-    return htl.html`<div style="color: var(--muted); font-size: 13px; font-style: italic;">No interval data</div>`;
+    const fallback = document.createElement("div");
+    fallback.style.cssText = "color: var(--muted); font-size: 13px; font-style: italic;";
+    fallback.textContent = "No interval data";
+    return fallback;
   }
 
   const exp = expectedVal ?? 0;
@@ -74,19 +107,66 @@ export function renderCardIntervalChart(est, ciLow, ciHigh, expectedVal = 0, wid
   const dotFill = isOutside ? "var(--ink, #1f2937)" : "var(--surface, #ffffff)";
   const dotStroke = "var(--ink, #1f2937)";
 
-  return htl.html`<svg width="100%" height="${height}" viewBox="0 0 ${width} ${height}" style="display: block; overflow: visible; font-variant-numeric: tabular-nums;">
-    <!-- Base track line -->
-    <line x1="16" y1="${yMid}" x2="${width - 16}" y2="${yMid}" stroke="#e5e7eb" stroke-width="1" />
-    <!-- Honest 90% Range Band -->
-    <rect x="${Math.min(xLow, xHigh)}" y="${yMid - 4}" width="${Math.max(3, Math.abs(xHigh - xLow))}" height="8" rx="4" fill="#e5e7eb" />
-    <!-- Expected Rate Tick -->
-    <line x1="${xTick}" y1="${yMid - 8}" x2="${xTick}" y2="${yMid + 8}" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" />
-    <!-- Observed Dot -->
-    <circle cx="${xEst}" cy="${yMid}" r="5" fill="${dotFill}" stroke="${dotStroke}" stroke-width="2" />
-    <!-- Axis Labels -->
-    <text x="${xTick}" y="${yMid + 20}" font-size="11" fill="#6b7280" text-anchor="middle" font-family="sans-serif">${exp === 0 ? "0" : exp.toFixed(2)}</text>
-    <text x="${xLow}" y="${yMid - 10}" font-size="11" fill="#6b7280" text-anchor="middle" font-family="sans-serif">${ciLow.toFixed(2)}</text>
-    <text x="${xHigh}" y="${yMid - 10}" font-size="11" fill="#6b7280" text-anchor="middle" font-family="sans-serif">${ciHigh.toFixed(2)}</text>
-    <text x="${xEst}" y="${yMid - 10}" font-size="11" font-weight="600" fill="#1f2937" text-anchor="middle" font-family="sans-serif">${est.toFixed(2)}</text>
-  </svg>`;
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("width", "100%");
+  svg.setAttribute("height", String(height));
+  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+  svg.style.cssText = "display: block; overflow: visible; font-variant-numeric: tabular-nums;";
+
+  const track = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  track.setAttribute("x1", "16");
+  track.setAttribute("y1", String(yMid));
+  track.setAttribute("x2", String(width - 16));
+  track.setAttribute("y2", String(yMid));
+  track.setAttribute("stroke", "#e5e7eb");
+  track.setAttribute("stroke-width", "1");
+  svg.appendChild(track);
+
+  const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  rect.setAttribute("x", String(Math.min(xLow, xHigh)));
+  rect.setAttribute("y", String(yMid - 4));
+  rect.setAttribute("width", String(Math.max(3, Math.abs(xHigh - xLow))));
+  rect.setAttribute("height", "8");
+  rect.setAttribute("rx", "4");
+  rect.setAttribute("fill", "#e5e7eb");
+  svg.appendChild(rect);
+
+  const tick = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  tick.setAttribute("x1", String(xTick));
+  tick.setAttribute("y1", String(yMid - 8));
+  tick.setAttribute("x2", String(xTick));
+  tick.setAttribute("y2", String(yMid + 8));
+  tick.setAttribute("stroke", "#9ca3af");
+  tick.setAttribute("stroke-width", "2");
+  tick.setAttribute("stroke-linecap", "round");
+  svg.appendChild(tick);
+
+  const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  circle.setAttribute("cx", String(xEst));
+  circle.setAttribute("cy", String(yMid));
+  circle.setAttribute("r", "5");
+  circle.setAttribute("fill", dotFill);
+  circle.setAttribute("stroke", dotStroke);
+  circle.setAttribute("stroke-width", "2");
+  svg.appendChild(circle);
+
+  const addText = (text, x, y, anchor = "middle", color = "#6b7280", weight = "normal") => {
+    const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    t.setAttribute("x", String(x));
+    t.setAttribute("y", String(y));
+    t.setAttribute("font-size", "11");
+    t.setAttribute("fill", color);
+    t.setAttribute("text-anchor", anchor);
+    t.setAttribute("font-family", "sans-serif");
+    if (weight !== "normal") t.setAttribute("font-weight", weight);
+    t.textContent = text;
+    svg.appendChild(t);
+  };
+
+  addText(exp === 0 ? "0" : exp.toFixed(2), xTick, yMid + 20);
+  addText(ciLow.toFixed(2), xLow, yMid - 10);
+  addText(ciHigh.toFixed(2), xHigh, yMid - 10);
+  addText(est.toFixed(2), xEst, yMid - 10, "middle", "#1f2937", "600");
+
+  return svg;
 }
