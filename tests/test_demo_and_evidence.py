@@ -62,7 +62,6 @@ def test_evidence_structure(tmp_path):
 
     ev_dict = build_evidence(df_sub, df_vil, scores, df_feat)
 
-    # Check enumerator enum_27 which has evidence (F3, F6, F7)
     assert "enum_27" in ev_dict
     e27 = ev_dict["enum_27"]
     assert "F3" in e27["features"]
@@ -81,16 +80,17 @@ def test_evidence_structure(tmp_path):
     assert "village_references" in f7 and len(f7["village_references"]) > 0
 
 
-def test_stata_and_csv_exports_match():
-    """Verify that flags.dta reads back with pandas.read_stata and matches flags.csv."""
+@pytest.mark.parametrize("scenario", ["mixed", "low"])
+def test_stata_and_csv_exports_match(scenario):
+    """Verify that flags.dta reads back with pandas.read_stata and matches flags.csv for both scenarios."""
     root = Path(__file__).resolve().parent.parent
-    data_dir = root / "site" / "src" / "data"
+    data_dir = root / "site" / "src" / "data" / scenario
 
     csv_path = data_dir / "flags.csv"
     dta_path = data_dir / "flags.dta"
 
-    assert csv_path.is_file(), "flags.csv not found in site/src/data"
-    assert dta_path.is_file(), "flags.dta not found in site/src/data"
+    assert csv_path.is_file(), f"flags.csv not found in site/src/data/{scenario}"
+    assert dta_path.is_file(), f"flags.dta not found in site/src/data/{scenario}"
 
     df_csv = pd.read_csv(csv_path, keep_default_na=False)
     df_dta = pd.read_stata(dta_path)
@@ -115,15 +115,17 @@ def test_demo_build_deterministic(tmp_path):
     res1 = tmp_path / "res1"
     res2 = tmp_path / "res2"
 
-    build_demo(output_dir=dir1, results_dir=res1, verbose=False)
-    build_demo(output_dir=dir2, results_dir=res2, verbose=False)
+    build_demo(scenario="all", base_data_dir=dir1, results_dir=res1, verbose=False)
+    build_demo(scenario="all", base_data_dir=dir2, results_dir=res2, verbose=False)
 
-    files1 = sorted([f.name for f in dir1.iterdir() if f.is_file()])
-    files2 = sorted([f.name for f in dir2.iterdir() if f.is_file()])
-    assert files1 == files2
+    for scenario in ["mixed", "low"]:
+        sc_dir1 = dir1 / scenario
+        sc_dir2 = dir2 / scenario
+        files1 = sorted([f.name for f in sc_dir1.iterdir() if f.is_file()])
+        files2 = sorted([f.name for f in sc_dir2.iterdir() if f.is_file()])
+        assert files1 == files2, f"Files list mismatch in scenario {scenario}: {files1} != {files2}"
 
-    for fname in files1:
-        h1 = hashlib.sha256(open(dir1 / fname, "rb").read()).hexdigest()
-        h2 = hashlib.sha256(open(dir2 / fname, "rb").read()).hexdigest()
-        assert h1 == h2, f"File {fname} hash mismatch between runs: {h1} != {h2}"
-
+        for fname in files1:
+            h1 = hashlib.sha256(open(sc_dir1 / fname, "rb").read()).hexdigest()
+            h2 = hashlib.sha256(open(sc_dir2 / fname, "rb").read()).hexdigest()
+            assert h1 == h2, f"Scenario {scenario} file {fname} hash mismatch between runs: {h1} != {h2}"

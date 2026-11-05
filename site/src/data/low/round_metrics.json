@@ -1,0 +1,19 @@
+{
+  "k": 4,
+  "round_precision_noshrinkage": 0.75,
+  "round_precision_v3": 0.5,
+  "scenario": "low",
+  "seed": 5001,
+  "study_average": {
+    "noshrink_ci_95": [
+      0.3021,
+      0.3505
+    ],
+    "noshrink_mean": 0.326,
+    "v3_ci_95": [
+      0.3682,
+      0.4224
+    ],
+    "v3_mean": 0.3953
+  }
+}

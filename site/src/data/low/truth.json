@@ -1,0 +1,402 @@
+[
+  {
+    "enumerator_id": "enum_01",
+    "fab_share_realized": 0.6429,
+    "primary_mode": "rushed",
+    "n_interviews": 14,
+    "n_fabricated": 9,
+    "intensity_name": "duration_multiplier",
+    "intensity_value": 0.32065732196954033,
+    "is_fabricator": true
+  },
+  {
+    "enumerator_id": "enum_02",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 7,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_03",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 5,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_04",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 6,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_05",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 6,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_06",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 11,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_07",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 14,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_08",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 11,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_09",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 14,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_10",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 6,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_11",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 12,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_12",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 13,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_13",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 10,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_14",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 9,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_15",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 6,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_16",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 11,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_17",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 14,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_18",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 13,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_19",
+    "fab_share_realized": 0.7692,
+    "primary_mode": "copy_paste",
+    "n_interviews": 13,
+    "n_fabricated": 10,
+    "intensity_name": "edit_rate",
+    "intensity_value": 0.2543524502522925,
+    "is_fabricator": true
+  },
+  {
+    "enumerator_id": "enum_20",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 14,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_21",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 15,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_22",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 13,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_23",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 13,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_24",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 5,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_25",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 12,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_26",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 13,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_27",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 15,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_28",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 11,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_29",
+    "fab_share_realized": 0.4545,
+    "primary_mode": "invented_gps",
+    "n_interviews": 11,
+    "n_fabricated": 5,
+    "intensity_name": "n_anchor",
+    "intensity_value": 1.0,
+    "is_fabricator": true
+  },
+  {
+    "enumerator_id": "enum_30",
+    "fab_share_realized": 0.7333,
+    "primary_mode": "straight_lining",
+    "n_interviews": 15,
+    "n_fabricated": 11,
+    "intensity_name": "prob_straight",
+    "intensity_value": 0.8987149724230319,
+    "is_fabricator": true
+  },
+  {
+    "enumerator_id": "enum_31",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 10,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_32",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 9,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_33",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 5,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_34",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 13,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_35",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 15,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_36",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 12,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_37",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 15,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_38",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 10,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_39",
+    "fab_share_realized": 0.0,
+    "primary_mode": null,
+    "n_interviews": 12,
+    "n_fabricated": 0,
+    "intensity_name": null,
+    "intensity_value": null,
+    "is_fabricator": false
+  },
+  {
+    "enumerator_id": "enum_40",
+    "fab_share_realized": 0.8889,
+    "primary_mode": "too_average",
+    "n_interviews": 9,
+    "n_fabricated": 8,
+    "intensity_name": "noise_rate",
+    "intensity_value": 0.05519879707590363,
+    "is_fabricator": true
+  }
+]

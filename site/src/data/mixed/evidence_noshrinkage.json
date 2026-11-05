@@ -1,0 +1,4912 @@
+{
+  "enum_01": {
+    "enumerator_id": "enum_01",
+    "risk_score": -0.0,
+    "p_e": 1.0,
+    "m_e": 10,
+    "n_interviews": 33,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_02": {
+    "enumerator_id": "enum_02",
+    "risk_score": -0.0,
+    "p_e": 1.0,
+    "m_e": 10,
+    "n_interviews": 15,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_03": {
+    "enumerator_id": "enum_03",
+    "risk_score": -0.0,
+    "p_e": 1.0,
+    "m_e": 10,
+    "n_interviews": 29,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_04": {
+    "enumerator_id": "enum_04",
+    "risk_score": 0.4901,
+    "p_e": 0.323489,
+    "m_e": 10,
+    "n_interviews": 17,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_05": {
+    "enumerator_id": "enum_05",
+    "risk_score": 9.7481,
+    "p_e": 0.0,
+    "m_e": 10,
+    "n_interviews": 55,
+    "evidence_features": [
+      "F1",
+      "F2"
+    ],
+    "features": {
+      "F1": {
+        "feature_id": "F1",
+        "feature_name": "Short interview duration",
+        "p_value": 0.0,
+        "feature_estimate": -0.491,
+        "shrunk_estimate": -0.491,
+        "ci_90": [
+          -0.5799,
+          -0.4021
+        ],
+        "submission_ids": [
+          "sub_01_00095",
+          "sub_01_00096",
+          "sub_01_00097",
+          "sub_01_00098",
+          "sub_01_00099",
+          "sub_01_00100",
+          "sub_01_00101",
+          "sub_01_00102",
+          "sub_01_00103",
+          "sub_01_00104",
+          "sub_01_00105",
+          "sub_01_00106",
+          "sub_01_00107",
+          "sub_01_00108",
+          "sub_01_00109",
+          "sub_01_00110",
+          "sub_01_00111",
+          "sub_01_00112",
+          "sub_01_00113",
+          "sub_01_00114",
+          "sub_01_00115",
+          "sub_01_00116",
+          "sub_01_00117",
+          "sub_01_00118",
+          "sub_01_00119",
+          "sub_01_00120",
+          "sub_01_00121",
+          "sub_01_00122",
+          "sub_01_00123",
+          "sub_01_00124",
+          "sub_01_00125",
+          "sub_01_00126",
+          "sub_01_00127",
+          "sub_01_00128",
+          "sub_01_00129",
+          "sub_01_00130",
+          "sub_01_00131",
+          "sub_01_00132",
+          "sub_01_00133",
+          "sub_01_00134",
+          "sub_01_00135",
+          "sub_01_00136",
+          "sub_01_00137",
+          "sub_01_00138",
+          "sub_01_00139",
+          "sub_01_00140",
+          "sub_01_00141",
+          "sub_01_00142",
+          "sub_01_00143",
+          "sub_01_00144",
+          "sub_01_00145",
+          "sub_01_00146",
+          "sub_01_00147",
+          "sub_01_00148",
+          "sub_01_00149"
+        ],
+        "durations": [
+          {
+            "submission_id": "sub_01_00095",
+            "duration_min": 17.79,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00096",
+            "duration_min": 20.08,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_00097",
+            "duration_min": 19.86,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_00098",
+            "duration_min": 23.6,
+            "hh_size": 8
+          },
+          {
+            "submission_id": "sub_01_00099",
+            "duration_min": 13.94,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00100",
+            "duration_min": 34.22,
+            "hh_size": 7
+          },
+          {
+            "submission_id": "sub_01_00101",
+            "duration_min": 12.94,
+            "hh_size": 8
+          },
+          {
+            "submission_id": "sub_01_00102",
+            "duration_min": 32.34,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00103",
+            "duration_min": 18.45,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00104",
+            "duration_min": 17.0,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00105",
+            "duration_min": 33.91,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00106",
+            "duration_min": 20.01,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00107",
+            "duration_min": 19.62,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_00108",
+            "duration_min": 25.91,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00109",
+            "duration_min": 20.2,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_00110",
+            "duration_min": 28.03,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00111",
+            "duration_min": 22.95,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00112",
+            "duration_min": 15.92,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00113",
+            "duration_min": 26.01,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_00114",
+            "duration_min": 34.26,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00115",
+            "duration_min": 21.24,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00116",
+            "duration_min": 28.34,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_00117",
+            "duration_min": 18.49,
+            "hh_size": 7
+          },
+          {
+            "submission_id": "sub_01_00118",
+            "duration_min": 21.0,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00119",
+            "duration_min": 19.12,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00120",
+            "duration_min": 16.65,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00121",
+            "duration_min": 27.83,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00122",
+            "duration_min": 42.49,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_00123",
+            "duration_min": 12.05,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00124",
+            "duration_min": 22.06,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00125",
+            "duration_min": 25.43,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_00126",
+            "duration_min": 22.54,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00127",
+            "duration_min": 21.22,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00128",
+            "duration_min": 20.64,
+            "hh_size": 2
+          },
+          {
+            "submission_id": "sub_01_00129",
+            "duration_min": 18.9,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00130",
+            "duration_min": 17.34,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00131",
+            "duration_min": 16.34,
+            "hh_size": 1
+          },
+          {
+            "submission_id": "sub_01_00132",
+            "duration_min": 21.66,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00133",
+            "duration_min": 29.15,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00134",
+            "duration_min": 26.11,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00135",
+            "duration_min": 18.53,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00136",
+            "duration_min": 23.99,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00137",
+            "duration_min": 32.33,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00138",
+            "duration_min": 20.58,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00139",
+            "duration_min": 22.16,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00140",
+            "duration_min": 15.48,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00141",
+            "duration_min": 17.39,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00142",
+            "duration_min": 14.11,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00143",
+            "duration_min": 20.31,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00144",
+            "duration_min": 22.79,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00145",
+            "duration_min": 19.7,
+            "hh_size": 2
+          },
+          {
+            "submission_id": "sub_01_00146",
+            "duration_min": 36.02,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00147",
+            "duration_min": 32.57,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_00148",
+            "duration_min": 20.92,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00149",
+            "duration_min": 26.04,
+            "hh_size": 6
+          }
+        ],
+        "mean_duration": 22.7
+      },
+      "F2": {
+        "feature_id": "F2",
+        "feature_name": "High daily interview volume",
+        "p_value": 0.001449,
+        "feature_estimate": 5.8929,
+        "shrunk_estimate": 5.8929,
+        "ci_90": [
+          2.843,
+          8.9428
+        ],
+        "submission_ids": [
+          "sub_01_00095",
+          "sub_01_00096",
+          "sub_01_00097",
+          "sub_01_00098",
+          "sub_01_00099",
+          "sub_01_00100",
+          "sub_01_00101",
+          "sub_01_00102",
+          "sub_01_00103",
+          "sub_01_00104",
+          "sub_01_00105",
+          "sub_01_00106",
+          "sub_01_00107",
+          "sub_01_00108",
+          "sub_01_00109",
+          "sub_01_00110",
+          "sub_01_00111",
+          "sub_01_00112",
+          "sub_01_00113",
+          "sub_01_00114",
+          "sub_01_00115",
+          "sub_01_00116",
+          "sub_01_00117",
+          "sub_01_00118",
+          "sub_01_00119",
+          "sub_01_00120",
+          "sub_01_00121",
+          "sub_01_00122",
+          "sub_01_00123",
+          "sub_01_00124",
+          "sub_01_00125",
+          "sub_01_00126",
+          "sub_01_00127",
+          "sub_01_00128",
+          "sub_01_00129",
+          "sub_01_00130",
+          "sub_01_00131",
+          "sub_01_00132",
+          "sub_01_00133",
+          "sub_01_00134",
+          "sub_01_00135",
+          "sub_01_00136",
+          "sub_01_00137",
+          "sub_01_00138",
+          "sub_01_00139",
+          "sub_01_00140",
+          "sub_01_00141",
+          "sub_01_00142",
+          "sub_01_00143",
+          "sub_01_00144",
+          "sub_01_00145",
+          "sub_01_00146",
+          "sub_01_00147",
+          "sub_01_00148",
+          "sub_01_00149"
+        ],
+        "daily_counts": [
+          {
+            "date": "2026-11-01",
+            "count": 14,
+            "submission_ids": [
+              "sub_01_00095",
+              "sub_01_00096",
+              "sub_01_00097",
+              "sub_01_00098",
+              "sub_01_00099",
+              "sub_01_00100",
+              "sub_01_00101",
+              "sub_01_00102",
+              "sub_01_00103",
+              "sub_01_00104",
+              "sub_01_00105",
+              "sub_01_00106",
+              "sub_01_00107",
+              "sub_01_00108"
+            ]
+          },
+          {
+            "date": "2026-11-02",
+            "count": 14,
+            "submission_ids": [
+              "sub_01_00109",
+              "sub_01_00110",
+              "sub_01_00111",
+              "sub_01_00112",
+              "sub_01_00113",
+              "sub_01_00114",
+              "sub_01_00115",
+              "sub_01_00116",
+              "sub_01_00117",
+              "sub_01_00118",
+              "sub_01_00119",
+              "sub_01_00120",
+              "sub_01_00121",
+              "sub_01_00122"
+            ]
+          },
+          {
+            "date": "2026-11-03",
+            "count": 13,
+            "submission_ids": [
+              "sub_01_00123",
+              "sub_01_00124",
+              "sub_01_00125",
+              "sub_01_00126",
+              "sub_01_00127",
+              "sub_01_00128",
+              "sub_01_00129",
+              "sub_01_00130",
+              "sub_01_00131",
+              "sub_01_00132",
+              "sub_01_00133",
+              "sub_01_00134",
+              "sub_01_00135"
+            ]
+          },
+          {
+            "date": "2026-11-04",
+            "count": 14,
+            "submission_ids": [
+              "sub_01_00136",
+              "sub_01_00137",
+              "sub_01_00138",
+              "sub_01_00139",
+              "sub_01_00140",
+              "sub_01_00141",
+              "sub_01_00142",
+              "sub_01_00143",
+              "sub_01_00144",
+              "sub_01_00145",
+              "sub_01_00146",
+              "sub_01_00147",
+              "sub_01_00148",
+              "sub_01_00149"
+            ]
+          }
+        ],
+        "max_daily_count": 14
+      }
+    }
+  },
+  "enum_06": {
+    "enumerator_id": "enum_06",
+    "risk_score": 0.4464,
+    "p_e": 0.35778,
+    "m_e": 10,
+    "n_interviews": 33,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_07": {
+    "enumerator_id": "enum_07",
+    "risk_score": 2.0464,
+    "p_e": 0.008987,
+    "m_e": 10,
+    "n_interviews": 10,
+    "evidence_features": [
+      "F1"
+    ],
+    "features": {
+      "F1": {
+        "feature_id": "F1",
+        "feature_name": "Short interview duration",
+        "p_value": 0.000899,
+        "feature_estimate": -0.4246,
+        "shrunk_estimate": -0.4246,
+        "ci_90": [
+          -0.633,
+          -0.2162
+        ],
+        "submission_ids": [
+          "sub_01_00183",
+          "sub_01_00184",
+          "sub_01_00185",
+          "sub_01_00186",
+          "sub_01_00187",
+          "sub_01_00188",
+          "sub_01_00189",
+          "sub_01_00190",
+          "sub_01_00191",
+          "sub_01_00192"
+        ],
+        "durations": [
+          {
+            "submission_id": "sub_01_00183",
+            "duration_min": 26.81,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00184",
+            "duration_min": 24.96,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00185",
+            "duration_min": 27.6,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00186",
+            "duration_min": 31.86,
+            "hh_size": 2
+          },
+          {
+            "submission_id": "sub_01_00187",
+            "duration_min": 49.46,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_00188",
+            "duration_min": 30.65,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00189",
+            "duration_min": 31.02,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_00190",
+            "duration_min": 41.87,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_00191",
+            "duration_min": 26.25,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00192",
+            "duration_min": 19.87,
+            "hh_size": 4
+          }
+        ],
+        "mean_duration": 31.04
+      }
+    }
+  },
+  "enum_08": {
+    "enumerator_id": "enum_08",
+    "risk_score": 4.4545,
+    "p_e": 3.5e-05,
+    "m_e": 10,
+    "n_interviews": 24,
+    "evidence_features": [
+      "F7"
+    ],
+    "features": {
+      "F7": {
+        "feature_id": "F7",
+        "feature_name": "GPS clustering / low spread",
+        "p_value": 4e-06,
+        "feature_estimate": -0.5924,
+        "shrunk_estimate": -0.5924,
+        "ci_90": [
+          -0.7804,
+          -0.4044
+        ],
+        "submission_ids": [
+          "sub_01_00193",
+          "sub_01_00194",
+          "sub_01_00195",
+          "sub_01_00196",
+          "sub_01_00197",
+          "sub_01_00198",
+          "sub_01_00199",
+          "sub_01_00200",
+          "sub_01_00201",
+          "sub_01_00202",
+          "sub_01_00203",
+          "sub_01_00204",
+          "sub_01_00205",
+          "sub_01_00206",
+          "sub_01_00207",
+          "sub_01_00208",
+          "sub_01_00209",
+          "sub_01_00210",
+          "sub_01_00211",
+          "sub_01_00212",
+          "sub_01_00213",
+          "sub_01_00214",
+          "sub_01_00215",
+          "sub_01_00216"
+        ],
+        "points": [
+          {
+            "submission_id": "sub_01_00193",
+            "village_id": "VIL014",
+            "lat": 24.53564,
+            "lon": 89.932373,
+            "accuracy": 21.47
+          },
+          {
+            "submission_id": "sub_01_00194",
+            "village_id": "VIL014",
+            "lat": 24.53654,
+            "lon": 89.931985,
+            "accuracy": 18.71
+          },
+          {
+            "submission_id": "sub_01_00195",
+            "village_id": "VIL014",
+            "lat": 24.536153,
+            "lon": 89.932836,
+            "accuracy": 3.24
+          },
+          {
+            "submission_id": "sub_01_00196",
+            "village_id": "VIL014",
+            "lat": 24.535387,
+            "lon": 89.936858,
+            "accuracy": 6.96
+          },
+          {
+            "submission_id": "sub_01_00197",
+            "village_id": "VIL014",
+            "lat": 24.531812,
+            "lon": 89.934121,
+            "accuracy": 20.21
+          },
+          {
+            "submission_id": "sub_01_00198",
+            "village_id": "VIL014",
+            "lat": 24.536847,
+            "lon": 89.930277,
+            "accuracy": 15.45
+          },
+          {
+            "submission_id": "sub_01_00199",
+            "village_id": "VIL014",
+            "lat": 24.53576,
+            "lon": 89.935122,
+            "accuracy": 19.08
+          },
+          {
+            "submission_id": "sub_01_00200",
+            "village_id": "VIL014",
+            "lat": 24.537844,
+            "lon": 89.932791,
+            "accuracy": 16.0
+          },
+          {
+            "submission_id": "sub_01_00201",
+            "village_id": "VIL014",
+            "lat": 24.530098,
+            "lon": 89.935598,
+            "accuracy": 6.09
+          },
+          {
+            "submission_id": "sub_01_00202",
+            "village_id": "VIL014",
+            "lat": 24.53691,
+            "lon": 89.931472,
+            "accuracy": 15.84
+          },
+          {
+            "submission_id": "sub_01_00203",
+            "village_id": "VIL014",
+            "lat": 24.534,
+            "lon": 89.935324,
+            "accuracy": 13.83
+          },
+          {
+            "submission_id": "sub_01_00204",
+            "village_id": "VIL014",
+            "lat": 24.537629,
+            "lon": 89.934272,
+            "accuracy": 7.53
+          },
+          {
+            "submission_id": "sub_01_00205",
+            "village_id": "VIL014",
+            "lat": 24.533157,
+            "lon": 89.935112,
+            "accuracy": 3.62
+          },
+          {
+            "submission_id": "sub_01_00206",
+            "village_id": "VIL014",
+            "lat": 24.534196,
+            "lon": 89.934816,
+            "accuracy": 7.31
+          },
+          {
+            "submission_id": "sub_01_00207",
+            "village_id": "VIL014",
+            "lat": 24.534547,
+            "lon": 89.937792,
+            "accuracy": 21.24
+          },
+          {
+            "submission_id": "sub_01_00208",
+            "village_id": "VIL014",
+            "lat": 24.535548,
+            "lon": 89.928713,
+            "accuracy": 23.49
+          },
+          {
+            "submission_id": "sub_01_00209",
+            "village_id": "VIL014",
+            "lat": 24.537139,
+            "lon": 89.931252,
+            "accuracy": 19.95
+          },
+          {
+            "submission_id": "sub_01_00210",
+            "village_id": "VIL014",
+            "lat": 24.531681,
+            "lon": 89.936371,
+            "accuracy": 14.77
+          },
+          {
+            "submission_id": "sub_01_00211",
+            "village_id": "VIL014",
+            "lat": 24.532938,
+            "lon": 89.935656,
+            "accuracy": 21.03
+          },
+          {
+            "submission_id": "sub_01_00212",
+            "village_id": "VIL014",
+            "lat": 24.538383,
+            "lon": 89.930471,
+            "accuracy": 16.62
+          },
+          {
+            "submission_id": "sub_01_00213",
+            "village_id": "VIL014",
+            "lat": 24.534116,
+            "lon": 89.934095,
+            "accuracy": 5.24
+          },
+          {
+            "submission_id": "sub_01_00214",
+            "village_id": "VIL014",
+            "lat": 24.537034,
+            "lon": 89.930805,
+            "accuracy": 13.71
+          },
+          {
+            "submission_id": "sub_01_00215",
+            "village_id": "VIL014",
+            "lat": 24.535934,
+            "lon": 89.933747,
+            "accuracy": 19.51
+          },
+          {
+            "submission_id": "sub_01_00216",
+            "village_id": "VIL014",
+            "lat": 24.536965,
+            "lon": 89.932272,
+            "accuracy": 8.8
+          }
+        ],
+        "village_references": [
+          {
+            "village_id": "VIL014",
+            "ref_lat": 24.534783,
+            "ref_lon": 89.934492
+          }
+        ]
+      }
+    }
+  },
+  "enum_09": {
+    "enumerator_id": "enum_09",
+    "risk_score": 13.8947,
+    "p_e": 0.0,
+    "m_e": 8,
+    "n_interviews": 21,
+    "evidence_features": [
+      "F4"
+    ],
+    "features": {
+      "F4": {
+        "feature_id": "F4",
+        "feature_name": "Straight-lined asset responses",
+        "p_value": 0.0,
+        "feature_estimate": 0.6667,
+        "shrunk_estimate": 0.6667,
+        "ci_90": [
+          0.4974,
+          0.8359
+        ],
+        "submission_ids": [
+          "sub_01_00217",
+          "sub_01_00219",
+          "sub_01_00220",
+          "sub_01_00221",
+          "sub_01_00222",
+          "sub_01_00223",
+          "sub_01_00227",
+          "sub_01_00228",
+          "sub_01_00229",
+          "sub_01_00232",
+          "sub_01_00233",
+          "sub_01_00234",
+          "sub_01_00235",
+          "sub_01_00237"
+        ],
+        "straight_records": [
+          {
+            "submission_id": "sub_01_00217",
+            "village_id": "VIL018",
+            "straight_value": 0
+          },
+          {
+            "submission_id": "sub_01_00219",
+            "village_id": "VIL018",
+            "straight_value": 0
+          },
+          {
+            "submission_id": "sub_01_00220",
+            "village_id": "VIL018",
+            "straight_value": 0
+          },
+          {
+            "submission_id": "sub_01_00221",
+            "village_id": "VIL018",
+            "straight_value": 0
+          },
+          {
+            "submission_id": "sub_01_00222",
+            "village_id": "VIL018",
+            "straight_value": 1
+          },
+          {
+            "submission_id": "sub_01_00223",
+            "village_id": "VIL018",
+            "straight_value": 1
+          },
+          {
+            "submission_id": "sub_01_00227",
+            "village_id": "VIL018",
+            "straight_value": 1
+          },
+          {
+            "submission_id": "sub_01_00228",
+            "village_id": "VIL018",
+            "straight_value": 0
+          },
+          {
+            "submission_id": "sub_01_00229",
+            "village_id": "VIL018",
+            "straight_value": 0
+          },
+          {
+            "submission_id": "sub_01_00232",
+            "village_id": "VIL018",
+            "straight_value": 0
+          },
+          {
+            "submission_id": "sub_01_00233",
+            "village_id": "VIL018",
+            "straight_value": 0
+          },
+          {
+            "submission_id": "sub_01_00234",
+            "village_id": "VIL018",
+            "straight_value": 0
+          },
+          {
+            "submission_id": "sub_01_00235",
+            "village_id": "VIL018",
+            "straight_value": 0
+          },
+          {
+            "submission_id": "sub_01_00237",
+            "village_id": "VIL018",
+            "straight_value": 0
+          }
+        ],
+        "straight_count": 14
+      }
+    }
+  },
+  "enum_10": {
+    "enumerator_id": "enum_10",
+    "risk_score": 0.2268,
+    "p_e": 0.593138,
+    "m_e": 10,
+    "n_interviews": 41,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_11": {
+    "enumerator_id": "enum_11",
+    "risk_score": -0.0,
+    "p_e": 1.0,
+    "m_e": 8,
+    "n_interviews": 20,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_12": {
+    "enumerator_id": "enum_12",
+    "risk_score": 11.2556,
+    "p_e": 0.0,
+    "m_e": 10,
+    "n_interviews": 12,
+    "evidence_features": [
+      "F1"
+    ],
+    "features": {
+      "F1": {
+        "feature_id": "F1",
+        "feature_name": "Short interview duration",
+        "p_value": 0.0,
+        "feature_estimate": -1.191,
+        "shrunk_estimate": -1.191,
+        "ci_90": [
+          -1.3813,
+          -1.0007
+        ],
+        "submission_ids": [
+          "sub_01_00299",
+          "sub_01_00300",
+          "sub_01_00301",
+          "sub_01_00302",
+          "sub_01_00303",
+          "sub_01_00304",
+          "sub_01_00305",
+          "sub_01_00306",
+          "sub_01_00307",
+          "sub_01_00308",
+          "sub_01_00309",
+          "sub_01_00310"
+        ],
+        "durations": [
+          {
+            "submission_id": "sub_01_00299",
+            "duration_min": 10.14,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00300",
+            "duration_min": 10.99,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00301",
+            "duration_min": 11.04,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00302",
+            "duration_min": 22.61,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00303",
+            "duration_min": 19.82,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00304",
+            "duration_min": 14.57,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00305",
+            "duration_min": 9.9,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00306",
+            "duration_min": 9.82,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00307",
+            "duration_min": 12.21,
+            "hh_size": 2
+          },
+          {
+            "submission_id": "sub_01_00308",
+            "duration_min": 13.31,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_00309",
+            "duration_min": 26.2,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00310",
+            "duration_min": 8.6,
+            "hh_size": 4
+          }
+        ],
+        "mean_duration": 14.1
+      }
+    }
+  },
+  "enum_13": {
+    "enumerator_id": "enum_13",
+    "risk_score": 5.7458,
+    "p_e": 2e-06,
+    "m_e": 8,
+    "n_interviews": 38,
+    "evidence_features": [
+      "F1"
+    ],
+    "features": {
+      "F1": {
+        "feature_id": "F1",
+        "feature_name": "Short interview duration",
+        "p_value": 0.0,
+        "feature_estimate": -0.3929,
+        "shrunk_estimate": -0.3929,
+        "ci_90": [
+          -0.4998,
+          -0.286
+        ],
+        "submission_ids": [
+          "sub_01_00311",
+          "sub_01_00312",
+          "sub_01_00313",
+          "sub_01_00314",
+          "sub_01_00315",
+          "sub_01_00316",
+          "sub_01_00317",
+          "sub_01_00318",
+          "sub_01_00319",
+          "sub_01_00320",
+          "sub_01_00321",
+          "sub_01_00322",
+          "sub_01_00323",
+          "sub_01_00324",
+          "sub_01_00325",
+          "sub_01_00326",
+          "sub_01_00327",
+          "sub_01_00328",
+          "sub_01_00329",
+          "sub_01_00330",
+          "sub_01_00331",
+          "sub_01_00332",
+          "sub_01_00333",
+          "sub_01_00334",
+          "sub_01_00335",
+          "sub_01_00336",
+          "sub_01_00337",
+          "sub_01_00338",
+          "sub_01_00339",
+          "sub_01_00340",
+          "sub_01_00341",
+          "sub_01_00342",
+          "sub_01_00343",
+          "sub_01_00344",
+          "sub_01_00345",
+          "sub_01_00346",
+          "sub_01_00347",
+          "sub_01_00348"
+        ],
+        "durations": [
+          {
+            "submission_id": "sub_01_00311",
+            "duration_min": 38.47,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00312",
+            "duration_min": 24.42,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00313",
+            "duration_min": 31.62,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00314",
+            "duration_min": 13.69,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00315",
+            "duration_min": 32.4,
+            "hh_size": 2
+          },
+          {
+            "submission_id": "sub_01_00316",
+            "duration_min": 25.05,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00317",
+            "duration_min": 22.16,
+            "hh_size": 2
+          },
+          {
+            "submission_id": "sub_01_00318",
+            "duration_min": 13.61,
+            "hh_size": 1
+          },
+          {
+            "submission_id": "sub_01_00319",
+            "duration_min": 23.55,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00320",
+            "duration_min": 26.62,
+            "hh_size": 9
+          },
+          {
+            "submission_id": "sub_01_00321",
+            "duration_min": 19.35,
+            "hh_size": 2
+          },
+          {
+            "submission_id": "sub_01_00322",
+            "duration_min": 24.76,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_00323",
+            "duration_min": 33.97,
+            "hh_size": 7
+          },
+          {
+            "submission_id": "sub_01_00324",
+            "duration_min": 36.07,
+            "hh_size": 7
+          },
+          {
+            "submission_id": "sub_01_00325",
+            "duration_min": 29.35,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_00326",
+            "duration_min": 30.32,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00327",
+            "duration_min": 25.12,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00328",
+            "duration_min": 26.81,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00329",
+            "duration_min": 20.77,
+            "hh_size": 2
+          },
+          {
+            "submission_id": "sub_01_00330",
+            "duration_min": 34.1,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_00331",
+            "duration_min": 23.45,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00332",
+            "duration_min": 25.69,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00333",
+            "duration_min": 28.37,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00334",
+            "duration_min": 23.57,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00335",
+            "duration_min": 26.02,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_00336",
+            "duration_min": 23.23,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00337",
+            "duration_min": 41.83,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_00338",
+            "duration_min": 33.06,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00339",
+            "duration_min": 37.53,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00340",
+            "duration_min": 26.95,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00341",
+            "duration_min": 24.09,
+            "hh_size": 7
+          },
+          {
+            "submission_id": "sub_01_00342",
+            "duration_min": 24.76,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00343",
+            "duration_min": 20.61,
+            "hh_size": 7
+          },
+          {
+            "submission_id": "sub_01_00344",
+            "duration_min": 29.32,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_00345",
+            "duration_min": 21.38,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_00346",
+            "duration_min": 17.49,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00347",
+            "duration_min": 23.35,
+            "hh_size": 2
+          },
+          {
+            "submission_id": "sub_01_00348",
+            "duration_min": 40.4,
+            "hh_size": 4
+          }
+        ],
+        "mean_duration": 26.93
+      }
+    }
+  },
+  "enum_14": {
+    "enumerator_id": "enum_14",
+    "risk_score": 0.2313,
+    "p_e": 0.587096,
+    "m_e": 8,
+    "n_interviews": 17,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_15": {
+    "enumerator_id": "enum_15",
+    "risk_score": 1.5313,
+    "p_e": 0.029427,
+    "m_e": 8,
+    "n_interviews": 55,
+    "evidence_features": [
+      "F3"
+    ],
+    "features": {
+      "F3": {
+        "feature_id": "F3",
+        "feature_name": "Near-duplicate submissions",
+        "p_value": 0.003678,
+        "feature_estimate": 0.1091,
+        "shrunk_estimate": 0.1091,
+        "ci_90": [
+          0.0399,
+          0.1782
+        ],
+        "submission_ids": [
+          "sub_01_00385",
+          "sub_01_00390",
+          "sub_01_00396",
+          "sub_01_00404",
+          "sub_01_00408",
+          "sub_01_00420"
+        ],
+        "pairs": [
+          {
+            "submission_id_1": "sub_01_00385",
+            "submission_id_2": "sub_01_00390",
+            "village_id": "VIL019",
+            "differing_fields": [
+              "roster_ages"
+            ]
+          },
+          {
+            "submission_id_1": "sub_01_00385",
+            "submission_id_2": "sub_01_00408",
+            "village_id": "VIL019",
+            "differing_fields": [
+              "roster_ages"
+            ]
+          },
+          {
+            "submission_id_1": "sub_01_00385",
+            "submission_id_2": "sub_01_00420",
+            "village_id": "VIL019",
+            "differing_fields": [
+              "roster_ages"
+            ]
+          },
+          {
+            "submission_id_1": "sub_01_00390",
+            "submission_id_2": "sub_01_00408",
+            "village_id": "VIL019",
+            "differing_fields": [
+              "roster_ages"
+            ]
+          },
+          {
+            "submission_id_1": "sub_01_00390",
+            "submission_id_2": "sub_01_00420",
+            "village_id": "VIL019",
+            "differing_fields": [
+              "roster_ages"
+            ]
+          },
+          {
+            "submission_id_1": "sub_01_00396",
+            "submission_id_2": "sub_01_00404",
+            "village_id": "VIL019",
+            "differing_fields": [
+              "roster_ages"
+            ]
+          },
+          {
+            "submission_id_1": "sub_01_00408",
+            "submission_id_2": "sub_01_00420",
+            "village_id": "VIL019",
+            "differing_fields": [
+              "roster_ages"
+            ]
+          }
+        ],
+        "pair_count": 7
+      }
+    }
+  },
+  "enum_16": {
+    "enumerator_id": "enum_16",
+    "risk_score": -0.0,
+    "p_e": 1.0,
+    "m_e": 10,
+    "n_interviews": 19,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_17": {
+    "enumerator_id": "enum_17",
+    "risk_score": 1.3627,
+    "p_e": 0.043378,
+    "m_e": 10,
+    "n_interviews": 51,
+    "evidence_features": [
+      "F7"
+    ],
+    "features": {
+      "F7": {
+        "feature_id": "F7",
+        "feature_name": "GPS clustering / low spread",
+        "p_value": 0.004338,
+        "feature_estimate": -0.1849,
+        "shrunk_estimate": -0.1849,
+        "ci_90": [
+          -0.295,
+          -0.0748
+        ],
+        "submission_ids": [
+          "sub_01_00440",
+          "sub_01_00441",
+          "sub_01_00442",
+          "sub_01_00443",
+          "sub_01_00444",
+          "sub_01_00445",
+          "sub_01_00446",
+          "sub_01_00447",
+          "sub_01_00448",
+          "sub_01_00449",
+          "sub_01_00450",
+          "sub_01_00451",
+          "sub_01_00452",
+          "sub_01_00453",
+          "sub_01_00454",
+          "sub_01_00455",
+          "sub_01_00456",
+          "sub_01_00457",
+          "sub_01_00458",
+          "sub_01_00459",
+          "sub_01_00460",
+          "sub_01_00461",
+          "sub_01_00462",
+          "sub_01_00463",
+          "sub_01_00464",
+          "sub_01_00465",
+          "sub_01_00466",
+          "sub_01_00467",
+          "sub_01_00468",
+          "sub_01_00469",
+          "sub_01_00470",
+          "sub_01_00471",
+          "sub_01_00472",
+          "sub_01_00473",
+          "sub_01_00474",
+          "sub_01_00475",
+          "sub_01_00476",
+          "sub_01_00477",
+          "sub_01_00478",
+          "sub_01_00479",
+          "sub_01_00480",
+          "sub_01_00481",
+          "sub_01_00482",
+          "sub_01_00483",
+          "sub_01_00484",
+          "sub_01_00485",
+          "sub_01_00486",
+          "sub_01_00487",
+          "sub_01_00488",
+          "sub_01_00489",
+          "sub_01_00490"
+        ],
+        "points": [
+          {
+            "submission_id": "sub_01_00440",
+            "village_id": "VIL018",
+            "lat": 24.475654,
+            "lon": 89.895885,
+            "accuracy": 10.84
+          },
+          {
+            "submission_id": "sub_01_00441",
+            "village_id": "VIL018",
+            "lat": 24.477444,
+            "lon": 89.895143,
+            "accuracy": 9.63
+          },
+          {
+            "submission_id": "sub_01_00442",
+            "village_id": "VIL018",
+            "lat": 24.480498,
+            "lon": 89.897477,
+            "accuracy": 7.45
+          },
+          {
+            "submission_id": "sub_01_00443",
+            "village_id": "VIL018",
+            "lat": 24.476874,
+            "lon": 89.902158,
+            "accuracy": 4.02
+          },
+          {
+            "submission_id": "sub_01_00444",
+            "village_id": "VIL018",
+            "lat": 24.478652,
+            "lon": 89.896186,
+            "accuracy": 6.39
+          },
+          {
+            "submission_id": "sub_01_00445",
+            "village_id": "VIL018",
+            "lat": 24.474408,
+            "lon": 89.889377,
+            "accuracy": 24.01
+          },
+          {
+            "submission_id": "sub_01_00446",
+            "village_id": "VIL018",
+            "lat": 24.478934,
+            "lon": 89.895704,
+            "accuracy": 23.73
+          },
+          {
+            "submission_id": "sub_01_00447",
+            "village_id": "VIL018",
+            "lat": 24.475897,
+            "lon": 89.892686,
+            "accuracy": 20.26
+          },
+          {
+            "submission_id": "sub_01_00448",
+            "village_id": "VIL018",
+            "lat": 24.482522,
+            "lon": 89.897575,
+            "accuracy": 18.94
+          },
+          {
+            "submission_id": "sub_01_00449",
+            "village_id": "VIL018",
+            "lat": 24.475631,
+            "lon": 89.894081,
+            "accuracy": 24.2
+          },
+          {
+            "submission_id": "sub_01_00450",
+            "village_id": "VIL018",
+            "lat": 24.476272,
+            "lon": 89.895162,
+            "accuracy": 4.42
+          },
+          {
+            "submission_id": "sub_01_00451",
+            "village_id": "VIL018",
+            "lat": 24.472686,
+            "lon": 89.896696,
+            "accuracy": 19.99
+          },
+          {
+            "submission_id": "sub_01_00452",
+            "village_id": "VIL018",
+            "lat": 24.473775,
+            "lon": 89.895875,
+            "accuracy": 6.23
+          },
+          {
+            "submission_id": "sub_01_00453",
+            "village_id": "VIL002",
+            "lat": 24.458622,
+            "lon": 89.87025,
+            "accuracy": 3.4
+          },
+          {
+            "submission_id": "sub_01_00454",
+            "village_id": "VIL002",
+            "lat": 24.461257,
+            "lon": 89.864793,
+            "accuracy": 12.67
+          },
+          {
+            "submission_id": "sub_01_00455",
+            "village_id": "VIL002",
+            "lat": 24.455897,
+            "lon": 89.86363,
+            "accuracy": 24.3
+          },
+          {
+            "submission_id": "sub_01_00456",
+            "village_id": "VIL002",
+            "lat": 24.463642,
+            "lon": 89.867978,
+            "accuracy": 24.82
+          },
+          {
+            "submission_id": "sub_01_00457",
+            "village_id": "VIL002",
+            "lat": 24.463794,
+            "lon": 89.865617,
+            "accuracy": 8.25
+          },
+          {
+            "submission_id": "sub_01_00458",
+            "village_id": "VIL002",
+            "lat": 24.46116,
+            "lon": 89.864057,
+            "accuracy": 11.15
+          },
+          {
+            "submission_id": "sub_01_00459",
+            "village_id": "VIL002",
+            "lat": 24.468039,
+            "lon": 89.862214,
+            "accuracy": 11.42
+          },
+          {
+            "submission_id": "sub_01_00460",
+            "village_id": "VIL002",
+            "lat": 24.461572,
+            "lon": 89.869293,
+            "accuracy": 12.69
+          },
+          {
+            "submission_id": "sub_01_00461",
+            "village_id": "VIL002",
+            "lat": 24.454174,
+            "lon": 89.870549,
+            "accuracy": 22.66
+          },
+          {
+            "submission_id": "sub_01_00462",
+            "village_id": "VIL002",
+            "lat": 24.461169,
+            "lon": 89.875041,
+            "accuracy": 23.22
+          },
+          {
+            "submission_id": "sub_01_00463",
+            "village_id": "VIL002",
+            "lat": 24.455093,
+            "lon": 89.862242,
+            "accuracy": 12.26
+          },
+          {
+            "submission_id": "sub_01_00464",
+            "village_id": "VIL002",
+            "lat": 24.462179,
+            "lon": 89.870401,
+            "accuracy": 11.57
+          },
+          {
+            "submission_id": "sub_01_00465",
+            "village_id": "VIL002",
+            "lat": 24.457664,
+            "lon": 89.867206,
+            "accuracy": 7.04
+          },
+          {
+            "submission_id": "sub_01_00466",
+            "village_id": "VIL002",
+            "lat": 24.464832,
+            "lon": 89.869074,
+            "accuracy": 11.84
+          },
+          {
+            "submission_id": "sub_01_00467",
+            "village_id": "VIL002",
+            "lat": 24.458847,
+            "lon": 89.861242,
+            "accuracy": 15.07
+          },
+          {
+            "submission_id": "sub_01_00468",
+            "village_id": "VIL002",
+            "lat": 24.458155,
+            "lon": 89.86383,
+            "accuracy": 12.93
+          },
+          {
+            "submission_id": "sub_01_00469",
+            "village_id": "VIL002",
+            "lat": 24.463901,
+            "lon": 89.863696,
+            "accuracy": 6.45
+          },
+          {
+            "submission_id": "sub_01_00470",
+            "village_id": "VIL002",
+            "lat": 24.464032,
+            "lon": 89.867037,
+            "accuracy": 12.99
+          },
+          {
+            "submission_id": "sub_01_00471",
+            "village_id": "VIL001",
+            "lat": 24.398387,
+            "lon": 90.039524,
+            "accuracy": 18.4
+          },
+          {
+            "submission_id": "sub_01_00472",
+            "village_id": "VIL001",
+            "lat": 24.407094,
+            "lon": 90.040266,
+            "accuracy": 4.45
+          },
+          {
+            "submission_id": "sub_01_00473",
+            "village_id": "VIL001",
+            "lat": 24.399685,
+            "lon": 90.04463,
+            "accuracy": 19.52
+          },
+          {
+            "submission_id": "sub_01_00474",
+            "village_id": "VIL001",
+            "lat": 24.399414,
+            "lon": 90.041545,
+            "accuracy": 5.54
+          },
+          {
+            "submission_id": "sub_01_00475",
+            "village_id": "VIL001",
+            "lat": 24.398644,
+            "lon": 90.04134,
+            "accuracy": 3.26
+          },
+          {
+            "submission_id": "sub_01_00476",
+            "village_id": "VIL001",
+            "lat": 24.401925,
+            "lon": 90.038066,
+            "accuracy": 19.02
+          },
+          {
+            "submission_id": "sub_01_00477",
+            "village_id": "VIL001",
+            "lat": 24.39799,
+            "lon": 90.040154,
+            "accuracy": 11.59
+          },
+          {
+            "submission_id": "sub_01_00478",
+            "village_id": "VIL001",
+            "lat": 24.398899,
+            "lon": 90.043156,
+            "accuracy": 21.32
+          },
+          {
+            "submission_id": "sub_01_00479",
+            "village_id": "VIL001",
+            "lat": 24.403335,
+            "lon": 90.040416,
+            "accuracy": 14.47
+          },
+          {
+            "submission_id": "sub_01_00480",
+            "village_id": "VIL001",
+            "lat": 24.402116,
+            "lon": 90.042725,
+            "accuracy": 20.16
+          },
+          {
+            "submission_id": "sub_01_00481",
+            "village_id": "VIL001",
+            "lat": 24.401237,
+            "lon": 90.045088,
+            "accuracy": 11.66
+          },
+          {
+            "submission_id": "sub_01_00482",
+            "village_id": "VIL001",
+            "lat": 24.405905,
+            "lon": 90.040049,
+            "accuracy": 14.21
+          },
+          {
+            "submission_id": "sub_01_00483",
+            "village_id": "VIL001",
+            "lat": 24.405925,
+            "lon": 90.044429,
+            "accuracy": 18.37
+          },
+          {
+            "submission_id": "sub_01_00484",
+            "village_id": "VIL001",
+            "lat": 24.403047,
+            "lon": 90.041608,
+            "accuracy": 6.91
+          },
+          {
+            "submission_id": "sub_01_00485",
+            "village_id": "VIL001",
+            "lat": 24.399611,
+            "lon": 90.049048,
+            "accuracy": 13.71
+          },
+          {
+            "submission_id": "sub_01_00486",
+            "village_id": "VIL001",
+            "lat": 24.399706,
+            "lon": 90.042858,
+            "accuracy": 17.6
+          },
+          {
+            "submission_id": "sub_01_00487",
+            "village_id": "VIL001",
+            "lat": 24.399735,
+            "lon": 90.045496,
+            "accuracy": 8.34
+          },
+          {
+            "submission_id": "sub_01_00488",
+            "village_id": "VIL001",
+            "lat": 24.401397,
+            "lon": 90.045008,
+            "accuracy": 14.39
+          },
+          {
+            "submission_id": "sub_01_00489",
+            "village_id": "VIL001",
+            "lat": 24.398338,
+            "lon": 90.043178,
+            "accuracy": 4.35
+          },
+          {
+            "submission_id": "sub_01_00490",
+            "village_id": "VIL001",
+            "lat": 24.403821,
+            "lon": 90.043759,
+            "accuracy": 12.73
+          }
+        ],
+        "village_references": [
+          {
+            "village_id": "VIL018",
+            "ref_lat": 24.477441,
+            "ref_lon": 89.895408
+          },
+          {
+            "village_id": "VIL002",
+            "ref_lat": 24.4612,
+            "ref_lon": 89.865374
+          },
+          {
+            "village_id": "VIL001",
+            "ref_lat": 24.401818,
+            "ref_lon": 90.041713
+          }
+        ]
+      }
+    }
+  },
+  "enum_18": {
+    "enumerator_id": "enum_18",
+    "risk_score": 1.8419,
+    "p_e": 0.014392,
+    "m_e": 10,
+    "n_interviews": 49,
+    "evidence_features": [
+      "F8"
+    ],
+    "features": {
+      "F8": {
+        "feature_id": "F8",
+        "feature_name": "Age heaping (multiples of 5)",
+        "p_value": 0.001439,
+        "feature_estimate": 0.4248,
+        "shrunk_estimate": 0.4248,
+        "ci_90": [
+          0.3591,
+          0.4906
+        ],
+        "submission_ids": [
+          "sub_01_00491",
+          "sub_01_00492",
+          "sub_01_00493",
+          "sub_01_00494",
+          "sub_01_00495",
+          "sub_01_00496",
+          "sub_01_00499",
+          "sub_01_00500",
+          "sub_01_00501",
+          "sub_01_00503",
+          "sub_01_00504",
+          "sub_01_00506",
+          "sub_01_00508",
+          "sub_01_00509",
+          "sub_01_00510",
+          "sub_01_00511",
+          "sub_01_00513",
+          "sub_01_00514",
+          "sub_01_00515",
+          "sub_01_00516",
+          "sub_01_00517",
+          "sub_01_00518",
+          "sub_01_00519",
+          "sub_01_00520",
+          "sub_01_00521",
+          "sub_01_00523",
+          "sub_01_00524",
+          "sub_01_00525",
+          "sub_01_00526",
+          "sub_01_00527",
+          "sub_01_00528",
+          "sub_01_00529",
+          "sub_01_00531",
+          "sub_01_00532",
+          "sub_01_00533",
+          "sub_01_00535",
+          "sub_01_00536",
+          "sub_01_00538",
+          "sub_01_00539"
+        ],
+        "heaped_records": [
+          {
+            "submission_id": "sub_01_00491",
+            "village_id": "VIL013",
+            "heaped_ages": [
+              25,
+              35,
+              20
+            ]
+          },
+          {
+            "submission_id": "sub_01_00492",
+            "village_id": "VIL013",
+            "heaped_ages": [
+              25
+            ]
+          },
+          {
+            "submission_id": "sub_01_00493",
+            "village_id": "VIL013",
+            "heaped_ages": [
+              30,
+              25
+            ]
+          },
+          {
+            "submission_id": "sub_01_00494",
+            "village_id": "VIL013",
+            "heaped_ages": [
+              30
+            ]
+          },
+          {
+            "submission_id": "sub_01_00495",
+            "village_id": "VIL013",
+            "heaped_ages": [
+              30,
+              20
+            ]
+          },
+          {
+            "submission_id": "sub_01_00496",
+            "village_id": "VIL013",
+            "heaped_ages": [
+              60
+            ]
+          },
+          {
+            "submission_id": "sub_01_00499",
+            "village_id": "VIL013",
+            "heaped_ages": [
+              60,
+              45
+            ]
+          },
+          {
+            "submission_id": "sub_01_00500",
+            "village_id": "VIL013",
+            "heaped_ages": [
+              45
+            ]
+          },
+          {
+            "submission_id": "sub_01_00501",
+            "village_id": "VIL013",
+            "heaped_ages": [
+              65,
+              25
+            ]
+          },
+          {
+            "submission_id": "sub_01_00503",
+            "village_id": "VIL013",
+            "heaped_ages": [
+              55,
+              40
+            ]
+          },
+          {
+            "submission_id": "sub_01_00504",
+            "village_id": "VIL013",
+            "heaped_ages": [
+              55,
+              50,
+              20
+            ]
+          },
+          {
+            "submission_id": "sub_01_00506",
+            "village_id": "VIL013",
+            "heaped_ages": [
+              30
+            ]
+          },
+          {
+            "submission_id": "sub_01_00508",
+            "village_id": "VIL013",
+            "heaped_ages": [
+              70
+            ]
+          },
+          {
+            "submission_id": "sub_01_00509",
+            "village_id": "VIL013",
+            "heaped_ages": [
+              65,
+              55
+            ]
+          },
+          {
+            "submission_id": "sub_01_00510",
+            "village_id": "VIL013",
+            "heaped_ages": [
+              50
+            ]
+          },
+          {
+            "submission_id": "sub_01_00511",
+            "village_id": "VIL013",
+            "heaped_ages": [
+              50
+            ]
+          },
+          {
+            "submission_id": "sub_01_00513",
+            "village_id": "VIL013",
+            "heaped_ages": [
+              45,
+              35,
+              20
+            ]
+          },
+          {
+            "submission_id": "sub_01_00514",
+            "village_id": "VIL013",
+            "heaped_ages": [
+              65
+            ]
+          },
+          {
+            "submission_id": "sub_01_00515",
+            "village_id": "VIL013",
+            "heaped_ages": [
+              45
+            ]
+          },
+          {
+            "submission_id": "sub_01_00516",
+            "village_id": "VIL023",
+            "heaped_ages": [
+              65
+            ]
+          },
+          {
+            "submission_id": "sub_01_00517",
+            "village_id": "VIL023",
+            "heaped_ages": [
+              40
+            ]
+          },
+          {
+            "submission_id": "sub_01_00518",
+            "village_id": "VIL023",
+            "heaped_ages": [
+              35
+            ]
+          },
+          {
+            "submission_id": "sub_01_00519",
+            "village_id": "VIL023",
+            "heaped_ages": [
+              30,
+              20
+            ]
+          },
+          {
+            "submission_id": "sub_01_00520",
+            "village_id": "VIL023",
+            "heaped_ages": [
+              25
+            ]
+          },
+          {
+            "submission_id": "sub_01_00521",
+            "village_id": "VIL023",
+            "heaped_ages": [
+              50,
+              45
+            ]
+          },
+          {
+            "submission_id": "sub_01_00523",
+            "village_id": "VIL023",
+            "heaped_ages": [
+              60,
+              35,
+              45,
+              25
+            ]
+          },
+          {
+            "submission_id": "sub_01_00524",
+            "village_id": "VIL023",
+            "heaped_ages": [
+              25
+            ]
+          },
+          {
+            "submission_id": "sub_01_00525",
+            "village_id": "VIL023",
+            "heaped_ages": [
+              30,
+              20
+            ]
+          },
+          {
+            "submission_id": "sub_01_00526",
+            "village_id": "VIL023",
+            "heaped_ages": [
+              40,
+              25,
+              20,
+              35
+            ]
+          },
+          {
+            "submission_id": "sub_01_00527",
+            "village_id": "VIL023",
+            "heaped_ages": [
+              35
+            ]
+          },
+          {
+            "submission_id": "sub_01_00528",
+            "village_id": "VIL023",
+            "heaped_ages": [
+              45,
+              20
+            ]
+          },
+          {
+            "submission_id": "sub_01_00529",
+            "village_id": "VIL023",
+            "heaped_ages": [
+              55
+            ]
+          },
+          {
+            "submission_id": "sub_01_00531",
+            "village_id": "VIL023",
+            "heaped_ages": [
+              55
+            ]
+          },
+          {
+            "submission_id": "sub_01_00532",
+            "village_id": "VIL023",
+            "heaped_ages": [
+              35
+            ]
+          },
+          {
+            "submission_id": "sub_01_00533",
+            "village_id": "VIL023",
+            "heaped_ages": [
+              55
+            ]
+          },
+          {
+            "submission_id": "sub_01_00535",
+            "village_id": "VIL023",
+            "heaped_ages": [
+              50,
+              45,
+              25,
+              30
+            ]
+          },
+          {
+            "submission_id": "sub_01_00536",
+            "village_id": "VIL023",
+            "heaped_ages": [
+              25
+            ]
+          },
+          {
+            "submission_id": "sub_01_00538",
+            "village_id": "VIL023",
+            "heaped_ages": [
+              45
+            ]
+          },
+          {
+            "submission_id": "sub_01_00539",
+            "village_id": "VIL023",
+            "heaped_ages": [
+              25,
+              20
+            ]
+          }
+        ],
+        "heaped_count": 39
+      }
+    }
+  },
+  "enum_19": {
+    "enumerator_id": "enum_19",
+    "risk_score": 0.8354,
+    "p_e": 0.146089,
+    "m_e": 8,
+    "n_interviews": 55,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_20": {
+    "enumerator_id": "enum_20",
+    "risk_score": 2.6451,
+    "p_e": 0.002264,
+    "m_e": 10,
+    "n_interviews": 5,
+    "evidence_features": [
+      "F1"
+    ],
+    "features": {
+      "F1": {
+        "feature_id": "F1",
+        "feature_name": "Short interview duration",
+        "p_value": 0.000226,
+        "feature_estimate": -0.6864,
+        "shrunk_estimate": -0.6864,
+        "ci_90": [
+          -0.9812,
+          -0.3916
+        ],
+        "submission_ids": [
+          "sub_01_00595",
+          "sub_01_00596",
+          "sub_01_00597",
+          "sub_01_00598",
+          "sub_01_00599"
+        ],
+        "durations": [
+          {
+            "submission_id": "sub_01_00595",
+            "duration_min": 15.31,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00596",
+            "duration_min": 36.61,
+            "hh_size": 7
+          },
+          {
+            "submission_id": "sub_01_00597",
+            "duration_min": 21.74,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00598",
+            "duration_min": 33.37,
+            "hh_size": 2
+          },
+          {
+            "submission_id": "sub_01_00599",
+            "duration_min": 20.63,
+            "hh_size": 1
+          }
+        ],
+        "mean_duration": 25.53
+      }
+    }
+  },
+  "enum_21": {
+    "enumerator_id": "enum_21",
+    "risk_score": 0.0636,
+    "p_e": 0.863731,
+    "m_e": 8,
+    "n_interviews": 48,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_22": {
+    "enumerator_id": "enum_22",
+    "risk_score": 1.2552,
+    "p_e": 0.055564,
+    "m_e": 8,
+    "n_interviews": 9,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_23": {
+    "enumerator_id": "enum_23",
+    "risk_score": 0.086,
+    "p_e": 0.820384,
+    "m_e": 10,
+    "n_interviews": 31,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_24": {
+    "enumerator_id": "enum_24",
+    "risk_score": 5.2139,
+    "p_e": 6e-06,
+    "m_e": 8,
+    "n_interviews": 18,
+    "evidence_features": [
+      "F1"
+    ],
+    "features": {
+      "F1": {
+        "feature_id": "F1",
+        "feature_name": "Short interview duration",
+        "p_value": 1e-06,
+        "feature_estimate": -0.5347,
+        "shrunk_estimate": -0.5347,
+        "ci_90": [
+          -0.6901,
+          -0.3793
+        ],
+        "submission_ids": [
+          "sub_01_00688",
+          "sub_01_00689",
+          "sub_01_00690",
+          "sub_01_00691",
+          "sub_01_00692",
+          "sub_01_00693",
+          "sub_01_00694",
+          "sub_01_00695",
+          "sub_01_00696",
+          "sub_01_00697",
+          "sub_01_00698",
+          "sub_01_00699",
+          "sub_01_00700",
+          "sub_01_00701",
+          "sub_01_00702",
+          "sub_01_00703",
+          "sub_01_00704",
+          "sub_01_00705"
+        ],
+        "durations": [
+          {
+            "submission_id": "sub_01_00688",
+            "duration_min": 27.72,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00689",
+            "duration_min": 28.35,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00690",
+            "duration_min": 24.73,
+            "hh_size": 2
+          },
+          {
+            "submission_id": "sub_01_00691",
+            "duration_min": 31.68,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00692",
+            "duration_min": 22.06,
+            "hh_size": 7
+          },
+          {
+            "submission_id": "sub_01_00693",
+            "duration_min": 26.4,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00694",
+            "duration_min": 21.95,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00695",
+            "duration_min": 38.03,
+            "hh_size": 1
+          },
+          {
+            "submission_id": "sub_01_00696",
+            "duration_min": 21.38,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00697",
+            "duration_min": 26.22,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00698",
+            "duration_min": 36.6,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00699",
+            "duration_min": 33.0,
+            "hh_size": 1
+          },
+          {
+            "submission_id": "sub_01_00700",
+            "duration_min": 30.23,
+            "hh_size": 8
+          },
+          {
+            "submission_id": "sub_01_00701",
+            "duration_min": 29.0,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00702",
+            "duration_min": 34.9,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00703",
+            "duration_min": 25.16,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_00704",
+            "duration_min": 35.76,
+            "hh_size": 2
+          },
+          {
+            "submission_id": "sub_01_00705",
+            "duration_min": 23.51,
+            "hh_size": 1
+          }
+        ],
+        "mean_duration": 28.7
+      }
+    }
+  },
+  "enum_25": {
+    "enumerator_id": "enum_25",
+    "risk_score": 0.4247,
+    "p_e": 0.376138,
+    "m_e": 10,
+    "n_interviews": 36,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_26": {
+    "enumerator_id": "enum_26",
+    "risk_score": 1.5763,
+    "p_e": 0.026529,
+    "m_e": 10,
+    "n_interviews": 25,
+    "evidence_features": [
+      "F9"
+    ],
+    "features": {
+      "F9": {
+        "feature_id": "F9",
+        "feature_name": "Item nonresponse anomaly",
+        "p_value": 0.002653,
+        "feature_estimate": 0.04,
+        "shrunk_estimate": 0.04,
+        "ci_90": [
+          0.0112,
+          0.0688
+        ],
+        "submission_ids": [
+          "sub_01_00751",
+          "sub_01_00753",
+          "sub_01_00765",
+          "sub_01_00766"
+        ],
+        "missing_count": 4
+      }
+    }
+  },
+  "enum_27": {
+    "enumerator_id": "enum_27",
+    "risk_score": 9.6526,
+    "p_e": 0.0,
+    "m_e": 10,
+    "n_interviews": 14,
+    "evidence_features": [
+      "F3",
+      "F6",
+      "F7"
+    ],
+    "features": {
+      "F3": {
+        "feature_id": "F3",
+        "feature_name": "Near-duplicate submissions",
+        "p_value": 0.0,
+        "feature_estimate": 0.6429,
+        "shrunk_estimate": 0.6429,
+        "ci_90": [
+          0.4322,
+          0.8535
+        ],
+        "submission_ids": [
+          "sub_01_00768",
+          "sub_01_00769",
+          "sub_01_00770",
+          "sub_01_00775",
+          "sub_01_00776",
+          "sub_01_00777",
+          "sub_01_00778",
+          "sub_01_00779",
+          "sub_01_00780"
+        ],
+        "pairs": [
+          {
+            "submission_id_1": "sub_01_00768",
+            "submission_id_2": "sub_01_00769",
+            "village_id": "VIL025",
+            "differing_fields": []
+          },
+          {
+            "submission_id_1": "sub_01_00768",
+            "submission_id_2": "sub_01_00770",
+            "village_id": "VIL025",
+            "differing_fields": [
+              "asset_internet"
+            ]
+          },
+          {
+            "submission_id_1": "sub_01_00769",
+            "submission_id_2": "sub_01_00770",
+            "village_id": "VIL025",
+            "differing_fields": [
+              "asset_internet"
+            ]
+          },
+          {
+            "submission_id_1": "sub_01_00775",
+            "submission_id_2": "sub_01_00776",
+            "village_id": "VIL035",
+            "differing_fields": []
+          },
+          {
+            "submission_id_1": "sub_01_00775",
+            "submission_id_2": "sub_01_00777",
+            "village_id": "VIL035",
+            "differing_fields": []
+          },
+          {
+            "submission_id_1": "sub_01_00775",
+            "submission_id_2": "sub_01_00778",
+            "village_id": "VIL035",
+            "differing_fields": []
+          },
+          {
+            "submission_id_1": "sub_01_00775",
+            "submission_id_2": "sub_01_00779",
+            "village_id": "VIL035",
+            "differing_fields": []
+          },
+          {
+            "submission_id_1": "sub_01_00775",
+            "submission_id_2": "sub_01_00780",
+            "village_id": "VIL035",
+            "differing_fields": []
+          },
+          {
+            "submission_id_1": "sub_01_00776",
+            "submission_id_2": "sub_01_00777",
+            "village_id": "VIL035",
+            "differing_fields": []
+          },
+          {
+            "submission_id_1": "sub_01_00776",
+            "submission_id_2": "sub_01_00778",
+            "village_id": "VIL035",
+            "differing_fields": []
+          },
+          {
+            "submission_id_1": "sub_01_00776",
+            "submission_id_2": "sub_01_00779",
+            "village_id": "VIL035",
+            "differing_fields": []
+          },
+          {
+            "submission_id_1": "sub_01_00776",
+            "submission_id_2": "sub_01_00780",
+            "village_id": "VIL035",
+            "differing_fields": []
+          },
+          {
+            "submission_id_1": "sub_01_00777",
+            "submission_id_2": "sub_01_00778",
+            "village_id": "VIL035",
+            "differing_fields": []
+          },
+          {
+            "submission_id_1": "sub_01_00777",
+            "submission_id_2": "sub_01_00779",
+            "village_id": "VIL035",
+            "differing_fields": []
+          },
+          {
+            "submission_id_1": "sub_01_00777",
+            "submission_id_2": "sub_01_00780",
+            "village_id": "VIL035",
+            "differing_fields": []
+          },
+          {
+            "submission_id_1": "sub_01_00778",
+            "submission_id_2": "sub_01_00779",
+            "village_id": "VIL035",
+            "differing_fields": []
+          },
+          {
+            "submission_id_1": "sub_01_00778",
+            "submission_id_2": "sub_01_00780",
+            "village_id": "VIL035",
+            "differing_fields": []
+          },
+          {
+            "submission_id_1": "sub_01_00779",
+            "submission_id_2": "sub_01_00780",
+            "village_id": "VIL035",
+            "differing_fields": []
+          }
+        ],
+        "pair_count": 18
+      },
+      "F6": {
+        "feature_id": "F6",
+        "feature_name": "Low household size dispersion",
+        "p_value": 0.003416,
+        "feature_estimate": -2.4652,
+        "shrunk_estimate": -2.4652,
+        "ci_90": [
+          -3.8406,
+          -1.0898
+        ],
+        "submission_ids": [
+          "sub_01_00767",
+          "sub_01_00768",
+          "sub_01_00769",
+          "sub_01_00770",
+          "sub_01_00771",
+          "sub_01_00772",
+          "sub_01_00773",
+          "sub_01_00774",
+          "sub_01_00775",
+          "sub_01_00776",
+          "sub_01_00777",
+          "sub_01_00778",
+          "sub_01_00779",
+          "sub_01_00780"
+        ],
+        "hh_size_variance": 0.6429
+      },
+      "F7": {
+        "feature_id": "F7",
+        "feature_name": "GPS clustering / low spread",
+        "p_value": 0.0,
+        "feature_estimate": -2.4004,
+        "shrunk_estimate": -2.4004,
+        "ci_90": [
+          -2.9072,
+          -1.8936
+        ],
+        "submission_ids": [
+          "sub_01_00767",
+          "sub_01_00768",
+          "sub_01_00769",
+          "sub_01_00770",
+          "sub_01_00771",
+          "sub_01_00772",
+          "sub_01_00773",
+          "sub_01_00774",
+          "sub_01_00775",
+          "sub_01_00776",
+          "sub_01_00777",
+          "sub_01_00778",
+          "sub_01_00779",
+          "sub_01_00780"
+        ],
+        "points": [
+          {
+            "submission_id": "sub_01_00767",
+            "village_id": "VIL025",
+            "lat": 24.581908,
+            "lon": 90.11611,
+            "accuracy": 16.52
+          },
+          {
+            "submission_id": "sub_01_00768",
+            "village_id": "VIL025",
+            "lat": 24.581977,
+            "lon": 90.116053,
+            "accuracy": 18.33
+          },
+          {
+            "submission_id": "sub_01_00769",
+            "village_id": "VIL025",
+            "lat": 24.582012,
+            "lon": 90.116429,
+            "accuracy": 21.86
+          },
+          {
+            "submission_id": "sub_01_00770",
+            "village_id": "VIL025",
+            "lat": 24.581937,
+            "lon": 90.116001,
+            "accuracy": 11.13
+          },
+          {
+            "submission_id": "sub_01_00771",
+            "village_id": "VIL011",
+            "lat": 24.544722,
+            "lon": 89.898356,
+            "accuracy": 3.54
+          },
+          {
+            "submission_id": "sub_01_00772",
+            "village_id": "VIL011",
+            "lat": 24.544816,
+            "lon": 89.898162,
+            "accuracy": 15.87
+          },
+          {
+            "submission_id": "sub_01_00773",
+            "village_id": "VIL011",
+            "lat": 24.54316,
+            "lon": 89.899403,
+            "accuracy": 10.57
+          },
+          {
+            "submission_id": "sub_01_00774",
+            "village_id": "VIL011",
+            "lat": 24.537044,
+            "lon": 89.902295,
+            "accuracy": 5.63
+          },
+          {
+            "submission_id": "sub_01_00775",
+            "village_id": "VIL035",
+            "lat": 24.581986,
+            "lon": 90.116065,
+            "accuracy": 11.0
+          },
+          {
+            "submission_id": "sub_01_00776",
+            "village_id": "VIL035",
+            "lat": 24.582085,
+            "lon": 90.11598,
+            "accuracy": 17.57
+          },
+          {
+            "submission_id": "sub_01_00777",
+            "village_id": "VIL035",
+            "lat": 24.581899,
+            "lon": 90.115751,
+            "accuracy": 15.04
+          },
+          {
+            "submission_id": "sub_01_00778",
+            "village_id": "VIL035",
+            "lat": 24.581893,
+            "lon": 90.115933,
+            "accuracy": 5.6
+          },
+          {
+            "submission_id": "sub_01_00779",
+            "village_id": "VIL035",
+            "lat": 24.582015,
+            "lon": 90.116402,
+            "accuracy": 11.9
+          },
+          {
+            "submission_id": "sub_01_00780",
+            "village_id": "VIL035",
+            "lat": 24.581819,
+            "lon": 90.116028,
+            "accuracy": 21.35
+          }
+        ],
+        "village_references": [
+          {
+            "village_id": "VIL025",
+            "ref_lat": 24.583889,
+            "ref_lon": 90.123193
+          },
+          {
+            "village_id": "VIL011",
+            "ref_lat": 24.542161,
+            "ref_lon": 89.899463
+          },
+          {
+            "village_id": "VIL035",
+            "ref_lat": 24.598781,
+            "ref_lon": 89.973056
+          }
+        ]
+      }
+    }
+  },
+  "enum_28": {
+    "enumerator_id": "enum_28",
+    "risk_score": -0.0,
+    "p_e": 1.0,
+    "m_e": 8,
+    "n_interviews": 28,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_29": {
+    "enumerator_id": "enum_29",
+    "risk_score": 5.9473,
+    "p_e": 1e-06,
+    "m_e": 8,
+    "n_interviews": 57,
+    "evidence_features": [
+      "F1"
+    ],
+    "features": {
+      "F1": {
+        "feature_id": "F1",
+        "feature_name": "Short interview duration",
+        "p_value": 0.0,
+        "feature_estimate": -0.3285,
+        "shrunk_estimate": -0.3285,
+        "ci_90": [
+          -0.4158,
+          -0.2412
+        ],
+        "submission_ids": [
+          "sub_01_00809",
+          "sub_01_00810",
+          "sub_01_00811",
+          "sub_01_00812",
+          "sub_01_00813",
+          "sub_01_00814",
+          "sub_01_00815",
+          "sub_01_00816",
+          "sub_01_00817",
+          "sub_01_00818",
+          "sub_01_00819",
+          "sub_01_00820",
+          "sub_01_00821",
+          "sub_01_00822",
+          "sub_01_00823",
+          "sub_01_00824",
+          "sub_01_00825",
+          "sub_01_00826",
+          "sub_01_00827",
+          "sub_01_00828",
+          "sub_01_00829",
+          "sub_01_00830",
+          "sub_01_00831",
+          "sub_01_00832",
+          "sub_01_00833",
+          "sub_01_00834",
+          "sub_01_00835",
+          "sub_01_00836",
+          "sub_01_00837",
+          "sub_01_00838",
+          "sub_01_00839",
+          "sub_01_00840",
+          "sub_01_00841",
+          "sub_01_00842",
+          "sub_01_00843",
+          "sub_01_00844",
+          "sub_01_00845",
+          "sub_01_00846",
+          "sub_01_00847",
+          "sub_01_00848",
+          "sub_01_00849",
+          "sub_01_00850",
+          "sub_01_00851",
+          "sub_01_00852",
+          "sub_01_00853",
+          "sub_01_00854",
+          "sub_01_00855",
+          "sub_01_00856",
+          "sub_01_00857",
+          "sub_01_00858",
+          "sub_01_00859",
+          "sub_01_00860",
+          "sub_01_00861",
+          "sub_01_00862",
+          "sub_01_00863",
+          "sub_01_00864",
+          "sub_01_00865"
+        ],
+        "durations": [
+          {
+            "submission_id": "sub_01_00809",
+            "duration_min": 59.95,
+            "hh_size": 8
+          },
+          {
+            "submission_id": "sub_01_00810",
+            "duration_min": 47.88,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00811",
+            "duration_min": 36.17,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00812",
+            "duration_min": 22.73,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_00813",
+            "duration_min": 35.05,
+            "hh_size": 2
+          },
+          {
+            "submission_id": "sub_01_00814",
+            "duration_min": 23.35,
+            "hh_size": 2
+          },
+          {
+            "submission_id": "sub_01_00815",
+            "duration_min": 29.19,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00816",
+            "duration_min": 29.17,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00817",
+            "duration_min": 43.14,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_00818",
+            "duration_min": 27.41,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_00819",
+            "duration_min": 33.51,
+            "hh_size": 8
+          },
+          {
+            "submission_id": "sub_01_00820",
+            "duration_min": 33.52,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00821",
+            "duration_min": 33.45,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00822",
+            "duration_min": 48.5,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00823",
+            "duration_min": 34.12,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00824",
+            "duration_min": 35.43,
+            "hh_size": 2
+          },
+          {
+            "submission_id": "sub_01_00825",
+            "duration_min": 41.25,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00826",
+            "duration_min": 36.9,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00827",
+            "duration_min": 31.04,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00828",
+            "duration_min": 27.39,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_00829",
+            "duration_min": 30.86,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00830",
+            "duration_min": 41.25,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00831",
+            "duration_min": 34.01,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00832",
+            "duration_min": 33.79,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00833",
+            "duration_min": 24.7,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00834",
+            "duration_min": 34.89,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00835",
+            "duration_min": 37.24,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00836",
+            "duration_min": 34.71,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00837",
+            "duration_min": 56.85,
+            "hh_size": 7
+          },
+          {
+            "submission_id": "sub_01_00838",
+            "duration_min": 39.76,
+            "hh_size": 8
+          },
+          {
+            "submission_id": "sub_01_00839",
+            "duration_min": 34.87,
+            "hh_size": 10
+          },
+          {
+            "submission_id": "sub_01_00840",
+            "duration_min": 28.0,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00841",
+            "duration_min": 34.27,
+            "hh_size": 8
+          },
+          {
+            "submission_id": "sub_01_00842",
+            "duration_min": 47.69,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00843",
+            "duration_min": 27.21,
+            "hh_size": 7
+          },
+          {
+            "submission_id": "sub_01_00844",
+            "duration_min": 51.01,
+            "hh_size": 8
+          },
+          {
+            "submission_id": "sub_01_00845",
+            "duration_min": 23.32,
+            "hh_size": 1
+          },
+          {
+            "submission_id": "sub_01_00846",
+            "duration_min": 32.3,
+            "hh_size": 7
+          },
+          {
+            "submission_id": "sub_01_00847",
+            "duration_min": 46.61,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00848",
+            "duration_min": 39.7,
+            "hh_size": 7
+          },
+          {
+            "submission_id": "sub_01_00849",
+            "duration_min": 30.17,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00850",
+            "duration_min": 48.71,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_00851",
+            "duration_min": 39.22,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00852",
+            "duration_min": 21.24,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00853",
+            "duration_min": 25.35,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00854",
+            "duration_min": 21.44,
+            "hh_size": 2
+          },
+          {
+            "submission_id": "sub_01_00855",
+            "duration_min": 39.34,
+            "hh_size": 7
+          },
+          {
+            "submission_id": "sub_01_00856",
+            "duration_min": 25.76,
+            "hh_size": 2
+          },
+          {
+            "submission_id": "sub_01_00857",
+            "duration_min": 28.54,
+            "hh_size": 2
+          },
+          {
+            "submission_id": "sub_01_00858",
+            "duration_min": 38.77,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00859",
+            "duration_min": 30.76,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00860",
+            "duration_min": 49.34,
+            "hh_size": 8
+          },
+          {
+            "submission_id": "sub_01_00861",
+            "duration_min": 40.46,
+            "hh_size": 2
+          },
+          {
+            "submission_id": "sub_01_00862",
+            "duration_min": 41.68,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00863",
+            "duration_min": 34.16,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00864",
+            "duration_min": 29.17,
+            "hh_size": 8
+          },
+          {
+            "submission_id": "sub_01_00865",
+            "duration_min": 56.61,
+            "hh_size": 4
+          }
+        ],
+        "mean_duration": 35.84
+      }
+    }
+  },
+  "enum_30": {
+    "enumerator_id": "enum_30",
+    "risk_score": -0.0,
+    "p_e": 1.0,
+    "m_e": 10,
+    "n_interviews": 23,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_31": {
+    "enumerator_id": "enum_31",
+    "risk_score": 1.0703,
+    "p_e": 0.085056,
+    "m_e": 10,
+    "n_interviews": 33,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_32": {
+    "enumerator_id": "enum_32",
+    "risk_score": 13.6671,
+    "p_e": 0.0,
+    "m_e": 10,
+    "n_interviews": 44,
+    "evidence_features": [
+      "F7"
+    ],
+    "features": {
+      "F7": {
+        "feature_id": "F7",
+        "feature_name": "GPS clustering / low spread",
+        "p_value": 0.0,
+        "feature_estimate": -2.731,
+        "shrunk_estimate": -2.731,
+        "ci_90": [
+          -3.0937,
+          -2.3683
+        ],
+        "submission_ids": [
+          "sub_01_00922",
+          "sub_01_00923",
+          "sub_01_00924",
+          "sub_01_00925",
+          "sub_01_00926",
+          "sub_01_00927",
+          "sub_01_00928",
+          "sub_01_00929",
+          "sub_01_00930",
+          "sub_01_00931",
+          "sub_01_00932",
+          "sub_01_00933",
+          "sub_01_00934",
+          "sub_01_00935",
+          "sub_01_00936",
+          "sub_01_00937",
+          "sub_01_00938",
+          "sub_01_00939",
+          "sub_01_00940",
+          "sub_01_00941",
+          "sub_01_00942",
+          "sub_01_00943",
+          "sub_01_00944",
+          "sub_01_00945",
+          "sub_01_00946",
+          "sub_01_00947",
+          "sub_01_00948",
+          "sub_01_00949",
+          "sub_01_00950",
+          "sub_01_00951",
+          "sub_01_00952",
+          "sub_01_00953",
+          "sub_01_00954",
+          "sub_01_00955",
+          "sub_01_00956",
+          "sub_01_00957",
+          "sub_01_00958",
+          "sub_01_00959",
+          "sub_01_00960",
+          "sub_01_00961",
+          "sub_01_00962",
+          "sub_01_00963",
+          "sub_01_00964",
+          "sub_01_00965"
+        ],
+        "points": [
+          {
+            "submission_id": "sub_01_00922",
+            "village_id": "VIL027",
+            "lat": 24.383297,
+            "lon": 89.916713,
+            "accuracy": 24.39
+          },
+          {
+            "submission_id": "sub_01_00923",
+            "village_id": "VIL027",
+            "lat": 24.379057,
+            "lon": 89.91482,
+            "accuracy": 9.49
+          },
+          {
+            "submission_id": "sub_01_00924",
+            "village_id": "VIL027",
+            "lat": 24.378723,
+            "lon": 89.914685,
+            "accuracy": 15.39
+          },
+          {
+            "submission_id": "sub_01_00925",
+            "village_id": "VIL027",
+            "lat": 24.377107,
+            "lon": 89.915224,
+            "accuracy": 6.14
+          },
+          {
+            "submission_id": "sub_01_00926",
+            "village_id": "VIL027",
+            "lat": 24.378729,
+            "lon": 89.914559,
+            "accuracy": 16.6
+          },
+          {
+            "submission_id": "sub_01_00927",
+            "village_id": "VIL027",
+            "lat": 24.377105,
+            "lon": 89.915288,
+            "accuracy": 13.68
+          },
+          {
+            "submission_id": "sub_01_00928",
+            "village_id": "VIL027",
+            "lat": 24.378666,
+            "lon": 89.91455,
+            "accuracy": 24.36
+          },
+          {
+            "submission_id": "sub_01_00929",
+            "village_id": "VIL027",
+            "lat": 24.375119,
+            "lon": 89.914224,
+            "accuracy": 7.02
+          },
+          {
+            "submission_id": "sub_01_00930",
+            "village_id": "VIL027",
+            "lat": 24.37907,
+            "lon": 89.914763,
+            "accuracy": 22.7
+          },
+          {
+            "submission_id": "sub_01_00931",
+            "village_id": "VIL027",
+            "lat": 24.378609,
+            "lon": 89.914635,
+            "accuracy": 7.17
+          },
+          {
+            "submission_id": "sub_01_00932",
+            "village_id": "VIL027",
+            "lat": 24.376153,
+            "lon": 89.91273,
+            "accuracy": 7.95
+          },
+          {
+            "submission_id": "sub_01_00933",
+            "village_id": "VIL027",
+            "lat": 24.378691,
+            "lon": 89.914615,
+            "accuracy": 17.19
+          },
+          {
+            "submission_id": "sub_01_00934",
+            "village_id": "VIL027",
+            "lat": 24.378255,
+            "lon": 89.920974,
+            "accuracy": 7.42
+          },
+          {
+            "submission_id": "sub_01_00935",
+            "village_id": "VIL027",
+            "lat": 24.378915,
+            "lon": 89.914729,
+            "accuracy": 9.25
+          },
+          {
+            "submission_id": "sub_01_00936",
+            "village_id": "VIL027",
+            "lat": 24.377167,
+            "lon": 89.915231,
+            "accuracy": 9.97
+          },
+          {
+            "submission_id": "sub_01_00937",
+            "village_id": "VIL027",
+            "lat": 24.377199,
+            "lon": 89.915214,
+            "accuracy": 20.25
+          },
+          {
+            "submission_id": "sub_01_00938",
+            "village_id": "VIL027",
+            "lat": 24.378995,
+            "lon": 89.91477,
+            "accuracy": 9.87
+          },
+          {
+            "submission_id": "sub_01_00939",
+            "village_id": "VIL027",
+            "lat": 24.377193,
+            "lon": 89.915226,
+            "accuracy": 24.09
+          },
+          {
+            "submission_id": "sub_01_00940",
+            "village_id": "VIL027",
+            "lat": 24.37715,
+            "lon": 89.915297,
+            "accuracy": 12.08
+          },
+          {
+            "submission_id": "sub_01_00941",
+            "village_id": "VIL027",
+            "lat": 24.379009,
+            "lon": 89.914759,
+            "accuracy": 14.45
+          },
+          {
+            "submission_id": "sub_01_00942",
+            "village_id": "VIL027",
+            "lat": 24.378986,
+            "lon": 89.914707,
+            "accuracy": 22.39
+          },
+          {
+            "submission_id": "sub_01_00943",
+            "village_id": "VIL027",
+            "lat": 24.377168,
+            "lon": 89.915303,
+            "accuracy": 10.45
+          },
+          {
+            "submission_id": "sub_01_00944",
+            "village_id": "VIL027",
+            "lat": 24.378922,
+            "lon": 89.914782,
+            "accuracy": 6.52
+          },
+          {
+            "submission_id": "sub_01_00945",
+            "village_id": "VIL027",
+            "lat": 24.377116,
+            "lon": 89.915299,
+            "accuracy": 3.12
+          },
+          {
+            "submission_id": "sub_01_00946",
+            "village_id": "VIL027",
+            "lat": 24.3772,
+            "lon": 89.91528,
+            "accuracy": 21.72
+          },
+          {
+            "submission_id": "sub_01_00947",
+            "village_id": "VIL027",
+            "lat": 24.377084,
+            "lon": 89.915268,
+            "accuracy": 18.63
+          },
+          {
+            "submission_id": "sub_01_00948",
+            "village_id": "VIL027",
+            "lat": 24.378684,
+            "lon": 89.91454,
+            "accuracy": 9.06
+          },
+          {
+            "submission_id": "sub_01_00949",
+            "village_id": "VIL027",
+            "lat": 24.376899,
+            "lon": 89.917116,
+            "accuracy": 16.75
+          },
+          {
+            "submission_id": "sub_01_00950",
+            "village_id": "VIL027",
+            "lat": 24.377174,
+            "lon": 89.915199,
+            "accuracy": 21.94
+          },
+          {
+            "submission_id": "sub_01_00951",
+            "village_id": "VIL034",
+            "lat": 24.624004,
+            "lon": 89.856038,
+            "accuracy": 18.29
+          },
+          {
+            "submission_id": "sub_01_00952",
+            "village_id": "VIL034",
+            "lat": 24.624159,
+            "lon": 89.854672,
+            "accuracy": 13.42
+          },
+          {
+            "submission_id": "sub_01_00953",
+            "village_id": "VIL034",
+            "lat": 24.624186,
+            "lon": 89.85483,
+            "accuracy": 5.67
+          },
+          {
+            "submission_id": "sub_01_00954",
+            "village_id": "VIL034",
+            "lat": 24.62414,
+            "lon": 89.854715,
+            "accuracy": 18.31
+          },
+          {
+            "submission_id": "sub_01_00955",
+            "village_id": "VIL034",
+            "lat": 24.625284,
+            "lon": 89.854106,
+            "accuracy": 17.06
+          },
+          {
+            "submission_id": "sub_01_00956",
+            "village_id": "VIL034",
+            "lat": 24.624109,
+            "lon": 89.854833,
+            "accuracy": 8.23
+          },
+          {
+            "submission_id": "sub_01_00957",
+            "village_id": "VIL034",
+            "lat": 24.617631,
+            "lon": 89.855319,
+            "accuracy": 11.51
+          },
+          {
+            "submission_id": "sub_01_00958",
+            "village_id": "VIL034",
+            "lat": 24.624081,
+            "lon": 89.854717,
+            "accuracy": 5.57
+          },
+          {
+            "submission_id": "sub_01_00959",
+            "village_id": "VIL034",
+            "lat": 24.624167,
+            "lon": 89.854765,
+            "accuracy": 13.8
+          },
+          {
+            "submission_id": "sub_01_00960",
+            "village_id": "VIL034",
+            "lat": 24.627875,
+            "lon": 89.856441,
+            "accuracy": 22.58
+          },
+          {
+            "submission_id": "sub_01_00961",
+            "village_id": "VIL034",
+            "lat": 24.625219,
+            "lon": 89.854128,
+            "accuracy": 4.8
+          },
+          {
+            "submission_id": "sub_01_00962",
+            "village_id": "VIL034",
+            "lat": 24.623973,
+            "lon": 89.856163,
+            "accuracy": 8.65
+          },
+          {
+            "submission_id": "sub_01_00963",
+            "village_id": "VIL034",
+            "lat": 24.624103,
+            "lon": 89.854779,
+            "accuracy": 10.74
+          },
+          {
+            "submission_id": "sub_01_00964",
+            "village_id": "VIL034",
+            "lat": 24.624142,
+            "lon": 89.854753,
+            "accuracy": 23.34
+          },
+          {
+            "submission_id": "sub_01_00965",
+            "village_id": "VIL034",
+            "lat": 24.625199,
+            "lon": 89.854121,
+            "accuracy": 11.92
+          }
+        ],
+        "village_references": [
+          {
+            "village_id": "VIL027",
+            "ref_lat": 24.378661,
+            "ref_lon": 89.914539
+          },
+          {
+            "village_id": "VIL034",
+            "ref_lat": 24.624344,
+            "ref_lon": 89.855675
+          }
+        ]
+      }
+    }
+  },
+  "enum_33": {
+    "enumerator_id": "enum_33",
+    "risk_score": 0.0697,
+    "p_e": 0.851777,
+    "m_e": 10,
+    "n_interviews": 58,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_34": {
+    "enumerator_id": "enum_34",
+    "risk_score": -0.0,
+    "p_e": 1.0,
+    "m_e": 8,
+    "n_interviews": 14,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_35": {
+    "enumerator_id": "enum_35",
+    "risk_score": 0.1614,
+    "p_e": 0.68958,
+    "m_e": 10,
+    "n_interviews": 28,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_36": {
+    "enumerator_id": "enum_36",
+    "risk_score": -0.0,
+    "p_e": 1.0,
+    "m_e": 10,
+    "n_interviews": 13,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_37": {
+    "enumerator_id": "enum_37",
+    "risk_score": 1.8708,
+    "p_e": 0.013464,
+    "m_e": 8,
+    "n_interviews": 42,
+    "evidence_features": [
+      "F1"
+    ],
+    "features": {
+      "F1": {
+        "feature_id": "F1",
+        "feature_name": "Short interview duration",
+        "p_value": 0.001683,
+        "feature_estimate": -0.1931,
+        "shrunk_estimate": -0.1931,
+        "ci_90": [
+          -0.2948,
+          -0.0914
+        ],
+        "submission_ids": [
+          "sub_01_01079",
+          "sub_01_01080",
+          "sub_01_01081",
+          "sub_01_01082",
+          "sub_01_01083",
+          "sub_01_01084",
+          "sub_01_01085",
+          "sub_01_01086",
+          "sub_01_01087",
+          "sub_01_01088",
+          "sub_01_01089",
+          "sub_01_01090",
+          "sub_01_01091",
+          "sub_01_01092",
+          "sub_01_01093",
+          "sub_01_01094",
+          "sub_01_01095",
+          "sub_01_01096",
+          "sub_01_01097",
+          "sub_01_01098",
+          "sub_01_01099",
+          "sub_01_01100",
+          "sub_01_01101",
+          "sub_01_01102",
+          "sub_01_01103",
+          "sub_01_01104",
+          "sub_01_01105",
+          "sub_01_01106",
+          "sub_01_01107",
+          "sub_01_01108",
+          "sub_01_01109",
+          "sub_01_01110",
+          "sub_01_01111",
+          "sub_01_01112",
+          "sub_01_01113",
+          "sub_01_01114",
+          "sub_01_01115",
+          "sub_01_01116",
+          "sub_01_01117",
+          "sub_01_01118",
+          "sub_01_01119",
+          "sub_01_01120"
+        ],
+        "durations": [
+          {
+            "submission_id": "sub_01_01079",
+            "duration_min": 29.24,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_01080",
+            "duration_min": 31.06,
+            "hh_size": 1
+          },
+          {
+            "submission_id": "sub_01_01081",
+            "duration_min": 44.0,
+            "hh_size": 2
+          },
+          {
+            "submission_id": "sub_01_01082",
+            "duration_min": 67.32,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_01083",
+            "duration_min": 27.83,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_01084",
+            "duration_min": 32.05,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_01085",
+            "duration_min": 26.22,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_01086",
+            "duration_min": 23.61,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_01087",
+            "duration_min": 22.72,
+            "hh_size": 1
+          },
+          {
+            "submission_id": "sub_01_01088",
+            "duration_min": 37.85,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_01089",
+            "duration_min": 36.78,
+            "hh_size": 7
+          },
+          {
+            "submission_id": "sub_01_01090",
+            "duration_min": 24.39,
+            "hh_size": 2
+          },
+          {
+            "submission_id": "sub_01_01091",
+            "duration_min": 32.37,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_01092",
+            "duration_min": 21.3,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_01093",
+            "duration_min": 30.71,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_01094",
+            "duration_min": 30.69,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_01095",
+            "duration_min": 36.95,
+            "hh_size": 9
+          },
+          {
+            "submission_id": "sub_01_01096",
+            "duration_min": 38.18,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_01097",
+            "duration_min": 44.76,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_01098",
+            "duration_min": 36.98,
+            "hh_size": 7
+          },
+          {
+            "submission_id": "sub_01_01099",
+            "duration_min": 37.46,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_01100",
+            "duration_min": 23.31,
+            "hh_size": 2
+          },
+          {
+            "submission_id": "sub_01_01101",
+            "duration_min": 33.48,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_01102",
+            "duration_min": 33.96,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_01103",
+            "duration_min": 42.51,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_01104",
+            "duration_min": 22.87,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_01105",
+            "duration_min": 43.19,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_01106",
+            "duration_min": 21.69,
+            "hh_size": 1
+          },
+          {
+            "submission_id": "sub_01_01107",
+            "duration_min": 26.04,
+            "hh_size": 2
+          },
+          {
+            "submission_id": "sub_01_01108",
+            "duration_min": 55.15,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_01109",
+            "duration_min": 28.67,
+            "hh_size": 8
+          },
+          {
+            "submission_id": "sub_01_01110",
+            "duration_min": 36.78,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_01111",
+            "duration_min": 48.09,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_01112",
+            "duration_min": 26.72,
+            "hh_size": 1
+          },
+          {
+            "submission_id": "sub_01_01113",
+            "duration_min": 52.85,
+            "hh_size": 1
+          },
+          {
+            "submission_id": "sub_01_01114",
+            "duration_min": 46.0,
+            "hh_size": 8
+          },
+          {
+            "submission_id": "sub_01_01115",
+            "duration_min": 24.44,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_01116",
+            "duration_min": 29.84,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_01117",
+            "duration_min": 27.16,
+            "hh_size": 1
+          },
+          {
+            "submission_id": "sub_01_01118",
+            "duration_min": 40.78,
+            "hh_size": 8
+          },
+          {
+            "submission_id": "sub_01_01119",
+            "duration_min": 29.48,
+            "hh_size": 2
+          },
+          {
+            "submission_id": "sub_01_01120",
+            "duration_min": 35.03,
+            "hh_size": 5
+          }
+        ],
+        "mean_duration": 34.3
+      }
+    }
+  },
+  "enum_38": {
+    "enumerator_id": "enum_38",
+    "risk_score": -0.0,
+    "p_e": 1.0,
+    "m_e": 10,
+    "n_interviews": 45,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_39": {
+    "enumerator_id": "enum_39",
+    "risk_score": 2.4473,
+    "p_e": 0.00357,
+    "m_e": 10,
+    "n_interviews": 20,
+    "evidence_features": [
+      "F7"
+    ],
+    "features": {
+      "F7": {
+        "feature_id": "F7",
+        "feature_name": "GPS clustering / low spread",
+        "p_value": 0.000357,
+        "feature_estimate": -0.2679,
+        "shrunk_estimate": -0.2679,
+        "ci_90": [
+          -0.3878,
+          -0.148
+        ],
+        "submission_ids": [
+          "sub_01_01166",
+          "sub_01_01167",
+          "sub_01_01168",
+          "sub_01_01169",
+          "sub_01_01170",
+          "sub_01_01171",
+          "sub_01_01172",
+          "sub_01_01173",
+          "sub_01_01174",
+          "sub_01_01175",
+          "sub_01_01176",
+          "sub_01_01177",
+          "sub_01_01178",
+          "sub_01_01179",
+          "sub_01_01180",
+          "sub_01_01181",
+          "sub_01_01182",
+          "sub_01_01183",
+          "sub_01_01184",
+          "sub_01_01185"
+        ],
+        "points": [
+          {
+            "submission_id": "sub_01_01166",
+            "village_id": "VIL021",
+            "lat": 24.514329,
+            "lon": 90.03104,
+            "accuracy": 20.44
+          },
+          {
+            "submission_id": "sub_01_01167",
+            "village_id": "VIL021",
+            "lat": 24.516521,
+            "lon": 90.029348,
+            "accuracy": 18.23
+          },
+          {
+            "submission_id": "sub_01_01168",
+            "village_id": "VIL021",
+            "lat": 24.517542,
+            "lon": 90.034049,
+            "accuracy": 24.53
+          },
+          {
+            "submission_id": "sub_01_01169",
+            "village_id": "VIL021",
+            "lat": 24.51418,
+            "lon": 90.031121,
+            "accuracy": 24.69
+          },
+          {
+            "submission_id": "sub_01_01170",
+            "village_id": "VIL021",
+            "lat": 24.511278,
+            "lon": 90.029464,
+            "accuracy": 24.87
+          },
+          {
+            "submission_id": "sub_01_01171",
+            "village_id": "VIL021",
+            "lat": 24.515319,
+            "lon": 90.031134,
+            "accuracy": 24.17
+          },
+          {
+            "submission_id": "sub_01_01172",
+            "village_id": "VIL021",
+            "lat": 24.51865,
+            "lon": 90.028937,
+            "accuracy": 22.99
+          },
+          {
+            "submission_id": "sub_01_01173",
+            "village_id": "VIL021",
+            "lat": 24.51565,
+            "lon": 90.028056,
+            "accuracy": 8.41
+          },
+          {
+            "submission_id": "sub_01_01174",
+            "village_id": "VIL021",
+            "lat": 24.510939,
+            "lon": 90.029577,
+            "accuracy": 8.56
+          },
+          {
+            "submission_id": "sub_01_01175",
+            "village_id": "VIL021",
+            "lat": 24.517784,
+            "lon": 90.031961,
+            "accuracy": 24.8
+          },
+          {
+            "submission_id": "sub_01_01176",
+            "village_id": "VIL022",
+            "lat": 24.407773,
+            "lon": 90.024449,
+            "accuracy": 21.03
+          },
+          {
+            "submission_id": "sub_01_01177",
+            "village_id": "VIL022",
+            "lat": 24.397822,
+            "lon": 90.024326,
+            "accuracy": 14.89
+          },
+          {
+            "submission_id": "sub_01_01178",
+            "village_id": "VIL022",
+            "lat": 24.403958,
+            "lon": 90.023612,
+            "accuracy": 3.52
+          },
+          {
+            "submission_id": "sub_01_01179",
+            "village_id": "VIL022",
+            "lat": 24.403158,
+            "lon": 90.01769,
+            "accuracy": 18.53
+          },
+          {
+            "submission_id": "sub_01_01180",
+            "village_id": "VIL022",
+            "lat": 24.404508,
+            "lon": 90.019783,
+            "accuracy": 17.18
+          },
+          {
+            "submission_id": "sub_01_01181",
+            "village_id": "VIL005",
+            "lat": 24.537762,
+            "lon": 89.993132,
+            "accuracy": 14.58
+          },
+          {
+            "submission_id": "sub_01_01182",
+            "village_id": "VIL005",
+            "lat": 24.534416,
+            "lon": 89.990864,
+            "accuracy": 4.84
+          },
+          {
+            "submission_id": "sub_01_01183",
+            "village_id": "VIL005",
+            "lat": 24.535128,
+            "lon": 89.9931,
+            "accuracy": 8.57
+          },
+          {
+            "submission_id": "sub_01_01184",
+            "village_id": "VIL005",
+            "lat": 24.538181,
+            "lon": 89.991404,
+            "accuracy": 6.83
+          },
+          {
+            "submission_id": "sub_01_01185",
+            "village_id": "VIL005",
+            "lat": 24.534509,
+            "lon": 89.992405,
+            "accuracy": 6.73
+          }
+        ],
+        "village_references": [
+          {
+            "village_id": "VIL021",
+            "ref_lat": 24.515609,
+            "ref_lon": 90.030583
+          },
+          {
+            "village_id": "VIL022",
+            "ref_lat": 24.403356,
+            "ref_lon": 90.022932
+          },
+          {
+            "village_id": "VIL005",
+            "ref_lat": 24.536203,
+            "ref_lon": 89.993617
+          }
+        ]
+      }
+    }
+  },
+  "enum_40": {
+    "enumerator_id": "enum_40",
+    "risk_score": 2.1856,
+    "p_e": 0.006522,
+    "m_e": 8,
+    "n_interviews": 56,
+    "evidence_features": [
+      "F8",
+      "F10"
+    ],
+    "features": {
+      "F8": {
+        "feature_id": "F8",
+        "feature_name": "Age heaping (multiples of 5)",
+        "p_value": 0.000957,
+        "feature_estimate": 0.3861,
+        "shrunk_estimate": 0.3861,
+        "ci_90": [
+          0.3224,
+          0.4498
+        ],
+        "submission_ids": [
+          "sub_01_01187",
+          "sub_01_01188",
+          "sub_01_01189",
+          "sub_01_01190",
+          "sub_01_01191",
+          "sub_01_01194",
+          "sub_01_01195",
+          "sub_01_01196",
+          "sub_01_01199",
+          "sub_01_01201",
+          "sub_01_01202",
+          "sub_01_01203",
+          "sub_01_01204",
+          "sub_01_01207",
+          "sub_01_01208",
+          "sub_01_01209",
+          "sub_01_01210",
+          "sub_01_01212",
+          "sub_01_01213",
+          "sub_01_01214",
+          "sub_01_01216",
+          "sub_01_01217",
+          "sub_01_01218",
+          "sub_01_01219",
+          "sub_01_01220",
+          "sub_01_01221",
+          "sub_01_01222",
+          "sub_01_01224",
+          "sub_01_01226",
+          "sub_01_01228",
+          "sub_01_01229",
+          "sub_01_01230",
+          "sub_01_01231",
+          "sub_01_01232",
+          "sub_01_01233",
+          "sub_01_01234",
+          "sub_01_01237",
+          "sub_01_01239",
+          "sub_01_01240",
+          "sub_01_01241"
+        ],
+        "heaped_records": [
+          {
+            "submission_id": "sub_01_01187",
+            "village_id": "VIL010",
+            "heaped_ages": [
+              30
+            ]
+          },
+          {
+            "submission_id": "sub_01_01188",
+            "village_id": "VIL010",
+            "heaped_ages": [
+              25
+            ]
+          },
+          {
+            "submission_id": "sub_01_01189",
+            "village_id": "VIL010",
+            "heaped_ages": [
+              20
+            ]
+          },
+          {
+            "submission_id": "sub_01_01190",
+            "village_id": "VIL010",
+            "heaped_ages": [
+              45,
+              20,
+              35,
+              35
+            ]
+          },
+          {
+            "submission_id": "sub_01_01191",
+            "village_id": "VIL010",
+            "heaped_ages": [
+              40,
+              35
+            ]
+          },
+          {
+            "submission_id": "sub_01_01194",
+            "village_id": "VIL010",
+            "heaped_ages": [
+              70,
+              65
+            ]
+          },
+          {
+            "submission_id": "sub_01_01195",
+            "village_id": "VIL010",
+            "heaped_ages": [
+              25
+            ]
+          },
+          {
+            "submission_id": "sub_01_01196",
+            "village_id": "VIL010",
+            "heaped_ages": [
+              50,
+              30
+            ]
+          },
+          {
+            "submission_id": "sub_01_01199",
+            "village_id": "VIL010",
+            "heaped_ages": [
+              30
+            ]
+          },
+          {
+            "submission_id": "sub_01_01201",
+            "village_id": "VIL010",
+            "heaped_ages": [
+              55
+            ]
+          },
+          {
+            "submission_id": "sub_01_01202",
+            "village_id": "VIL010",
+            "heaped_ages": [
+              55
+            ]
+          },
+          {
+            "submission_id": "sub_01_01203",
+            "village_id": "VIL010",
+            "heaped_ages": [
+              65,
+              25
+            ]
+          },
+          {
+            "submission_id": "sub_01_01204",
+            "village_id": "VIL010",
+            "heaped_ages": [
+              50
+            ]
+          },
+          {
+            "submission_id": "sub_01_01207",
+            "village_id": "VIL010",
+            "heaped_ages": [
+              35,
+              25,
+              20
+            ]
+          },
+          {
+            "submission_id": "sub_01_01208",
+            "village_id": "VIL032",
+            "heaped_ages": [
+              65
+            ]
+          },
+          {
+            "submission_id": "sub_01_01209",
+            "village_id": "VIL032",
+            "heaped_ages": [
+              60,
+              55
+            ]
+          },
+          {
+            "submission_id": "sub_01_01210",
+            "village_id": "VIL032",
+            "heaped_ages": [
+              35
+            ]
+          },
+          {
+            "submission_id": "sub_01_01212",
+            "village_id": "VIL032",
+            "heaped_ages": [
+              40
+            ]
+          },
+          {
+            "submission_id": "sub_01_01213",
+            "village_id": "VIL032",
+            "heaped_ages": [
+              55,
+              20
+            ]
+          },
+          {
+            "submission_id": "sub_01_01214",
+            "village_id": "VIL032",
+            "heaped_ages": [
+              50,
+              20
+            ]
+          },
+          {
+            "submission_id": "sub_01_01216",
+            "village_id": "VIL032",
+            "heaped_ages": [
+              45,
+              40
+            ]
+          },
+          {
+            "submission_id": "sub_01_01217",
+            "village_id": "VIL032",
+            "heaped_ages": [
+              25,
+              20
+            ]
+          },
+          {
+            "submission_id": "sub_01_01218",
+            "village_id": "VIL032",
+            "heaped_ages": [
+              70,
+              25
+            ]
+          },
+          {
+            "submission_id": "sub_01_01219",
+            "village_id": "VIL032",
+            "heaped_ages": [
+              30
+            ]
+          },
+          {
+            "submission_id": "sub_01_01220",
+            "village_id": "VIL032",
+            "heaped_ages": [
+              60,
+              50
+            ]
+          },
+          {
+            "submission_id": "sub_01_01221",
+            "village_id": "VIL032",
+            "heaped_ages": [
+              50,
+              40
+            ]
+          },
+          {
+            "submission_id": "sub_01_01222",
+            "village_id": "VIL032",
+            "heaped_ages": [
+              50,
+              30,
+              20
+            ]
+          },
+          {
+            "submission_id": "sub_01_01224",
+            "village_id": "VIL032",
+            "heaped_ages": [
+              20
+            ]
+          },
+          {
+            "submission_id": "sub_01_01226",
+            "village_id": "VIL032",
+            "heaped_ages": [
+              55
+            ]
+          },
+          {
+            "submission_id": "sub_01_01228",
+            "village_id": "VIL032",
+            "heaped_ages": [
+              50
+            ]
+          },
+          {
+            "submission_id": "sub_01_01229",
+            "village_id": "VIL032",
+            "heaped_ages": [
+              30,
+              25
+            ]
+          },
+          {
+            "submission_id": "sub_01_01230",
+            "village_id": "VIL032",
+            "heaped_ages": [
+              50
+            ]
+          },
+          {
+            "submission_id": "sub_01_01231",
+            "village_id": "VIL032",
+            "heaped_ages": [
+              65
+            ]
+          },
+          {
+            "submission_id": "sub_01_01232",
+            "village_id": "VIL032",
+            "heaped_ages": [
+              55,
+              50
+            ]
+          },
+          {
+            "submission_id": "sub_01_01233",
+            "village_id": "VIL032",
+            "heaped_ages": [
+              60
+            ]
+          },
+          {
+            "submission_id": "sub_01_01234",
+            "village_id": "VIL032",
+            "heaped_ages": [
+              45
+            ]
+          },
+          {
+            "submission_id": "sub_01_01237",
+            "village_id": "VIL032",
+            "heaped_ages": [
+              25
+            ]
+          },
+          {
+            "submission_id": "sub_01_01239",
+            "village_id": "VIL032",
+            "heaped_ages": [
+              50
+            ]
+          },
+          {
+            "submission_id": "sub_01_01240",
+            "village_id": "VIL032",
+            "heaped_ages": [
+              50
+            ]
+          },
+          {
+            "submission_id": "sub_01_01241",
+            "village_id": "VIL032",
+            "heaped_ages": [
+              50
+            ]
+          }
+        ],
+        "heaped_count": 40
+      },
+      "F10": {
+        "feature_id": "F10",
+        "feature_name": "Duration-size decoupling",
+        "p_value": 0.000815,
+        "feature_estimate": 0.2472,
+        "shrunk_estimate": -0.5132,
+        "ci_90": [
+          -0.7459,
+          -0.2806
+        ],
+        "submission_ids": [
+          "sub_01_01186",
+          "sub_01_01187",
+          "sub_01_01188",
+          "sub_01_01189",
+          "sub_01_01190",
+          "sub_01_01191",
+          "sub_01_01192",
+          "sub_01_01193",
+          "sub_01_01194",
+          "sub_01_01195",
+          "sub_01_01196",
+          "sub_01_01197",
+          "sub_01_01198",
+          "sub_01_01199",
+          "sub_01_01200",
+          "sub_01_01201",
+          "sub_01_01202",
+          "sub_01_01203",
+          "sub_01_01204",
+          "sub_01_01205",
+          "sub_01_01206",
+          "sub_01_01207",
+          "sub_01_01208",
+          "sub_01_01209",
+          "sub_01_01210",
+          "sub_01_01211",
+          "sub_01_01212",
+          "sub_01_01213",
+          "sub_01_01214",
+          "sub_01_01215",
+          "sub_01_01216",
+          "sub_01_01217",
+          "sub_01_01218",
+          "sub_01_01219",
+          "sub_01_01220",
+          "sub_01_01221",
+          "sub_01_01222",
+          "sub_01_01223",
+          "sub_01_01224",
+          "sub_01_01225",
+          "sub_01_01226",
+          "sub_01_01227",
+          "sub_01_01228",
+          "sub_01_01229",
+          "sub_01_01230",
+          "sub_01_01231",
+          "sub_01_01232",
+          "sub_01_01233",
+          "sub_01_01234",
+          "sub_01_01235",
+          "sub_01_01236",
+          "sub_01_01237",
+          "sub_01_01238",
+          "sub_01_01239",
+          "sub_01_01240",
+          "sub_01_01241"
+        ],
+        "records": [
+          {
+            "submission_id": "sub_01_01186",
+            "duration_min": 37.7,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_01187",
+            "duration_min": 42.17,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_01188",
+            "duration_min": 58.19,
+            "hh_size": 9
+          },
+          {
+            "submission_id": "sub_01_01189",
+            "duration_min": 37.52,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_01190",
+            "duration_min": 30.02,
+            "hh_size": 10
+          },
+          {
+            "submission_id": "sub_01_01191",
+            "duration_min": 27.45,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_01192",
+            "duration_min": 41.25,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_01193",
+            "duration_min": 30.04,
+            "hh_size": 2
+          },
+          {
+            "submission_id": "sub_01_01194",
+            "duration_min": 29.4,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_01195",
+            "duration_min": 33.93,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_01196",
+            "duration_min": 39.09,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_01197",
+            "duration_min": 34.07,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_01198",
+            "duration_min": 39.58,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_01199",
+            "duration_min": 32.42,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_01200",
+            "duration_min": 19.05,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_01201",
+            "duration_min": 30.5,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_01202",
+            "duration_min": 28.16,
+            "hh_size": 2
+          },
+          {
+            "submission_id": "sub_01_01203",
+            "duration_min": 49.11,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_01204",
+            "duration_min": 50.98,
+            "hh_size": 8
+          },
+          {
+            "submission_id": "sub_01_01205",
+            "duration_min": 51.49,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_01206",
+            "duration_min": 44.78,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_01207",
+            "duration_min": 31.77,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_01208",
+            "duration_min": 47.79,
+            "hh_size": 2
+          },
+          {
+            "submission_id": "sub_01_01209",
+            "duration_min": 35.46,
+            "hh_size": 7
+          },
+          {
+            "submission_id": "sub_01_01210",
+            "duration_min": 48.15,
+            "hh_size": 8
+          },
+          {
+            "submission_id": "sub_01_01211",
+            "duration_min": 38.71,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_01212",
+            "duration_min": 35.48,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_01213",
+            "duration_min": 39.01,
+            "hh_size": 8
+          },
+          {
+            "submission_id": "sub_01_01214",
+            "duration_min": 38.26,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_01215",
+            "duration_min": 29.33,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_01216",
+            "duration_min": 33.91,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_01217",
+            "duration_min": 37.43,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_01218",
+            "duration_min": 27.76,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_01219",
+            "duration_min": 38.01,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_01220",
+            "duration_min": 38.03,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_01221",
+            "duration_min": 25.9,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_01222",
+            "duration_min": 37.57,
+            "hh_size": 8
+          },
+          {
+            "submission_id": "sub_01_01223",
+            "duration_min": 47.67,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_01224",
+            "duration_min": 51.08,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_01225",
+            "duration_min": 41.89,
+            "hh_size": 2
+          },
+          {
+            "submission_id": "sub_01_01226",
+            "duration_min": 42.27,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_01227",
+            "duration_min": 29.15,
+            "hh_size": 2
+          },
+          {
+            "submission_id": "sub_01_01228",
+            "duration_min": 22.65,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_01229",
+            "duration_min": 31.76,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_01230",
+            "duration_min": 40.9,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_01231",
+            "duration_min": 40.07,
+            "hh_size": 2
+          },
+          {
+            "submission_id": "sub_01_01232",
+            "duration_min": 43.5,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_01233",
+            "duration_min": 34.05,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_01234",
+            "duration_min": 34.75,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_01235",
+            "duration_min": 37.8,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_01236",
+            "duration_min": 21.26,
+            "hh_size": 2
+          },
+          {
+            "submission_id": "sub_01_01237",
+            "duration_min": 33.6,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_01238",
+            "duration_min": 34.91,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_01239",
+            "duration_min": 32.5,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_01240",
+            "duration_min": 44.39,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_01241",
+            "duration_min": 24.93,
+            "hh_size": 2
+          }
+        ]
+      }
+    }
+  }
+}
