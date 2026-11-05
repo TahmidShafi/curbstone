@@ -1,0 +1,243 @@
+# Curbstone Quality Audit Demo
+
+Detect likely fabricated survey interviews (curbstoning) at the enumerator level and allocate field back-checks using empirical Bayes shrinkage risk ranking.
+
+```js
+import { allocateBackChecks } from "./components/allocator.js";
+import { renderRiskTable } from "./components/riskTable.js";
+import { renderEvidenceDrawer } from "./components/evidenceDrawer.js";
+
+// Static file attachments across scenarios
+const mixedData = {
+  design: await FileAttachment("./data/mixed/design.json").json(),
+  roundMetrics: await FileAttachment("./data/mixed/round_metrics.json").json(),
+  scoresShrinkage: await FileAttachment("./data/mixed/scores_shrinkage.parquet").parquet(),
+  scoresNoshrinkage: await FileAttachment("./data/mixed/scores_noshrinkage.parquet").parquet(),
+  evidenceShrinkage: await FileAttachment("./data/mixed/evidence.json").json(),
+  evidenceNoshrinkage: await FileAttachment("./data/mixed/evidence_noshrinkage.json").json(),
+  submissions: await FileAttachment("./data/mixed/submissions.parquet").parquet(),
+  villages: await FileAttachment("./data/mixed/villages.parquet").parquet(),
+  flagsCsvHref: await FileAttachment("./data/mixed/flags.csv").href,
+  flagsDtaHref: await FileAttachment("./data/mixed/flags.dta").href,
+};
+
+const lowData = {
+  design: await FileAttachment("./data/low/design.json").json(),
+  roundMetrics: await FileAttachment("./data/low/round_metrics.json").json(),
+  scoresShrinkage: await FileAttachment("./data/low/scores_shrinkage.parquet").parquet(),
+  scoresNoshrinkage: await FileAttachment("./data/low/scores_noshrinkage.parquet").parquet(),
+  evidenceShrinkage: await FileAttachment("./data/low/evidence.json").json(),
+  evidenceNoshrinkage: await FileAttachment("./data/low/evidence_noshrinkage.json").json(),
+  submissions: await FileAttachment("./data/low/submissions.parquet").parquet(),
+  villages: await FileAttachment("./data/low/villages.parquet").parquet(),
+  flagsCsvHref: await FileAttachment("./data/low/flags.csv").href,
+  flagsDtaHref: await FileAttachment("./data/low/flags.dta").href,
+};
+```
+
+<div class="grid grid-cols-2" style="margin-top: 16px;">
+  <div>
+```js
+const scenario = view(Inputs.radio(["mixed", "low"], {
+  value: "mixed",
+  label: "Workload Scenario:",
+  format: (x) => x === "mixed" ? "Mixed Workload [5, 60] (Seed 5000)" : "Low Workload [5, 15] (Seed 5001)"
+}));
+```
+  </div>
+  <div>
+```js
+const shrinkageOn = view(Inputs.toggle({
+  value: true,
+  label: "Empirical Bayes Shrinkage (Scoring v3):"
+}));
+```
+  </div>
+</div>
+
+```js
+const activeData = scenario === "mixed" ? mixedData : lowData;
+const design = activeData.design;
+const roundMetrics = activeData.roundMetrics;
+const rawScores = shrinkageOn ? activeData.scoresShrinkage : activeData.scoresNoshrinkage;
+const evidenceDict = shrinkageOn ? activeData.evidenceShrinkage : activeData.evidenceNoshrinkage;
+const submissions = activeData.submissions;
+const villages = activeData.villages;
+```
+
+<div class="card" style="padding: 14px 18px; margin: 16px 0; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;">
+  <div style="font-size: 0.9rem; color: #334155;">
+    <strong>Design Parameters:</strong> Seed: <code>${design.seed}</code> &bull; Workload: <code>${design.workload_profile} [${design.workload_range.join(", ")}]</code> &bull; Enumerators: <code>${design.n_enumerators}</code> &bull; Prevalence: <code>${design.prevalence}</code> (12.5% fabricators) &bull; ICC: <code>${design.icc_level}</code> (0.15) &bull; Active modes: <code>${design.active_fraud_modes.join(", ")}</code>
+  </div>
+  <div style="font-size: 0.85rem; color: #64748b; margin-top: 6px;">
+    <em>Seeds were fixed before results were viewed.</em> &bull;
+    <strong>Round Performance:</strong> Precision@4 = <code>${shrinkageOn ? roundMetrics.round_precision_v3 : roundMetrics.round_precision_noshrinkage}</code>. Study average for ${design.workload_profile} workload: <code>${shrinkageOn ? roundMetrics.study_average.v3_mean : roundMetrics.study_average.noshrink_mean} [${(shrinkageOn ? roundMetrics.study_average.v3_ci_95 : roundMetrics.study_average.noshrink_ci_95).join(", ")}]</code>.
+  </div>
+</div>
+
+<div class="grid grid-cols-4" style="gap: 12px; margin-bottom: 12px;">
+```js
+const budget = view(Inputs.range([10, 200], {value: 60, step: 5, label: "Back-check Budget (interviews):"}));
+const floorShare = view(Inputs.range([0, 50], {value: 20, step: 5, label: "Random Floor Share (%):"}));
+const allocSeed = view(Inputs.number({value: 42, step: 1, label: "Allocator Seed:"}));
+const revealCount = view(Inputs.button("Reveal Ground Truth"));
+```
+</div>
+
+```js
+// Reveal state tracking (only fetch truth.json when clicked)
+const isRevealed = revealCount > 0;
+const truthLabels = Mutable(null);
+
+if (isRevealed && truthLabels.value == null) {
+  const attachment = scenario === "mixed"
+    ? FileAttachment("./data/mixed/truth.json")
+    : FileAttachment("./data/low/truth.json");
+  truthLabels.value = await attachment.json();
+}
+
+// Map ground truth labels if revealed
+const truthMap = new Map();
+if (truthLabels.value) {
+  for (const t of truthLabels.value) {
+    truthMap.set(t.enumerator_id, t);
+  }
+}
+```
+
+```js
+// Extract evidence submission IDs across all enumerators
+const evidenceSubmissionIds = new Set();
+for (const [eId, eInfo] of Object.entries(evidenceDict)) {
+  for (const f of Object.values(eInfo.features || {})) {
+    for (const sid of f.submission_ids || []) {
+      evidenceSubmissionIds.add(sid);
+    }
+  }
+}
+
+// Run back-check allocation pure function
+const enumeratorList = rawScores.map(r => ({
+  id: r.enumerator_id,
+  n: Number(r.n_interviews),
+  risk: Number(r.risk_score)
+}));
+
+const allocation = allocateBackChecks({
+  enumerators: enumeratorList,
+  submissions: submissions,
+  evidenceIds: Array.from(evidenceSubmissionIds),
+  budget: budget,
+  floorShare: floorShare / 100.0,
+  seed: allocSeed,
+});
+```
+
+```js
+// Assemble sorted table rows
+const sortedScores = [...rawScores].sort((a, b) => {
+  if (b.risk_score !== a.risk_score) return b.risk_score - a.risk_score;
+  return a.enumerator_id.localeCompare(b.enumerator_id);
+});
+
+const tableRows = sortedScores.map((r, idx) => {
+  const eId = r.enumerator_id;
+  const evInfo = evidenceDict[eId] || {};
+  const evFeatures = Object.keys(evInfo.features || {});
+  
+  // Find strongest feature interval
+  let strongestEst = null, ciLo = null, ciHi = null;
+  if (evFeatures.length > 0) {
+    const fData = evInfo.features[evFeatures[0]];
+    strongestEst = fData.shrunk_estimate ?? fData.feature_estimate;
+    if (fData.ci_90) {
+      ciLo = fData.ci_90[0];
+      ciHi = fData.ci_90[1];
+    }
+  }
+
+  // Determine ground truth status if revealed
+  let truthLabel = "TN";
+  if (isRevealed) {
+    const isFab = Boolean(truthMap.get(eId)?.is_fabricator);
+    const inTop4 = idx < 4;
+    if (inTop4 && isFab) truthLabel = "TP";
+    else if (inTop4 && !isFab) truthLabel = "FP";
+    else if (!inTop4 && isFab) truthLabel = "FN";
+    else truthLabel = "TN";
+  }
+
+  return {
+    rank: idx + 1,
+    enumerator_id: eId,
+    n: Number(r.n_interviews),
+    risk_score: Number(r.risk_score),
+    evidence: r.evidence || "",
+    strongest_est: strongestEst,
+    strongest_ci_low: ciLo,
+    strongest_ci_high: ciHi,
+    rule_hits: Number(r.by_flag ? 1 : 0), // fallback or count
+    allocated_backchecks: allocation.allocatedCounts[eId] || 0,
+    truth_label: truthLabel,
+  };
+});
+```
+
+```js
+// Selection state for evidence drawer
+const selectedEnumId = Mutable("enum_27");
+function setSelected(id) {
+  selectedEnumId.value = id;
+}
+```
+
+${renderRiskTable({
+  rows: tableRows,
+  selectedId: selectedEnumId.value,
+  onSelect: setSelected,
+  isRevealed: isRevealed,
+})}
+
+```js
+function downloadCsv() {
+  const headers = ["submission_id", "enumerator_id", "selection_reason", "is_evidence"];
+  const csvContent = [headers.join(",")].concat(
+    allocation.selectedSubmissions.map(s => `${s.submission_id},${s.enumerator_id},${s.selection_reason},${s.is_evidence}`)
+  ).join("\n");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `backcheck_allocation_${scenario}_b${budget}.csv`;
+  a.click();
+}
+
+const staticCsvHref = scenario === "mixed" ? mixedData.flagsCsvHref : lowData.flagsCsvHref;
+const staticDtaHref = scenario === "mixed" ? mixedData.flagsDtaHref : lowData.flagsDtaHref;
+
+const downloadActions = html`
+  <div style="text-align: right;">
+    <button class="btn" onclick=${() => downloadCsv()} style="padding: 6px 12px; font-weight: 600; cursor: pointer; border-radius: 4px; background: #2563eb; color: #fff; border: none;">
+      Download Current Allocation (CSV)
+    </button>
+    <a href="${staticCsvHref}" download style="margin-left: 8px; font-size: 0.85rem; color: #2563eb;">Static flags.csv</a>
+    <a href="${staticDtaHref}" download style="margin-left: 8px; font-size: 0.85rem; color: #2563eb;">Static flags.dta</a>
+  </div>
+`;
+```
+
+<div class="grid grid-cols-2" style="align-items: center; margin: 12px 0;">
+  <div>
+    <strong>Total Allocated Interviews:</strong> ${allocation.totalAllocated} / ${submissions.length} (${allocation.floorAllocated} random floor, ${allocation.riskAllocated} risk-weighted)
+  </div>
+  ${downloadActions}
+</div>
+
+<!-- Evidence Drawer Component -->
+${renderEvidenceDrawer({
+  enumeratorId: selectedEnumId.value,
+  enumEvidence: evidenceDict[selectedEnumId.value],
+  allSubmissions: submissions,
+  villages: villages,
+  onClose: () => setSelected(null),
+})}
