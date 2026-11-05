@@ -1,5 +1,19 @@
 import * as Plot from "npm:@observablehq/plot";
 import * as htl from "npm:htl";
+import { renderCardIntervalChart } from "./intervalBar.js";
+
+export const FEATURE_NAMES = {
+  F1: "Fast interviews",
+  F2: "High daily volume",
+  F3: "Near-duplicates",
+  F4: "Straight-lining",
+  F5: "Low asset dispersion",
+  F6: "Low household-size dispersion",
+  F7: "GPS clustering",
+  F8: "Age heaping",
+  F9: "Non-response",
+  F10: "Duration–size coupling",
+};
 
 const FEATURE_EXPLANATIONS = {
   F1: "Interview durations are significantly shorter than village peers after adjusting for household size.",
@@ -22,32 +36,34 @@ export function renderEvidenceDrawer({
   onClose,
 }) {
   if (!enumeratorId || !enumEvidence) {
-    return htl.html`<div class="card" style="padding: 16px; color: #666; font-style: italic;">
-      Select an enumerator row from the risk table above to inspect the audit evidence drawer.
+    return htl.html`<div style="padding: 16px; color: var(--muted); font-style: italic;">
+      Select an enumerator row from the risk table above to inspect the audit evidence.
     </div>`;
   }
 
   const features = enumEvidence.features || {};
   const featureKeys = Object.keys(features);
 
-  return htl.html`<div class="card" style="padding: 20px; border: 1px solid #c7d2fe; background: #fafafa; border-radius: 8px; margin-top: 20px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 16px;">
+  return htl.html`<div style="background: var(--page); border: 1px solid var(--line); border-radius: 8px; padding: 16px; margin: 4px 0;">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); padding-bottom: 12px; margin-bottom: 16px;">
       <div>
-        <h3 style="margin: 0; font-size: 1.25rem; color: #1e293b;">
-          Audit Evidence: <span style="font-family: monospace; color: #2563eb;">${enumeratorId}</span>
+        <h3 style="margin: 0; font-size: 18px; color: var(--ink);">
+          Audit Evidence: <span class="enum-id" style="color: var(--accent);">${enumeratorId}</span>
         </h3>
-        <p style="margin: 4px 0 0 0; font-size: 0.875rem; color: #64748b;">
-          Risk score: <strong>${enumEvidence.risk_score.toFixed(4)}</strong> &bull;
+        <p style="margin: 4px 0 0 0; font-size: 13px; color: var(--muted);" class="tabular-nums">
+          Risk score: <strong>${enumEvidence.risk_score.toFixed(1)}</strong> &bull;
           Interviews: <strong>${enumEvidence.n_interviews}</strong> &bull;
-          Flagged features (p &lt; 0.05/m): <strong>${featureKeys.length > 0 ? featureKeys.join(", ") : "None"}</strong>
+          Flagged features (p &lt; 0.05/m): <strong>${featureKeys.length > 0 ? featureKeys.map(k => FEATURE_NAMES[k] || k).join(", ") : "None"}</strong>
         </p>
       </div>
-      ${onClose ? htl.html`<button class="btn" onclick=${onClose} style="padding: 6px 12px; font-size: 12px; cursor: pointer; border-radius: 4px; border: 1px solid #cbd5e1; background: #fff;">Close Drawer</button>` : ""}
+      ${onClose ? htl.html`<button class="btn-secondary" onclick=${onClose}>Close</button>` : ""}
     </div>
 
     ${featureKeys.length === 0
-      ? htl.html`<p style="color: #64748b; font-style: italic;">No features met the Bonferroni significance threshold (p &lt; 0.05 / m) for this enumerator.</p>`
-      : featureKeys.map((fKey) => renderFeatureCard(fKey, features[fKey], enumeratorId, allSubmissions, villages))
+      ? htl.html`<p style="color: var(--muted); font-style: italic; font-size: 13px; margin: 8px 0;">No features met the Bonferroni significance threshold (p &lt; 0.05 / m) for this enumerator.</p>`
+      : htl.html`<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px;">
+          ${featureKeys.map((fKey) => renderFeatureCard(fKey, features[fKey], enumeratorId, allSubmissions, villages))}
+        </div>`
     }
   </div>`;
 }
@@ -55,50 +71,58 @@ export function renderEvidenceDrawer({
 function formatPValue(p) {
   if (p == null) return "—";
   if (p < 1e-16) return "< 1e-16";
-  return p.toExponential(3);
+  return p.toExponential(2);
 }
 
 function renderFeatureCard(fKey, fData, enumeratorId, allSubmissions, villages) {
+  const plainName = FEATURE_NAMES[fKey] || fData.feature_name;
   const explanation = FEATURE_EXPLANATIONS[fKey] || fData.feature_name;
   const isCount = ["F3", "F4", "F8", "F9"].includes(fKey);
   const pValStr = formatPValue(fData.p_value);
   const shrunkStr = fData.shrunk_estimate != null ? fData.shrunk_estimate.toFixed(3) : "—";
 
-  // Continuous features
   const d = fData.feature_estimate;
   const dStr = d != null ? d.toFixed(3) : "—";
   const h = fData.honest_halfwidth ?? (fData.ci_90 ? (fData.ci_90[1] - fData.ci_90[0]) / 2 : null);
   const contRangeStr = h != null ? `[${(-h).toFixed(3)}, +${h.toFixed(3)}]` : "—";
 
-  // Count features
   const rate = fData.observed_rate ?? (fData.k != null && fData.n ? fData.k / fData.n : fData.feature_estimate);
   const rateStr = rate != null ? rate.toFixed(3) : "—";
   const countsStr = fData.k != null && fData.n != null ? ` (${fData.k}/${fData.n})` : "";
   const countRange = fData.honest_range_90 ?? fData.ci_90;
   const countRangeStr = countRange ? `[${countRange[0].toFixed(3)}, ${countRange[1].toFixed(3)}]` : "—";
 
-  return htl.html`<div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px; margin-bottom: 16px;">
-    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
-      <h4 style="margin: 0; font-size: 1rem; color: #0f172a;">
-        <span style="display: inline-block; background: #dbeafe; color: #1e40af; font-weight: bold; padding: 2px 8px; border-radius: 4px; font-size: 0.85rem; margin-right: 8px;">${fKey}</span>
-        ${fData.feature_name}
+  const estVal = isCount ? rate : d;
+  const [ciLo, ciHi] = isCount ? (countRange || [0, 0]) : [-h, h];
+  const expVal = 0;
+
+  return htl.html`<div style="background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px; box-sizing: border-box;">
+    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+      <h4 style="margin: 0; font-size: 15px; color: var(--ink);">
+        <span class="evidence-chip" title="${fKey}">${fKey}</span>
+        ${plainName}
       </h4>
-      <span style="font-family: monospace; font-size: 0.85rem; color: #b91c1c; font-weight: 600;">p = ${pValStr}</span>
+      <span style="font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums;">p = ${pValStr}</span>
     </div>
 
-    <p style="margin: 0 0 12px 0; font-size: 0.9rem; color: #334155;">${explanation}</p>
+    <p style="margin: 0 0 10px 0; font-size: 13px; color: var(--ink); line-height: 18px;">${explanation}</p>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; background: #f8fafc; padding: 10px; border-radius: 4px; font-size: 0.85rem; margin-bottom: 8px;">
+    <!-- Larger observed vs honest chart -->
+    <div style="margin: 8px 0 12px 0;">
+      ${renderCardIntervalChart(estVal, ciLo, ciHi, expVal, 320, 48)}
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 6px; background: var(--page); padding: 8px 10px; border-radius: 4px; font-size: 12px; margin-bottom: 8px;" class="tabular-nums">
       ${isCount
-        ? htl.html`<div><strong>Observed rate:</strong> ${rateStr}${countsStr}</div><div><strong>Honest 90% range:</strong> ${countRangeStr}</div>`
-        : htl.html`<div><strong>Observed:</strong> ${dStr}</div><div><strong>Honest 90% range:</strong> ${contRangeStr}</div>`
+        ? htl.html`<div><strong>Observed:</strong> ${rateStr}${countsStr}</div><div><strong>Honest 90%:</strong> ${countRangeStr}</div>`
+        : htl.html`<div><strong>Observed:</strong> ${dStr}</div><div><strong>Honest 90%:</strong> ${contRangeStr}</div>`
       }
-      <div><strong>Contributing Records:</strong> ${fData.submission_ids ? fData.submission_ids.length : 0}</div>
+      <div><strong>Records:</strong> ${fData.submission_ids ? fData.submission_ids.length : 0}</div>
     </div>
 
-    <details style="margin-bottom: 14px; font-size: 0.8rem; color: #64748b;">
-      <summary style="cursor: pointer; color: #475569;">Model details</summary>
-      <div style="margin-top: 4px;">
+    <details style="margin-top: 6px; font-size: 12px; color: var(--muted);">
+      <summary style="cursor: pointer; font-weight: 500;">Model details</summary>
+      <div style="margin-top: 4px; color: var(--ink);" class="tabular-nums">
         ${isCount
           ? htl.html`Posterior mean: <strong>${shrunkStr}</strong>`
           : htl.html`Posterior mean (complete pooling when tau^2 = 0): <strong>${shrunkStr}</strong>`
@@ -106,11 +130,8 @@ function renderFeatureCard(fKey, fData, enumeratorId, allSubmissions, villages) 
       </div>
     </details>
 
-    <!-- Feature-specific visualizations -->
     ${fKey === "F7" ? renderGpsScatter(fData, enumeratorId, allSubmissions, villages) : ""}
     ${fKey === "F1" ? renderDurationStrip(enumeratorId, allSubmissions) : ""}
-
-    <!-- Contributing Submissions Detail -->
     ${renderContributingDetails(fKey, fData)}
   </div>`;
 }
@@ -123,34 +144,44 @@ function renderGpsScatter(fData, enumeratorId, allSubmissions, villages) {
   const peers = allSubmissions.filter((s) => activeVids.has(s.village_id) && s.enumerator_id !== enumeratorId);
   const vilRefs = (villages || []).filter((v) => activeVids.has(v.village_id));
 
-  const plotData = [
-    ...peers.map((p) => ({ lat: p.gps_lat, lon: p.gps_lon, type: "Village Peers", size: 4 })),
-    ...points.map((p) => ({ lat: p.lat, lon: p.lon, type: `${enumeratorId} (Flagged)`, size: 7 })),
-    ...vilRefs.map((v) => ({ lat: v.ref_lat, lon: v.ref_lon, type: "Village Reference Point", size: 9 })),
-  ];
-
   return htl.html`<div style="margin: 12px 0;">
-    <div style="font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 4px;">F7 GPS Spatial Dispersion vs Village Peers:</div>
+    <div style="font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 4px;">GPS interview locations:</div>
     ${Plot.plot({
-      width: 580,
-      height: 280,
+      width: 320,
+      height: 240,
+      aspectRatio: 1,
       grid: true,
-      color: {
-        domain: ["Village Peers", `${enumeratorId} (Flagged)`, "Village Reference Point"],
-        range: ["#94a3b8", "#ea580c", "#dc2626"],
-        legend: true,
-      },
       marks: [
-        Plot.dot(plotData, {
+        Plot.dot(peers, {
+          x: "gps_lon",
+          y: "gps_lat",
+          fill: "#9ca3af",
+          r: 2.5,
+          title: (d) => `Peer interview (${d.submission_id})`
+        }),
+        Plot.dot(vilRefs, {
+          x: "ref_lon",
+          y: "ref_lat",
+          stroke: "#4b5563",
+          strokeWidth: 2,
+          fill: "none",
+          r: 6,
+          title: (d) => `Village reference point (${d.village_id})`
+        }),
+        Plot.dot(points, {
           x: "lon",
           y: "lat",
-          stroke: "type",
-          fill: (d) => (d.type === "Village Peers" ? "none" : d.type === "Village Reference Point" ? "#dc2626" : "#ea580c"),
-          r: (d) => (d.type === "Village Reference Point" ? 6 : d.type === "Village Peers" ? 3 : 5),
-          symbol: (d) => (d.type === "Village Reference Point" ? "diamond" : "circle"),
+          fill: "#1f2937",
+          r: 4,
+          title: (d) => `${enumeratorId} interview (${d.submission_id})`
         }),
       ],
     })}
+    <div style="display: flex; gap: 12px; font-size: 11px; color: var(--muted); margin-top: 6px;">
+      <span><span style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #9ca3af; margin-right: 3px;"></span>Village peers</span>
+      <span><span style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #1f2937; margin-right: 3px;"></span>${enumeratorId} (Flagged)</span>
+      <span><span style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid #4b5563; margin-right: 3px; box-sizing: border-box;"></span>Village reference</span>
+    </div>
   </div>`;
 }
 
@@ -161,21 +192,20 @@ function renderDurationStrip(enumeratorId, allSubmissions) {
   const peerSubs = allSubmissions.filter((s) => vids.has(s.village_id) && s.enumerator_id !== enumeratorId);
 
   const plotData = [
-    ...peerSubs.map((s) => ({ group: "Village Peers", duration: s.duration_min })),
-    ...enumSubs.map((s) => ({ group: `${enumeratorId} (Flagged)`, duration: s.duration_min })),
+    ...peerSubs.map((s) => ({ group: "Peers", duration: s.duration_min })),
+    ...enumSubs.map((s) => ({ group: "Flagged", duration: s.duration_min })),
   ];
 
   return htl.html`<div style="margin: 12px 0;">
-    <div style="font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 4px;">F1 Interview Duration vs Village Peers (Minutes):</div>
+    <div style="font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 4px;">Duration vs peers (min):</div>
     ${Plot.plot({
-      width: 580,
-      height: 180,
-      x: { label: "Duration (min)", domain: [0, 80], grid: true },
+      width: 320,
+      height: 120,
+      x: { label: null, domain: [0, 80], grid: true },
       y: { label: null },
       color: {
-        domain: ["Village Peers", `${enumeratorId} (Flagged)`],
-        range: ["#94a3b8", "#ea580c"],
-        legend: true,
+        domain: ["Peers", "Flagged"],
+        range: ["#9ca3af", "#1f2937"],
       },
       marks: [
         Plot.tickX(plotData, {
@@ -191,41 +221,39 @@ function renderDurationStrip(enumeratorId, allSubmissions) {
 
 function renderContributingDetails(fKey, fData) {
   if (fKey === "F3" && fData.pairs && fData.pairs.length > 0) {
-    return htl.html`<details style="font-size: 0.825rem; margin-top: 8px;">
-      <summary style="cursor: pointer; color: #2563eb; font-weight: 600;">View ${fData.pairs.length} Near-Duplicate Pairs</summary>
-      <table style="width: 100%; border-collapse: collapse; margin-top: 6px;">
-        <thead><tr style="background: #f1f5f9; text-align: left;"><th style="padding: 4px 8px;">Submission 1</th><th style="padding: 4px 8px;">Submission 2</th><th style="padding: 4px 8px;">Village</th><th style="padding: 4px 8px;">Differing Fields</th></tr></thead>
+    return htl.html`<details style="font-size: 12px; margin-top: 8px;">
+      <summary style="cursor: pointer; color: var(--accent); font-weight: 500;">Near-duplicate pairs (${fData.pairs.length})</summary>
+      <table style="width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 11px;">
+        <thead><tr style="border-bottom: 1px solid var(--line); color: var(--muted); text-align: left;"><th style="padding: 2px 4px;">Sub 1</th><th style="padding: 2px 4px;">Sub 2</th><th style="padding: 2px 4px;">Village</th><th style="padding: 2px 4px;">Diffs</th></tr></thead>
         <tbody>
-          ${fData.pairs.slice(0, 15).map((p) => htl.html`<tr>
-            <td style="padding: 4px 8px; font-family: monospace;">${p.submission_id_1}</td>
-            <td style="padding: 4px 8px; font-family: monospace;">${p.submission_id_2}</td>
-            <td style="padding: 4px 8px;">${p.village_id}</td>
-            <td style="padding: 4px 8px; color: #475569;">${p.differing_fields.length === 0 ? "Exact duplicate (0 diffs)" : p.differing_fields.join(", ")}</td>
+          ${fData.pairs.slice(0, 10).map((p) => htl.html`<tr style="border-bottom: 1px solid var(--line);">
+            <td style="padding: 2px 4px;" class="enum-id">${p.submission_id_1}</td>
+            <td style="padding: 2px 4px;" class="enum-id">${p.submission_id_2}</td>
+            <td style="padding: 2px 4px;">${p.village_id}</td>
+            <td style="padding: 2px 4px; color: var(--muted);">${p.differing_fields.length === 0 ? "Exact duplicate" : p.differing_fields.join(", ")}</td>
           </tr>`)}
         </tbody>
       </table>
-      ${fData.pairs.length > 15 ? htl.html`<p style="margin: 4px 0 0 0; color: #64748b;">(Showing 15 of ${fData.pairs.length} pairs)</p>` : ""}
     </details>`;
   }
 
   if (fKey === "F4" && fData.straight_records && fData.straight_records.length > 0) {
-    return htl.html`<details style="font-size: 0.825rem; margin-top: 8px;">
-      <summary style="cursor: pointer; color: #2563eb; font-weight: 600;">View ${fData.straight_records.length} Straight-Lined Records</summary>
-      <div style="font-family: monospace; font-size: 0.8rem; background: #f8fafc; padding: 6px 10px; border-radius: 4px; margin-top: 4px;">
-        ${fData.straight_records.map((r) => `${r.submission_id} (value: ${r.straight_value})`).join(", ")}
+    return htl.html`<details style="font-size: 12px; margin-top: 8px;">
+      <summary style="cursor: pointer; color: var(--accent); font-weight: 500;">Straight-lined records (${fData.straight_records.length})</summary>
+      <div style="font-size: 11px; background: var(--page); padding: 6px; border-radius: 4px; margin-top: 4px;" class="enum-id">
+        ${fData.straight_records.map((r) => `${r.submission_id} (val: ${r.straight_value})`).join(", ")}
       </div>
     </details>`;
   }
 
   if (fData.submission_ids && fData.submission_ids.length > 0) {
-    return htl.html`<details style="font-size: 0.825rem; margin-top: 8px;">
-      <summary style="cursor: pointer; color: #2563eb; font-weight: 600;">Contributing Submission IDs (${fData.submission_ids.length})</summary>
-      <div style="font-family: monospace; font-size: 0.8rem; background: #f8fafc; padding: 6px 10px; border-radius: 4px; margin-top: 4px; word-break: break-all;">
-        ${fData.submission_ids.slice(0, 30).join(", ")}${fData.submission_ids.length > 30 ? ` ... (+${fData.submission_ids.length - 30} more)` : ""}
+    return htl.html`<details style="font-size: 12px; margin-top: 8px;">
+      <summary style="cursor: pointer; color: var(--accent); font-weight: 500;">Contributing submissions (${fData.submission_ids.length})</summary>
+      <div style="font-size: 11px; background: var(--page); padding: 6px; border-radius: 4px; margin-top: 4px; word-break: break-all;" class="enum-id">
+        ${fData.submission_ids.slice(0, 20).join(", ")}${fData.submission_ids.length > 20 ? ` ... (+${fData.submission_ids.length - 20} more)` : ""}
       </div>
     </details>`;
   }
 
   return "";
 }
-

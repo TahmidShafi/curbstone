@@ -1,3 +1,7 @@
+---
+title: Rule engine (live)
+---
+
 # Live DQA SQL Rule Engine
 
 Execute all 12 pre-registered Data Quality Assurance (DQA) rules in DuckDB-Wasm in real time directly within your browser.
@@ -41,7 +45,7 @@ if (!mixedRosterType.includes("[]") && !mixedRosterType.toUpperCase().includes("
 if (!lowRosterType.includes("[]") && !lowRosterType.toUpperCase().includes("LIST")) tableErrors.push(`low_submissions.roster_ages arrived as '${lowRosterType}' instead of DuckDB LIST`);
 
 if (tableErrors.length > 0) {
-  display(html`<div class="card" style="padding: 16px; margin: 16px 0; background: #fef2f2; border: 2px solid #ef4444; border-radius: 6px; color: #991b1b;">
+  display(html`<div class="card" style="padding: 16px; margin: 16px 0; background: var(--surface); border: 2px solid var(--ink); border-radius: 6px; color: var(--ink);">
     <div style="font-weight: bold; font-size: 1rem; margin-bottom: 4px;">Table Registration Verification Error</div>
     <div>The following registered DuckDB table verification check(s) failed:</div>
     <ul style="margin: 4px 0 0 0; padding-left: 20px;">${tableErrors.map(e => html`<li>${e}</li>`)}</ul>
@@ -109,9 +113,9 @@ const badgeMessage = allPassed
 
 ```js
 display(html`
-<div class="card" style="padding: 16px; margin: 16px 0; background: ${allPassed ? '#f0fdf4' : '#fef2f2'}; border: 1px solid ${allPassed ? '#86efac' : '#fca5a5'}; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
+<div class="card" style="padding: 16px; margin: 16px 0; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
   <div>
-    <span style="display: inline-block; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 0.9rem; background: ${allPassed ? '#16a34a' : '#dc2626'}; color: #fff;">${allPassed ? "PARITY MATCH" : "PARITY MISMATCH"}</span>
+    <span style="display: inline-block; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 0.9rem; background: ${allPassed ? '#16a34a' : 'var(--ink)'}; color: #fff;">${allPassed ? "PARITY MATCH" : "PARITY MISMATCH"}</span>
     <span style="margin-left: 12px; font-size: 0.95rem; color: #1e293b; font-weight: 600;">${badgeMessage}</span>
   </div>
   <div style="font-size: 0.85rem; color: #64748b; font-family: monospace;">12 rules evaluated in ${totalMs.toFixed(1)} ms</div>
@@ -142,11 +146,11 @@ display(html`
         <tr style="border-bottom: 1px solid #f1f5f9;">
           <td style="padding: 8px 10px; font-family: monospace; font-weight: bold; color: #1e40af;">${r.id}</td>
           <td style="padding: 8px 10px; color: #475569;">${r.level}</td>
-          <td style="padding: 8px 10px;"><span style="font-size: 0.75rem; font-weight: 600; padding: 2px 6px; border-radius: 4px; background: ${r.severity === 'high' ? '#fee2e2' : r.severity === 'medium' ? '#fef3c7' : '#f1f5f9'}; color: ${r.severity === 'high' ? '#991b1b' : r.severity === 'medium' ? '#92400e' : '#334155'};">${r.severity.toUpperCase()}</span></td>
+          <td style="padding: 8px 10px;"><span style="font-size: 0.75rem; font-weight: 600; padding: 2px 6px; border-radius: 4px; background: var(--page); border: 1px solid var(--line); color: var(--ink);">${r.severity.toUpperCase()}</span></td>
           <td style="padding: 8px 10px; color: #334155;">${r.description}</td>
           <td style="padding: 8px 10px; text-align: right; font-weight: bold;">${r.hits}</td>
           <td style="padding: 8px 10px; text-align: right; color: #64748b;">${r.expected}</td>
-          <td style="padding: 8px 10px; text-align: center;">${r.pass ? html`<span style="color: #16a34a; font-weight: bold;">PASS</span>` : html`<span style="color: #dc2626; font-weight: bold;">FAIL</span>`}</td>
+          <td style="padding: 8px 10px; text-align: center;">${r.pass ? html`<span style="color: #16a34a; font-weight: bold;">PASS</span>` : html`<span style="color: var(--ink); font-weight: bold;">FAIL</span>`}</td>
           <td style="padding: 8px 10px; text-align: right; font-family: monospace; color: #64748b;">${r.ms.toFixed(1)} ms</td>
         </tr>
       `)}

@@ -1,3 +1,7 @@
+---
+title: Method
+---
+
 # Methodology & System Architecture
 
 An end-to-end overview of the Curbstone Data Quality Assurance pipeline, from synthetic population generation to field back-check allocation.

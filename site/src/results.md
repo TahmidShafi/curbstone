@@ -1,3 +1,7 @@
+---
+title: Results
+---
+
 # Empirical Evaluation & Robustness Study
 
 Performance evaluation across 72 factorial configurations (1,440 rounds, seeds 1000..1019), held-out fraud mode evaluation (seeds 2000..2019), and detection-by-day analysis (seeds 3000..3019).

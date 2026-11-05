@@ -1,8 +1,11 @@
 export default {
-  title: "Curbstone DQA",
+  title: "Curbstone",
+  theme: "air",
+  head: '<link rel="stylesheet" type="text/css" href="/style.css">',
   root: "src",
   pages: [
-    {name: "Rules (live)", path: "/rules"},
+    {name: "Demo", path: "/index"},
+    {name: "Rule engine (live)", path: "/rules"},
     {name: "Results", path: "/results"},
     {name: "Method", path: "/method"}
   ],
