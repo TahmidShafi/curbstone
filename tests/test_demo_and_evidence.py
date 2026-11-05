@@ -11,6 +11,7 @@ import pytest
 from engine.evidence import build_evidence
 from engine.features import build_feature_table
 from engine.scoring import score_enumerators
+import pyarrow.parquet as pq
 from generator.run import run_generation
 from scripts.build_demo import build_demo
 
@@ -135,10 +136,21 @@ def test_demo_build_deterministic(tmp_path):
             h2 = hashlib.sha256(open(sc_dir2 / fname, "rb").read()).hexdigest()
             assert h1 == h2, f"Scenario {scenario} file {fname} hash mismatch between runs: {h1} != {h2}"
 
-    for fname in ["mixed_submissions.parquet", "mixed_villages.parquet", "low_submissions.parquet", "low_villages.parquet"]:
-        h1 = hashlib.sha256(open(dir1 / fname, "rb").read()).hexdigest()
-        h2 = hashlib.sha256(open(dir2 / fname, "rb").read()).hexdigest()
-        assert h1 == h2, f"File {fname} hash mismatch between runs"
+
+def test_all_parquet_files_valid_and_nonempty():
+    """Verify that every parquet file under site/src/data can be opened by pyarrow and has rows."""
+    root = Path(__file__).resolve().parent.parent
+    data_dir = root / "site" / "src" / "data"
+    parquet_files = sorted(list(data_dir.rglob("*.parquet")))
+    assert len(parquet_files) > 0, "No parquet files found under site/src/data"
+
+    for p in parquet_files:
+        raw = p.read_bytes()
+        assert len(raw) >= 8, f"{p} is too small ({len(raw)} bytes)"
+        assert raw[:4] == b"PAR1", f"{p} does not start with PAR1 magic"
+        assert raw[-4:] == b"PAR1", f"{p} does not end with PAR1 magic"
+        tbl = pq.read_table(p)
+        assert tbl.num_rows > 0, f"{p} has 0 rows"
 
 
 @pytest.mark.parametrize("scenario", ["mixed", "low"])

@@ -11,12 +11,12 @@ const mixedExpectedHits = await FileAttachment("./data/mixed/rule_hits_expected.
 const lowRulesYaml = await FileAttachment("./data/low/rules.yaml").text();
 const lowExpectedHits = await FileAttachment("./data/low/rule_hits_expected.json").json();
 
-// Initialize ONE DuckDB instance per page load with unique file names
+// Initialize ONE DuckDB instance per page load with unique table names
 const db = await DuckDBClient.of({
-  mixed_submissions: FileAttachment("./data/mixed_submissions.parquet"),
-  mixed_villages: FileAttachment("./data/mixed_villages.parquet"),
-  low_submissions: FileAttachment("./data/low_submissions.parquet"),
-  low_villages: FileAttachment("./data/low_villages.parquet"),
+  mixed_submissions: FileAttachment("./data/mixed/submissions.parquet"),
+  mixed_villages:    FileAttachment("./data/mixed/villages.parquet"),
+  low_submissions:   FileAttachment("./data/low/submissions.parquet"),
+  low_villages:      FileAttachment("./data/low/villages.parquet")
 });
 const benchHistory = [];
 ```

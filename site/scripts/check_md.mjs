@@ -50,6 +50,20 @@ function getHtmlFiles(dir) {
   return files;
 }
 
+function getParquetFiles(dir) {
+  if (!fs.existsSync(dir)) return [];
+  const files = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...getParquetFiles(full));
+    } else if (entry.isFile() && entry.name.endsWith(".parquet")) {
+      files.push(full);
+    }
+  }
+  return files;
+}
+
 // 1. Check markdown files for indented ```js or ```js inside HTML
 const mdFiles = getMarkdownFiles(srcDir);
 for (const file of mdFiles) {
@@ -144,12 +158,33 @@ for (const file of htmlFiles) {
   }
 }
 
+// 3. Check every built .parquet file in dist: must start and end with "PAR1"
+const distParquetFiles = getParquetFiles(distDir);
+let parquetFileCount = 0;
+for (const file of distParquetFiles) {
+  parquetFileCount++;
+  const buf = fs.readFileSync(file);
+  if (buf.length < 8) {
+    logError(file, null, `Parquet file size (${buf.length} bytes) is less than 8 bytes.`);
+    continue;
+  }
+  const startMagic = buf.subarray(0, 4).toString("utf-8");
+  const endMagic = buf.subarray(buf.length - 4).toString("utf-8");
+  if (startMagic !== "PAR1" || endMagic !== "PAR1") {
+    logError(
+      file,
+      null,
+      `Parquet magic mismatch: starts with '${startMagic}' and ends with '${endMagic}' (expected 'PAR1')`
+    );
+  }
+}
+
 if (errorCount > 0) {
   console.error(`\ncheck_md: FAILED with ${errorCount} error(s).`);
   process.exit(1);
 } else {
   console.log(
-    `check_md: PASSED. Scanned ${mdFiles.length} markdown file(s), ${htmlFiles.length} built HTML file(s), verified ${moduleScriptCount} module script(s).`
+    `check_md: PASSED. Scanned ${mdFiles.length} markdown file(s), ${htmlFiles.length} built HTML file(s), verified ${moduleScriptCount} module script(s), verified ${parquetFileCount} parquet file(s).`
   );
   process.exit(0);
 }
