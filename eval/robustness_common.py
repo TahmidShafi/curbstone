@@ -99,3 +99,16 @@ def compute_mode_average_precision(
         return float("nan")
     return compute_average_precision(sub_scores, sub_is_fab, sub_tie)
 
+
+def wilson_ci(x: int, n: int, confidence: float = 0.95) -> Tuple[float, float, float]:
+    """Compute Wilson score interval for binomial proportion x/n."""
+    if n == 0:
+        return 0.0, 0.0, 0.0
+    p = x / n
+    z = 1.959963984540054
+    denom = 1.0 + (z ** 2) / n
+    center = (p + (z ** 2) / (2.0 * n)) / denom
+    margin = (z / denom) * np.sqrt((p * (1.0 - p) / n) + (z ** 2) / (4.0 * (n ** 2)))
+    return float(p), float(max(0.0, center - margin)), float(min(1.0, center + margin))
+
+
