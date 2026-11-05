@@ -64,3 +64,69 @@ export function downloadAllocationCsv(selectedSubmissions, scenario, budget) {
   a.download = `backcheck_allocation_${scenario}_b${budget}.csv`;
   a.click();
 }
+
+/**
+ * Render inline evidence chips with max 1 visible chip + "+N"
+ */
+export function renderEvidenceChips(evidenceStr) {
+  const wrap = document.createElement("div");
+  wrap.style.cssText = "display: flex; flex-wrap: wrap; gap: 4px; align-items: center;";
+
+  const codes = (evidenceStr || "").split(",").map((s) => s.trim()).filter(Boolean);
+  if (codes.length === 0) {
+    const dash = document.createElement("span");
+    dash.style.cssText = "color: var(--muted); font-size: 12px;";
+    dash.textContent = "—";
+    wrap.appendChild(dash);
+    return wrap;
+  }
+
+  const fullList = codes.map((c) => `${c}: ${FEATURE_NAMES[c] || c}`).join(", ");
+  const maxVisible = 1;
+  const visible = codes.slice(0, maxVisible);
+  const remaining = codes.length - maxVisible;
+
+  for (const code of visible) {
+    const chip = document.createElement("span");
+    chip.className = "evidence-chip";
+    chip.title = `${code}: ${FEATURE_NAMES[code] || code}`;
+    chip.textContent = FEATURE_NAMES[code] || code;
+    wrap.appendChild(chip);
+  }
+
+  if (remaining > 0) {
+    const more = document.createElement("span");
+    more.className = "evidence-chip";
+    more.title = fullList;
+    more.textContent = `+${remaining}`;
+    wrap.appendChild(more);
+  }
+
+  return wrap;
+}
+
+/**
+ * Render concise truth status cell with full wording in title attribute
+ */
+export function renderTruthCell(label) {
+  const span = document.createElement("span");
+  span.style.cssText = "padding-left: 6px; color: var(--ink); font-size: 12px; white-space: nowrap;";
+  if (label === "TP") {
+    span.style.borderLeft = "3px solid var(--fab, #c2410c)";
+    span.textContent = "Fabricator ✓";
+    span.title = "Fabricator — in top 4";
+  } else if (label === "FN") {
+    span.style.borderLeft = "3px solid var(--fab, #c2410c)";
+    span.textContent = "Fabricator — missed";
+    span.title = "Fabricator — missed";
+  } else if (label === "FP") {
+    span.style.borderLeft = "3px solid var(--honest, #2563eb)";
+    span.textContent = "Honest — flagged";
+    span.title = "Honest — flagged";
+  } else {
+    span.style.borderLeft = "3px solid var(--honest, #2563eb)";
+    span.textContent = "Honest";
+    span.title = "Honest";
+  }
+  return span;
+}

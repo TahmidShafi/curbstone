@@ -4,7 +4,7 @@
  * - vertical tick at 0 / expected rate (#64748b)
  * - dot = observed (radius 4; filled --ink when outside band, hollow when inside)
  */
-export function renderIntervalBar(est, ciLow, ciHigh, width = 110, height = 20, expectedVal = 0) {
+export function renderIntervalBar(est, ciLow, ciHigh, width = 110, height = 20, expectedVal = 0, isResponsive = false) {
   if (est == null || ciLow == null || ciHigh == null || isNaN(est) || isNaN(ciLow) || isNaN(ciHigh)) {
     const span = document.createElement("span");
     span.style.cssText = "color: var(--muted); font-size: 12px;";
@@ -35,9 +35,16 @@ export function renderIntervalBar(est, ciLow, ciHigh, width = 110, height = 20, 
   const dotStroke = "var(--ink, #1f2937)";
 
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.setAttribute("width", String(width));
-  svg.setAttribute("height", String(height));
-  svg.style.cssText = "display: inline-block; vertical-align: middle;";
+  if (isResponsive) {
+    svg.setAttribute("width", "100%");
+    svg.setAttribute("height", String(height));
+    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    svg.style.cssText = "display: block; width: 100%; max-width: 100%;";
+  } else {
+    svg.setAttribute("width", String(width));
+    svg.setAttribute("height", String(height));
+    svg.style.cssText = "display: inline-block; vertical-align: middle;";
+  }
 
   // Honest 90% band: fill #cbd5e1, height 8px
   const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
@@ -118,7 +125,7 @@ export function renderCardIntervalChart(est, ciLow, ciHigh, expectedVal = 0, wid
   svg.setAttribute("width", "100%");
   svg.setAttribute("height", String(height));
   svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
-  svg.style.cssText = "display: block; overflow: visible; font-variant-numeric: tabular-nums;";
+  svg.style.cssText = "display: block; width: 100%; max-width: 100%; height: auto; font-variant-numeric: tabular-nums;";
 
   const track = document.createElementNS("http://www.w3.org/2000/svg", "line");
   track.setAttribute("x1", "16");

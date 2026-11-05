@@ -46,7 +46,8 @@ export function renderEvidenceDrawer({
   const featureKeys = Object.keys(features);
 
   const container = document.createElement("div");
-  container.style.cssText = "background: var(--page); border: 1px solid var(--line); border-radius: 8px; padding: 16px; margin: 4px 0;";
+  container.className = "evidence-drawer-container";
+  container.style.cssText = "background: var(--page); border: 1px solid var(--line); border-radius: 8px; padding: 16px; margin: 4px 0; box-sizing: border-box; width: 100%; max-width: 100%;";
 
   const header = document.createElement("div");
   header.style.cssText = "display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); padding-bottom: 12px; margin-bottom: 16px;";
@@ -80,7 +81,8 @@ export function renderEvidenceDrawer({
     container.appendChild(noFeat);
   } else {
     const grid = document.createElement("div");
-    grid.style.cssText = "display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px;";
+    grid.className = "evidence-cards-grid";
+    grid.style.cssText = "display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; width: 100%; box-sizing: border-box;";
     for (const fKey of featureKeys) {
       grid.appendChild(renderFeatureCard(fKey, features[fKey], enumeratorId, allSubmissions, villages));
     }
@@ -118,18 +120,21 @@ function renderFeatureCard(fKey, fData, enumeratorId, allSubmissions, villages) 
   const [ciLo, ciHi] = isCount ? (countRange || [0, 0]) : [-h, h];
 
   const card = document.createElement("div");
-  card.style.cssText = "background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px; box-sizing: border-box;";
+  card.className = "evidence-feature-card";
+  card.style.cssText = "background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px; box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0;";
 
-  const topRow = document.createElement("div");
-  topRow.style.cssText = "display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;";
-  topRow.innerHTML = `
-    <h4 style="margin: 0; font-size: 15px; color: var(--ink);">
+  const headerWrap = document.createElement("div");
+  headerWrap.style.cssText = "margin-bottom: 8px;";
+  headerWrap.innerHTML = `
+    <h4 style="margin: 0 0 4px 0; font-size: 15px; color: var(--ink); line-height: 20px;">
       <span class="evidence-chip" title="${fKey}">${fKey}</span>
       ${plainName}
     </h4>
-    <span style="font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums;">p = ${pValStr}</span>
+    <div style="font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap;">
+      p = ${pValStr}
+    </div>
   `;
-  card.appendChild(topRow);
+  card.appendChild(headerWrap);
 
   const desc = document.createElement("p");
   desc.style.cssText = "margin: 0 0 10px 0; font-size: 13px; color: var(--ink); line-height: 18px;";

@@ -106,3 +106,76 @@ test("activateRow handler inserts drawer row after clicked row and toggles clean
   assert.strictEqual(tableContainer.querySelectorAll("tr.evidence-drawer-row").length, 1);
   assert.strictEqual(row3.nextElementSibling.getAttribute("data-drawer-for"), "enum_03");
 });
+
+test("drawer starts closed on load and on scenario change, preserved across reveal/shrinkage", async () => {
+  const dom = new JSDOM("<!DOCTYPE html><html><body></body></html>");
+  global.document = dom.window.document;
+  global.Event = dom.window.Event;
+  global.Node = dom.window.Node;
+
+  const { renderRiskTable, activateRow } = await import("../src/components/riskTable.js");
+
+  const sampleRows = [
+    { rank: 1, enumerator_id: "enum_01", n: 20, risk_score: 2.5, evidence: "F1", strongest_est: -1.2, strongest_ci_low: -0.5, strongest_ci_high: 0.5, rule_hits: 1, allocated_backchecks: 5, truth_label: "TN" },
+    { rank: 2, enumerator_id: "enum_02", n: 15, risk_score: 1.8, evidence: "F3, F7", strongest_est: 0.3, strongest_ci_low: 0.0, strongest_ci_high: 0.1, rule_hits: 0, allocated_backchecks: 3, truth_label: "TN" },
+    { rank: 3, enumerator_id: "enum_03", n: 18, risk_score: 1.2, evidence: "", strongest_est: null, strongest_ci_low: null, strongest_ci_high: null, rule_hits: 0, allocated_backchecks: 2, truth_label: "TN" },
+  ];
+
+  // Initial load with scenario "mixed": drawer starts CLOSED
+  const t1 = renderRiskTable({ scenario: "mixed", rows: sampleRows });
+  assert.strictEqual(t1.querySelectorAll("tr.evidence-drawer-row").length, 0, "must start closed on load");
+
+  // User activates enum_02
+  activateRow(t1, "enum_02");
+  assert.strictEqual(t1.querySelectorAll("tr.evidence-drawer-row").length, 1);
+
+  // Re-render same scenario (e.g. reveal toggled): drawer stays OPEN for enum_02
+  const t2 = renderRiskTable({ scenario: "mixed", rows: sampleRows, isRevealed: true });
+  assert.strictEqual(t2.querySelectorAll("tr.evidence-drawer-row").length, 1, "drawer preserved on reveal toggle");
+  assert.strictEqual(t2.querySelector("tr.evidence-drawer-row").getAttribute("data-drawer-for"), "enum_02");
+
+  // Re-render with new scenario "low": drawer starts CLOSED on scenario change
+  const t3 = renderRiskTable({ scenario: "low", rows: sampleRows });
+  assert.strictEqual(t3.querySelectorAll("tr.evidence-drawer-row").length, 0, "drawer closed on scenario change");
+});
+
+test("mobile cards rendered with top-4 divider and toggle drawer on mobile", async () => {
+  const dom = new JSDOM("<!DOCTYPE html><html><body></body></html>");
+  global.document = dom.window.document;
+  global.Event = dom.window.Event;
+  global.Node = dom.window.Node;
+
+  const { renderRiskTable, activateRow } = await import("../src/components/riskTable.js");
+
+  const sampleRows = [
+    { rank: 1, enumerator_id: "enum_01", n: 20, risk_score: 2.5, evidence: "F1", strongest_est: -1.2, strongest_ci_low: -0.5, strongest_ci_high: 0.5, rule_hits: 1, allocated_backchecks: 5, truth_label: "TN" },
+    { rank: 2, enumerator_id: "enum_02", n: 15, risk_score: 1.8, evidence: "F3, F7", strongest_est: 0.3, strongest_ci_low: 0.0, strongest_ci_high: 0.1, rule_hits: 0, allocated_backchecks: 3, truth_label: "TN" },
+    { rank: 3, enumerator_id: "enum_03", n: 18, risk_score: 1.2, evidence: "", strongest_est: null, strongest_ci_low: null, strongest_ci_high: null, rule_hits: 0, allocated_backchecks: 2, truth_label: "TN" },
+    { rank: 4, enumerator_id: "enum_04", n: 25, risk_score: 0.9, evidence: "F2", strongest_est: 1.1, strongest_ci_low: -0.2, strongest_ci_high: 0.2, rule_hits: 0, allocated_backchecks: 1, truth_label: "TN" },
+    { rank: 5, enumerator_id: "enum_05", n: 10, risk_score: 0.2, evidence: "", strongest_est: null, strongest_ci_low: null, strongest_ci_high: null, rule_hits: 0, allocated_backchecks: 0, truth_label: "TN" },
+  ];
+
+  const container = renderRiskTable({ scenario: "test", rows: sampleRows, isRevealed: true });
+
+  const cards = container.querySelectorAll(".risk-card");
+  assert.strictEqual(cards.length, 5, "must render 5 mobile cards");
+
+  const divider = container.querySelector(".rank-divider-card");
+  assert.ok(divider, "must have rank divider card between card 4 and 5");
+  assert.strictEqual(cards[3].nextElementSibling, divider, "divider must be after card 4");
+
+  // Check card content
+  const card1 = cards[0];
+  assert.ok(card1.textContent.includes("#1"), "line 1 has rank");
+  assert.ok(card1.textContent.includes("enum_01"), "line 1 has enum_01");
+  assert.ok(card1.textContent.includes("2.5"), "line 1 has risk score");
+  assert.ok(card1.textContent.includes("n · 1 rules · 5 checks"), "line 4 has n · rules · checks");
+  assert.ok(card1.textContent.includes("Honest"), "truth line rendered when revealed");
+
+  // Tapping card on mobile opens mobile drawer
+  activateRow(container, "enum_01");
+  assert.strictEqual(card1.getAttribute("aria-expanded"), "true");
+  const mobileDrawer = container.querySelector(".risk-card-drawer");
+  assert.ok(mobileDrawer, "mobile drawer exists");
+  assert.strictEqual(card1.nextElementSibling, mobileDrawer, "mobile drawer inserted after card");
+});

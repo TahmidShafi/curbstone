@@ -175,14 +175,77 @@ dl.sim-settings {
 dl.sim-settings dt { font-weight: 600; color: var(--muted); }
 dl.sim-settings dd { margin: 0; color: var(--ink); }
 
-/* Table responsive wrapper */
+/* Table responsive wrapper & mobile cards */
 .table-wrapper {
+  display: block;
   overflow-x: visible;
   width: 100%;
 }
-@media (max-width: 900px) {
+.risk-cards-mobile {
+  display: none;
+}
+@media (max-width: 900px) and (min-width: 641px) {
   .table-wrapper {
     overflow-x: auto;
+  }
+}
+@media (max-width: 640px) {
+  .table-wrapper {
+    display: none !important;
+  }
+  .risk-cards-mobile {
+    display: flex !important;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .evidence-cards-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  .evidence-drawer-container {
+    padding: 12px 10px !important;
+  }
+  .segmented-control {
+    width: 100%;
+  }
+  .segmented-control form {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    width: 100%;
+  }
+  .segmented-control label {
+    width: 100%;
+    box-sizing: border-box;
+    border-right: none !important;
+    border-bottom: 1px solid var(--line);
+    height: 36px;
+    padding: 0 12px;
+  }
+  .segmented-control label:last-child {
+    border-bottom: none;
+  }
+  .control-panel {
+    padding: 12px 14px;
+  }
+  .control-row {
+    gap: 12px;
+  }
+  .control-item {
+    width: 100%;
+  }
+  .control-item form {
+    width: 100%;
+  }
+  .control-panel input[type="range"] {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  .stat-strip {
+    grid-template-columns: 1fr;
   }
 }
 

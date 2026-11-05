@@ -214,6 +214,7 @@ const tableRows = sortedScores.map((r, idx) => {
 });
 
 display(renderRiskTable({
+  scenario: scenario,
   rows: tableRows,
   isRevealed: isRevealed,
   evidenceDict: evidenceDict,
