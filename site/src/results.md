@@ -29,7 +29,7 @@ Rule engine scale benchmark (1M rows): all 12 rules, median 1,712 ms over 3 runs
 display(renderPrecisionChart(width));
 ```
 
-<details>
+<details class="table-wrapper">
 <summary>Full table</summary>
 
 | Workload | Prevalence | Max Achievable | Scoring v3 (Mean) | v3 Rel. Prec. | v3 10th–90th | No-Shrink (Mean) | No-Shrink Rel. | Rules (Mean) | Rules Rel. |
@@ -57,7 +57,7 @@ display(renderPrecisionChart(width));
 display(renderRecallChart(width));
 ```
 
-<details>
+<details class="table-wrapper">
 <summary>Full table</summary>
 
 | Mode | Type | Rounds | Scoring v3 (x/n [95% CI]) | No-Shrinkage (x/n [95% CI]) | Rules Baseline (x/n [95% CI]) |
@@ -81,7 +81,7 @@ display(renderRecallChart(width));
 display(renderShrinkageChart(width));
 ```
 
-<details>
+<details class="table-wrapper">
 <summary>Full table</summary>
 
 | Workload Profile | Total Slots | Scoring v3 (x/Total) | No-Shrinkage (x/Total) | Rules Baseline (x/Total) | v3 − No-Shrink (Paired 95% CI) |
@@ -95,8 +95,8 @@ display(renderShrinkageChart(width));
 
 ### Detection Rate by Working Day (Prevalence 0.10, k = 4)
 
-<div style="overflow-x: auto; max-width: 100%; margin: 16px 0 24px 0; background: var(--surface); border: 1px solid var(--line); border-radius: 8px;">
-  <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+<div class="table-wrapper" style="overflow-x: auto; max-width: 100%; margin: 16px 0 24px 0; background: var(--surface); border: 1px solid var(--line); border-radius: 8px;">
+  <table class="results-table" style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
     <thead>
       <tr style="border-bottom: 1px solid var(--line); color: var(--ink); font-weight: 600;">
         <th style="padding: 10px 12px; white-space: nowrap;">Mode</th>

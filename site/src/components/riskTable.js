@@ -43,6 +43,7 @@ export function renderRiskTable({
   wrapper.style.cssText = "background: var(--surface); border: 1px solid var(--line); border-radius: 8px; width: 100%; box-sizing: border-box;";
 
   const table = document.createElement("table");
+  table.className = "risk-table";
   table.style.cssText = "width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;";
 
   const thead = document.createElement("thead");

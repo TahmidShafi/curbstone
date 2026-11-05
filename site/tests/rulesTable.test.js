@@ -39,6 +39,7 @@ test("renderRuleTableRow returns HTMLTableRowElement with exactly 8 cells in cor
   const tableContainer = renderExecutedRulesTable([sampleRule, { ...sampleRule, id: "RULE_02", pass: false }]);
   const table = tableContainer.querySelector("table");
   assert.ok(table, "table must exist");
+  assert.strictEqual(table.className, "rules-table", "table must have class rules-table");
   assert.strictEqual(table.style.width, "100%", "table width must be 100%");
   assert.strictEqual(table.style.tableLayout, "fixed", "table layout must be fixed");
 

@@ -181,6 +181,9 @@ dl.sim-settings dd { margin: 0; color: var(--ink); }
   overflow-x: visible;
   width: 100%;
 }
+.table-wrapper table, table.rules-table, table.results-table, table.risk-table, details table {
+  max-width: none;
+}
 .risk-cards-mobile {
   display: none;
 }

@@ -174,6 +174,7 @@ export function renderExecutedRulesTable(results = []) {
   wrapper.style.cssText = "overflow-x: auto; max-width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; margin-bottom: 24px; box-sizing: border-box;";
 
   const table = document.createElement("table");
+  table.className = "rules-table";
   table.style.cssText = "width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; table-layout: fixed;";
 
   const colgroup = document.createElement("colgroup");
