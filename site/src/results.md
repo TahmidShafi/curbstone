@@ -9,6 +9,7 @@ Performance evaluation across 72 factorial configurations (1,440 rounds, seeds 1
 - **Risk Ranking vs Deterministic Rules:** Scoring v3 achieves a +0.1307 [+0.1191, +0.1422] precision@4 advantage over deterministic rule filtering, and +0.1946 [+0.1783, +0.2110] higher average precision. In relative precision (precision / max achievable), v3 achieves 49.4%–80.2% across medium-to-high prevalence settings compared to rules' 25.0%–61.3%.
 - **Empirical Bayes Shrinkage Effect:** Shrinkage strongly protects small-workload honest enumerators. Under Low Workload [5, 15], shrinkage yields a +0.0693 [+0.0521, +0.0865] precision@4 boost over raw un-shrunk estimation and reduces small-$n$ honest false flags by 5.3 percentage points (-0.0531 [-0.0708, -0.0359]).
 - **The Straight-Lining Cost:** Shrinkage is not a free lunch. On the `straight_lining` mode, shrinking asset dispersion estimates toward peer expectations lowers average precision by -0.1152 [-0.1417, -0.0886] compared to un-shrunk estimators, because low within-record variance is partially dampened by cell shrinkage.
+- **Rule Engine Scale Benchmark (1M rows):** [to be measured in browser] (evaluated live in DuckDB-Wasm on the Rules page).
 
 ---
 
@@ -62,7 +63,7 @@ Performance evaluation across 72 factorial configurations (1,440 rounds, seeds 1
 
 | Workload Profile | Total Slots | Scoring v3 ($x/\text{Total}$) | No-Shrinkage ($x/\text{Total}$) | Rules Baseline ($x/\text{Total}$) | v3 − No-Shrink (Paired 95% CI) |
 | :--- | ---: | :--- | :--- | :--- | :--- |
-| **Low** [5, 15] | 1920 | 1037/1920 (0.5401) | 1139/1920 (0.5932) | 1198/1920 (0.6240) | -0.0531 [-0.0708, -0.0359] |
+| **Low** [5, 15] (all enumerators have $n < 15$ in this profile; this equals the false-positive share ($1 - \text{precision}$)) | 1920 | 1037/1920 (0.5401) | 1139/1920 (0.5932) | 1198/1920 (0.6240) | -0.0531 [-0.0708, -0.0359] |
 | **Mixed** [5, 60] | 1920 | 196/1920 (0.1021) | 66/1920 (0.0344) | 53/1920 (0.0276) | +0.0677 [+0.0552, +0.0807] |
 | **High** [40, 60] | 1920 | 0/1920 (0.0000) | 0/1920 (0.0000) | 0/1920 (0.0000) | +0.0000 [+0.0000, +0.0000] |
 | **Overall** (72 Configs) | 5760 | 1233/5760 (0.2141) | 1205/5760 (0.2092) | 1251/5760 (0.2172) | +0.0049 [-0.0026, +0.0127] |

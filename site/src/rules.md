@@ -152,14 +152,18 @@ const benchResult = Mutable(null);
 if (runBenchmark > 0) {
   benchResult.value = { running: true };
   
-  // Replicate to 1,000,000 rows using range join
+  // Replicate to 1,000,000 rows while preserving enumerator-day and village structures
   const t0 = performance.now();
+  const demoCountRes = await db.query("SELECT count(*)::INT AS cnt FROM submissions;");
+  const demoSubmissionsCount = demoCountRes.toArray()[0].cnt;
+  const demoRate = (totalHits / (demoSubmissionsCount / 1000)).toFixed(2);
+
   await db.query(`
     CREATE OR REPLACE TABLE _bench_submissions AS
     SELECT
       'bench_' || r.i AS submission_id,
       s.round,
-      'enum_' || lpad(((r.i % 40) + 1)::VARCHAR, 2, '0') AS enumerator_id,
+      s.enumerator_id || '_r' || (r.i // ${demoSubmissionsCount}) AS enumerator_id,
       s.upazila_code,
       s.village_id,
       s.start_time,
@@ -180,7 +184,7 @@ if (runBenchmark > 0) {
       s.end_local
     FROM range(0, 1000000) r(i)
     JOIN (SELECT *, row_number() OVER () - 1 AS rn FROM submissions) s
-      ON s.rn = r.i % (SELECT count(*) FROM submissions);
+      ON s.rn = r.i % ${demoSubmissionsCount};
   `);
   
   // Replace view temporarily for benchmark
@@ -198,6 +202,7 @@ if (runBenchmark > 0) {
   // Restore original submissions view
   await db.query(activeViewSql);
   const totalElapsed = performance.now() - t0;
+  const benchRate = (benchHits / 1000).toFixed(2);
 
   benchResult.value = {
     running: false,
@@ -205,6 +210,8 @@ if (runBenchmark > 0) {
     ruleTotalMs: ruleTotalMs,
     totalElapsed: totalElapsed,
     benchHits: benchHits,
+    benchRate: benchRate,
+    demoRate: demoRate,
     cores: typeof navigator !== 'undefined' ? (navigator.hardwareConcurrency || "Unknown") : "N/A",
     userAgent: typeof navigator !== 'undefined' ? (navigator.userAgent || "Unknown") : "Node.js",
   };
@@ -224,16 +231,21 @@ ${benchResult.value && !benchResult.value.running ? html`
       <div style="background: #fff; padding: 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
         <div style="font-size: 0.8rem; color: #64748b;">12-Rule Evaluation Time</div>
         <div style="font-size: 1.25rem; font-weight: bold; color: #0284c7;">${benchResult.value.ruleTotalMs.toFixed(1)} ms</div>
+        <div style="font-size: 0.75rem; color: #64748b; margin-top: 4px;">measured in this browser (DuckDB-Wasm)</div>
       </div>
       <div style="background: #fff; padding: 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
         <div style="font-size: 0.8rem; color: #64748b;">Processing Throughput</div>
         <div style="font-size: 1.25rem; font-weight: bold; color: #16a34a;">
           ${(1000000 / (benchResult.value.ruleTotalMs / 1000)).toLocaleString(undefined, {maximumFractionDigits: 0})} rows/sec
         </div>
+        <div style="font-size: 0.75rem; color: #64748b; margin-top: 4px;">in-memory streaming SQL</div>
       </div>
       <div style="background: #fff; padding: 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
-        <div style="font-size: 0.8rem; color: #64748b;">Total Violations Detected</div>
-        <div style="font-size: 1.25rem; font-weight: bold; color: #c2410c;">${benchResult.value.benchHits.toLocaleString()} hits</div>
+        <div style="font-size: 0.8rem; color: #64748b;">Violations per 1,000 Submissions</div>
+        <div style="font-size: 1.25rem; font-weight: bold; color: #c2410c;">
+          ${benchResult.value.benchRate} <span style="font-size: 0.85rem; font-weight: normal; color: #64748b;">(demo: ${benchResult.value.demoRate})</span>
+        </div>
+        <div style="font-size: 0.75rem; color: #64748b; margin-top: 4px;">${benchResult.value.benchHits.toLocaleString()} total violations detected</div>
       </div>
     </div>
     <div style="font-size: 0.825rem; color: #64748b; font-family: monospace;">
@@ -241,3 +253,4 @@ ${benchResult.value && !benchResult.value.running ? html`
     </div>
   </div>
 ` : ""}
+

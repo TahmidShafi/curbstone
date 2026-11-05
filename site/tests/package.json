@@ -1,0 +1,5 @@
+{
+  "name": "site-tests",
+  "type": "module",
+  "main": "allocator.test.js"
+}

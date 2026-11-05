@@ -40,3 +40,4 @@ export function renderIntervalBar(est, ciLow, ciHigh, width = 120, height = 20) 
     <title>Estimate: ${est.toFixed(3)} [${ciLow.toFixed(3)}, ${ciHigh.toFixed(3)}]</title>
   </svg>`;
 }
+

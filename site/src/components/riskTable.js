@@ -89,3 +89,4 @@ function renderTruthBadge(label) {
   }
   return htl.html`<span style="color: #64748b;">[TN] Honest</span>`;
 }
+

@@ -9,3 +9,4 @@ export default {
   toc: true,
   pager: true
 };
+

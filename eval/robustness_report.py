@@ -120,7 +120,7 @@ def generate_small_n_table(df_grid: pd.DataFrame) -> Tuple[pd.DataFrame, str]:
     """Table 4: Small-n honest false-flag slots and paired bootstrap CI for v3 - no-shrinkage."""
     rows = []
     subsets = [
-        ("Low Workload [5, 15]", df_grid[df_grid["workload_name"] == "low"]),
+        ("Low Workload [5, 15] (all enumerators have n < 15 in this profile; this equals the false-positive share (1 − precision))", df_grid[df_grid["workload_name"] == "low"]),
         ("Mixed Workload [5, 60]", df_grid[df_grid["workload_name"] == "mixed"]),
         ("High Workload [40, 60]", df_grid[df_grid["workload_name"] == "high"]),
         ("Overall (All 72 Configs)", df_grid),

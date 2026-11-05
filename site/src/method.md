@@ -12,20 +12,28 @@ The diagram below illustrates the flow of data, rules, feature estimators, and a
 flowchart TD
   classDef stage fill:#f8fafc,stroke:#3b82f6,stroke-width:2px,color:#1e293b;
   classDef highlight fill:#eff6ff,stroke:#2563eb,stroke-width:2px,color:#1e40af;
+  classDef table fill:#f1f5f9,stroke:#64748b,stroke-width:2px,color:#0f172a;
 
-  G["1. Synthetic Data Generator<br/>(Population, Villages, Enumerators, 5 Fraud Modes)"]:::stage
-  R["2. SQL Rule Engine<br/>(12 DQA Rules in DuckDB-Wasm)"]:::stage
-  F["3. Feature Extraction<br/>(10 Paradata & Response Features F1–F10)"]:::stage
-  S["4. Scoring v3 Engine<br/>(Cell Shrinkage M=50, Empirical Bayes)"]:::highlight
-  RK["5. Risk Ranking<br/>(Enumerator Risk Score = -log10 p_e)"]:::stage
-  BA["6. Back-Check Allocator<br/>(Random Floor + Risk Proportional + Evidence First)"]:::highlight
+  GEN["Generator<br/>(Population, Villages, Enumerators, Fraud)"]:::stage
+  SUB["Submissions<br/>(Survey Paradata & Responses)"]:::stage
+  RULES["Rules<br/>(12 SQL DQA Checks)"]:::stage
+  HITS["Rule Hits<br/>(Display only)"]:::stage
+  FEAT["Features<br/>(10 Paradata & Response Features F1–F10)"]:::stage
+  SCORE["Scoring v3<br/>(Cell Shrinkage M=50, Empirical Bayes)"]:::highlight
+  RANK["Risk Ranking<br/>(Enumerator Risk Score = -log10 p_e)"]:::stage
+  ALLOC["Back-Check Allocator<br/>(Random Floor + Risk Proportional + Evidence First)"]:::highlight
+  TAB["Risk Table<br/>(Rule hits and risk ranking both shown)"]:::table
 
-  G --> R
-  G --> F
-  R -.->|Deterministic Flags| S
-  F -->|Empirical Observables| S
-  S --> RK
-  RK --> BA
+  GEN --> SUB
+  SUB --> RULES
+  RULES --> HITS
+  SUB --> FEAT
+  FEAT --> SCORE
+  SCORE --> RANK
+  RANK --> ALLOC
+
+  HITS --> TAB
+  RANK --> TAB
 ```
 
 ---
