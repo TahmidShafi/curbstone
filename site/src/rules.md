@@ -8,17 +8,39 @@ import {load} from "npm:js-yaml";
 // Load static rules YAML & expected hits
 const mixedRulesYaml = await FileAttachment("./data/mixed/rules.yaml").text();
 const mixedExpectedHits = await FileAttachment("./data/mixed/rule_hits_expected.json").json();
+const mixedMetrics = await FileAttachment("./data/mixed/round_metrics.json").json();
 const lowRulesYaml = await FileAttachment("./data/low/rules.yaml").text();
 const lowExpectedHits = await FileAttachment("./data/low/rule_hits_expected.json").json();
+const lowMetrics = await FileAttachment("./data/low/round_metrics.json").json();
 
-// Initialize ONE DuckDB instance per page load with unique table names
+// Initialize ONE DuckDB instance per page load with globally unique parquet file basenames
 const db = await DuckDBClient.of({
-  mixed_submissions: FileAttachment("./data/mixed/submissions.parquet"),
-  mixed_villages:    FileAttachment("./data/mixed/villages.parquet"),
-  low_submissions:   FileAttachment("./data/low/submissions.parquet"),
-  low_villages:      FileAttachment("./data/low/villages.parquet")
+  mixed_submissions: FileAttachment("./data/mixed/mixed_submissions.parquet"),
+  mixed_villages:    FileAttachment("./data/mixed/mixed_villages.parquet"),
+  low_submissions:   FileAttachment("./data/low/low_submissions.parquet"),
+  low_villages:      FileAttachment("./data/low/low_villages.parquet")
 });
 const benchHistory = [];
+
+// Self-check after registration: verify row counts match expected values from build_demo.py
+const mixedSubCnt = (await db.query("SELECT count(*)::INT AS cnt FROM mixed_submissions")).toArray()[0].cnt;
+const lowSubCnt = (await db.query("SELECT count(*)::INT AS cnt FROM low_submissions")).toArray()[0].cnt;
+const mixedVilCnt = (await db.query("SELECT count(*)::INT AS cnt FROM mixed_villages")).toArray()[0].cnt;
+const lowVilCnt = (await db.query("SELECT count(*)::INT AS cnt FROM low_villages")).toArray()[0].cnt;
+
+const tableErrors = [];
+if (mixedSubCnt !== mixedMetrics.submissions_count) tableErrors.push(`mixed_submissions (got ${mixedSubCnt}, expected ${mixedMetrics.submissions_count})`);
+if (lowSubCnt !== lowMetrics.submissions_count) tableErrors.push(`low_submissions (got ${lowSubCnt}, expected ${lowMetrics.submissions_count})`);
+if (mixedVilCnt !== mixedMetrics.villages_count) tableErrors.push(`mixed_villages (got ${mixedVilCnt}, expected ${mixedMetrics.villages_count})`);
+if (lowVilCnt !== lowMetrics.villages_count) tableErrors.push(`low_villages (got ${lowVilCnt}, expected ${lowMetrics.villages_count})`);
+
+if (tableErrors.length > 0) {
+  display(html`<div class="card" style="padding: 16px; margin: 16px 0; background: #fef2f2; border: 2px solid #ef4444; border-radius: 6px; color: #991b1b;">
+    <div style="font-weight: bold; font-size: 1rem; margin-bottom: 4px;">Table Registration Row Count Mismatch</div>
+    <div>Expected counts written by build_demo differ from registered DuckDB tables:</div>
+    <ul style="margin: 4px 0 0 0; padding-left: 20px;">${tableErrors.map(e => html`<li>${e}</li>`)}</ul>
+  </div>`);
+}
 ```
 
 ```js
@@ -81,20 +103,12 @@ const badgeMessage = allPassed
 
 ```js
 display(html`
-<div class="card" style="padding: 16px; margin: 16px 0; background: ${allPassed ? '#f0fdf4' : '#fef2f2'}; border: 1px solid ${allPassed ? '#86efac' : '#fca5a5'}; border-radius: 6px;">
-  <div style="display: flex; justify-content: space-between; align-items: center;">
-    <div>
-      <span style="display: inline-block; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 0.9rem; background: ${allPassed ? '#16a34a' : '#dc2626'}; color: #fff;">
-        ${allPassed ? "PARITY MATCH" : "PARITY MISMATCH"}
-      </span>
-      <span style="margin-left: 12px; font-size: 0.95rem; color: #1e293b; font-weight: 600;">
-        ${badgeMessage}
-      </span>
-    </div>
-    <div style="font-size: 0.85rem; color: #64748b; font-family: monospace;">
-      12 rules evaluated in ${totalMs.toFixed(1)} ms
-    </div>
+<div class="card" style="padding: 16px; margin: 16px 0; background: ${allPassed ? '#f0fdf4' : '#fef2f2'}; border: 1px solid ${allPassed ? '#86efac' : '#fca5a5'}; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
+  <div>
+    <span style="display: inline-block; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 0.9rem; background: ${allPassed ? '#16a34a' : '#dc2626'}; color: #fff;">${allPassed ? "PARITY MATCH" : "PARITY MISMATCH"}</span>
+    <span style="margin-left: 12px; font-size: 0.95rem; color: #1e293b; font-weight: 600;">${badgeMessage}</span>
   </div>
+  <div style="font-size: 0.85rem; color: #64748b; font-family: monospace;">12 rules evaluated in ${totalMs.toFixed(1)} ms</div>
 </div>
 `);
 ```

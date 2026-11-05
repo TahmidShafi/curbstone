@@ -206,8 +206,8 @@ def test_offset_free_timestamp_rule_hit_parity(tmp_path):
 
     data_dir = Path(__file__).resolve().parent.parent / "site" / "src" / "data"
     for sc, exp_hits in [("mixed", 22), ("low", 7)]:
-        sub_p = data_dir / sc / "submissions.parquet"
-        vil_p = data_dir / sc / "villages.parquet"
+        sub_p = data_dir / sc / f"{sc}_submissions.parquet"
+        vil_p = data_dir / sc / f"{sc}_villages.parquet"
         if sub_p.is_file() and vil_p.is_file():
             hits = run_rules(sub_p, vil_p, rules=rules)
             assert len(hits) == exp_hits, f"Scenario {sc} rule hits mismatch: {len(hits)} != {exp_hits}"

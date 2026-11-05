@@ -12,6 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import argparse
 from datetime import datetime
 import json
+import os
 import shutil
 from typing import Any, Dict, Optional
 import numpy as np
@@ -23,6 +24,13 @@ from engine.features import build_feature_table
 from engine.rules import load_rules, run_rules
 from engine.scoring import score_enumerators
 from generator.run import run_generation
+
+
+def atomic_to_parquet(df: pd.DataFrame, dest: Path) -> None:
+    """Write DataFrame to parquet atomically via <dest>.tmp, then rename."""
+    tmp_path = Path(str(dest) + ".tmp")
+    df.to_parquet(tmp_path, engine="pyarrow", index=False)
+    os.replace(tmp_path, dest)
 
 
 def get_study_average_metrics(scenario_name: str, results_parquet: Path) -> Dict[str, Any]:
@@ -91,16 +99,16 @@ def build_single_scenario(
         df_vil = pd.read_parquet(vil_path)
         df_truth = pd.read_parquet(truth_path)
 
-        df_sub.to_parquet(output_dir / "submissions.parquet", engine="pyarrow", index=False)
-        df_vil.to_parquet(output_dir / "villages.parquet", engine="pyarrow", index=False)
+        atomic_to_parquet(df_sub, output_dir / f"{scenario_name}_submissions.parquet")
+        atomic_to_parquet(df_vil, output_dir / f"{scenario_name}_villages.parquet")
 
         # Features & Scores
         df_feat = build_feature_table(sub_path, vil_path, seed=12345)
         scores_shrinkage = score_enumerators(df_feat, scoring_version="v3", no_shrinkage=False)
         scores_noshrinkage = score_enumerators(df_feat, scoring_version="v3", no_shrinkage=True)
 
-        scores_shrinkage.to_parquet(output_dir / "scores_shrinkage.parquet", engine="pyarrow", index=False)
-        scores_noshrinkage.to_parquet(output_dir / "scores_noshrinkage.parquet", engine="pyarrow", index=False)
+        atomic_to_parquet(scores_shrinkage, output_dir / f"{scenario_name}_scores_shrinkage.parquet")
+        atomic_to_parquet(scores_noshrinkage, output_dir / f"{scenario_name}_scores_noshrinkage.parquet")
 
         # Evidence
         ev_dict_shrink = build_evidence(df_sub, df_vil, scores_shrinkage, df_feat, no_shrinkage=False)
@@ -178,6 +186,8 @@ def build_single_scenario(
         study_avg = get_study_average_metrics(scenario_name, project_root / "outputs" / "robustness" / "results.parquet")
         round_metrics_data = {
             "scenario": scenario_name, "seed": seed, "k": 4,
+            "submissions_count": int(len(df_sub)),
+            "villages_count": int(len(df_vil)),
             "round_hits_v3": int(round(p4_v3 * 4)),
             "round_hits_noshrinkage": int(round(p4_ns * 4)),
             "round_precision_v3": p4_v3, "round_precision_noshrinkage": p4_ns,

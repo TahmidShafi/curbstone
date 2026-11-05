@@ -153,6 +153,17 @@ def test_all_parquet_files_valid_and_nonempty():
         assert tbl.num_rows > 0, f"{p} has 0 rows"
 
 
+def test_no_duplicate_parquet_basenames():
+    """Verify that no two parquet files under site/src/data share a basename."""
+    root = Path(__file__).resolve().parent.parent
+    data_dir = root / "site" / "src" / "data"
+    parquet_files = list(data_dir.rglob("*.parquet"))
+    assert len(parquet_files) > 0, "No parquet files found under site/src/data"
+    basenames = [p.name for p in parquet_files]
+    duplicates = [name for name in set(basenames) if basenames.count(name) > 1]
+    assert not duplicates, f"Found duplicate parquet basenames under site/src/data: {duplicates}"
+
+
 @pytest.mark.parametrize("scenario", ["mixed", "low"])
 def test_rule_hits_identical_between_variants(scenario):
     """Verify that rule hits are identical between shrinkage and no-shrinkage variants and match flags.csv."""
