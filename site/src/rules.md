@@ -13,12 +13,12 @@ const lowRulesYaml = await FileAttachment("./data/low/rules.yaml").text();
 const lowExpectedHits = await FileAttachment("./data/low/rule_hits_expected.json").json();
 const lowMetrics = await FileAttachment("./data/low/round_metrics.json").json();
 
-// Initialize ONE DuckDB instance per page load with globally unique parquet file basenames
+// Initialize ONE DuckDB instance per page load by passing in-memory Arrow tables
 const db = await DuckDBClient.of({
-  mixed_submissions: FileAttachment("./data/mixed/mixed_submissions.parquet"),
-  mixed_villages:    FileAttachment("./data/mixed/mixed_villages.parquet"),
-  low_submissions:   FileAttachment("./data/low/low_submissions.parquet"),
-  low_villages:      FileAttachment("./data/low/low_villages.parquet")
+  mixed_submissions: await FileAttachment("./data/mixed/mixed_submissions.parquet").parquet(),
+  mixed_villages:    await FileAttachment("./data/mixed/mixed_villages.parquet").parquet(),
+  low_submissions:   await FileAttachment("./data/low/low_submissions.parquet").parquet(),
+  low_villages:      await FileAttachment("./data/low/low_villages.parquet").parquet()
 });
 const benchHistory = [];
 
@@ -28,16 +28,22 @@ const lowSubCnt = (await db.query("SELECT count(*)::INT AS cnt FROM low_submissi
 const mixedVilCnt = (await db.query("SELECT count(*)::INT AS cnt FROM mixed_villages")).toArray()[0].cnt;
 const lowVilCnt = (await db.query("SELECT count(*)::INT AS cnt FROM low_villages")).toArray()[0].cnt;
 
+// Check that roster_ages (Arrow list) arrives as a DuckDB LIST (R03/R04 use len()/list_min())
+const mixedRosterType = (await db.query("SELECT typeof(roster_ages) AS t FROM mixed_submissions LIMIT 1")).toArray()[0]?.t ?? "unknown";
+const lowRosterType = (await db.query("SELECT typeof(roster_ages) AS t FROM low_submissions LIMIT 1")).toArray()[0]?.t ?? "unknown";
+
 const tableErrors = [];
-if (mixedSubCnt !== mixedMetrics.submissions_count) tableErrors.push(`mixed_submissions (got ${mixedSubCnt}, expected ${mixedMetrics.submissions_count})`);
-if (lowSubCnt !== lowMetrics.submissions_count) tableErrors.push(`low_submissions (got ${lowSubCnt}, expected ${lowMetrics.submissions_count})`);
-if (mixedVilCnt !== mixedMetrics.villages_count) tableErrors.push(`mixed_villages (got ${mixedVilCnt}, expected ${mixedMetrics.villages_count})`);
-if (lowVilCnt !== lowMetrics.villages_count) tableErrors.push(`low_villages (got ${lowVilCnt}, expected ${lowMetrics.villages_count})`);
+if (mixedSubCnt !== mixedMetrics.submissions_count) tableErrors.push(`mixed_submissions row count (got ${mixedSubCnt}, expected ${mixedMetrics.submissions_count})`);
+if (lowSubCnt !== lowMetrics.submissions_count) tableErrors.push(`low_submissions row count (got ${lowSubCnt}, expected ${lowMetrics.submissions_count})`);
+if (mixedVilCnt !== mixedMetrics.villages_count) tableErrors.push(`mixed_villages row count (got ${mixedVilCnt}, expected ${mixedMetrics.villages_count})`);
+if (lowVilCnt !== lowMetrics.villages_count) tableErrors.push(`low_villages row count (got ${lowVilCnt}, expected ${lowMetrics.villages_count})`);
+if (!mixedRosterType.includes("[]") && !mixedRosterType.toUpperCase().includes("LIST")) tableErrors.push(`mixed_submissions.roster_ages arrived as '${mixedRosterType}' instead of DuckDB LIST`);
+if (!lowRosterType.includes("[]") && !lowRosterType.toUpperCase().includes("LIST")) tableErrors.push(`low_submissions.roster_ages arrived as '${lowRosterType}' instead of DuckDB LIST`);
 
 if (tableErrors.length > 0) {
   display(html`<div class="card" style="padding: 16px; margin: 16px 0; background: #fef2f2; border: 2px solid #ef4444; border-radius: 6px; color: #991b1b;">
-    <div style="font-weight: bold; font-size: 1rem; margin-bottom: 4px;">Table Registration Row Count Mismatch</div>
-    <div>Expected counts written by build_demo differ from registered DuckDB tables:</div>
+    <div style="font-weight: bold; font-size: 1rem; margin-bottom: 4px;">Table Registration Verification Error</div>
+    <div>The following registered DuckDB table verification check(s) failed:</div>
     <ul style="margin: 4px 0 0 0; padding-left: 20px;">${tableErrors.map(e => html`<li>${e}</li>`)}</ul>
   </div>`);
 }
@@ -136,17 +142,11 @@ display(html`
         <tr style="border-bottom: 1px solid #f1f5f9;">
           <td style="padding: 8px 10px; font-family: monospace; font-weight: bold; color: #1e40af;">${r.id}</td>
           <td style="padding: 8px 10px; color: #475569;">${r.level}</td>
-          <td style="padding: 8px 10px;">
-            <span style="font-size: 0.75rem; font-weight: 600; padding: 2px 6px; border-radius: 4px; background: ${r.severity === 'high' ? '#fee2e2' : r.severity === 'medium' ? '#fef3c7' : '#f1f5f9'}; color: ${r.severity === 'high' ? '#991b1b' : r.severity === 'medium' ? '#92400e' : '#334155'};">
-              ${r.severity.toUpperCase()}
-            </span>
-          </td>
+          <td style="padding: 8px 10px;"><span style="font-size: 0.75rem; font-weight: 600; padding: 2px 6px; border-radius: 4px; background: ${r.severity === 'high' ? '#fee2e2' : r.severity === 'medium' ? '#fef3c7' : '#f1f5f9'}; color: ${r.severity === 'high' ? '#991b1b' : r.severity === 'medium' ? '#92400e' : '#334155'};">${r.severity.toUpperCase()}</span></td>
           <td style="padding: 8px 10px; color: #334155;">${r.description}</td>
           <td style="padding: 8px 10px; text-align: right; font-weight: bold;">${r.hits}</td>
           <td style="padding: 8px 10px; text-align: right; color: #64748b;">${r.expected}</td>
-          <td style="padding: 8px 10px; text-align: center;">
-            ${r.pass ? html`<span style="color: #16a34a; font-weight: bold;">PASS</span>` : html`<span style="color: #dc2626; font-weight: bold;">FAIL</span>`}
-          </td>
+          <td style="padding: 8px 10px; text-align: center;">${r.pass ? html`<span style="color: #16a34a; font-weight: bold;">PASS</span>` : html`<span style="color: #dc2626; font-weight: bold;">FAIL</span>`}</td>
           <td style="padding: 8px 10px; text-align: right; font-family: monospace; color: #64748b;">${r.ms.toFixed(1)} ms</td>
         </tr>
       `)}
