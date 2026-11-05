@@ -1,8 +1,8 @@
 /**
  * Render a mini inline SVG 90% interval bar for the risk table.
- * - grey band = honest 90% range
- * - vertical tick at 0 (or expected rate)
- * - dot = observed; filled --ink when outside band, hollow when inside.
+ * - grey band = honest 90% range (#cbd5e1, height 8px)
+ * - vertical tick at 0 / expected rate (#64748b)
+ * - dot = observed (radius 4; filled --ink when outside band, hollow when inside)
  */
 export function renderIntervalBar(est, ciLow, ciHigh, width = 110, height = 20, expectedVal = 0) {
   if (est == null || ciLow == null || ciHigh == null || isNaN(est) || isNaN(ciLow) || isNaN(ciHigh)) {
@@ -39,29 +39,32 @@ export function renderIntervalBar(est, ciLow, ciHigh, width = 110, height = 20, 
   svg.setAttribute("height", String(height));
   svg.style.cssText = "display: inline-block; vertical-align: middle;";
 
+  // Honest 90% band: fill #cbd5e1, height 8px
   const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
   rect.setAttribute("x", String(Math.min(xLow, xHigh)));
-  rect.setAttribute("y", String(yMid - 3));
+  rect.setAttribute("y", String(yMid - 4));
   rect.setAttribute("width", String(Math.max(2, Math.abs(xHigh - xLow))));
-  rect.setAttribute("height", "6");
-  rect.setAttribute("rx", "3");
-  rect.setAttribute("fill", "#e5e7eb");
+  rect.setAttribute("height", "8");
+  rect.setAttribute("rx", "4");
+  rect.setAttribute("fill", "#cbd5e1");
   svg.appendChild(rect);
 
+  // Expected tick: #64748b
   const tick = document.createElementNS("http://www.w3.org/2000/svg", "line");
   tick.setAttribute("x1", String(xTick));
   tick.setAttribute("y1", String(yMid - 6));
   tick.setAttribute("x2", String(xTick));
   tick.setAttribute("y2", String(yMid + 6));
-  tick.setAttribute("stroke", "#9ca3af");
-  tick.setAttribute("stroke-width", "1.5");
+  tick.setAttribute("stroke", "#64748b");
+  tick.setAttribute("stroke-width", "2");
   tick.setAttribute("stroke-linecap", "round");
   svg.appendChild(tick);
 
+  // Dot: radius 4
   const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
   circle.setAttribute("cx", String(xEst));
   circle.setAttribute("cy", String(yMid));
-  circle.setAttribute("r", "3.5");
+  circle.setAttribute("r", "4");
   circle.setAttribute("fill", dotFill);
   circle.setAttribute("stroke", dotStroke);
   circle.setAttribute("stroke-width", "1.5");
@@ -76,6 +79,10 @@ export function renderIntervalBar(est, ciLow, ciHigh, width = 110, height = 20, 
 
 /**
  * Render a larger SVG interval chart for feature cards in the evidence drawer.
+ * - grey band #cbd5e1, height 8px
+ * - expected tick #64748b
+ * - dot radius 4
+ * - small axis labels (11px)
  */
 export function renderCardIntervalChart(est, ciLow, ciHigh, expectedVal = 0, width = 340, height = 48) {
   if (est == null || ciLow == null || ciHigh == null || isNaN(est) || isNaN(ciLow) || isNaN(ciHigh)) {
@@ -122,35 +129,38 @@ export function renderCardIntervalChart(est, ciLow, ciHigh, expectedVal = 0, wid
   track.setAttribute("stroke-width", "1");
   svg.appendChild(track);
 
+  // Band: #cbd5e1, height 8px
   const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
   rect.setAttribute("x", String(Math.min(xLow, xHigh)));
   rect.setAttribute("y", String(yMid - 4));
   rect.setAttribute("width", String(Math.max(3, Math.abs(xHigh - xLow))));
   rect.setAttribute("height", "8");
   rect.setAttribute("rx", "4");
-  rect.setAttribute("fill", "#e5e7eb");
+  rect.setAttribute("fill", "#cbd5e1");
   svg.appendChild(rect);
 
+  // Tick: #64748b
   const tick = document.createElementNS("http://www.w3.org/2000/svg", "line");
   tick.setAttribute("x1", String(xTick));
   tick.setAttribute("y1", String(yMid - 8));
   tick.setAttribute("x2", String(xTick));
   tick.setAttribute("y2", String(yMid + 8));
-  tick.setAttribute("stroke", "#9ca3af");
+  tick.setAttribute("stroke", "#64748b");
   tick.setAttribute("stroke-width", "2");
   tick.setAttribute("stroke-linecap", "round");
   svg.appendChild(tick);
 
+  // Dot: radius 4
   const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
   circle.setAttribute("cx", String(xEst));
   circle.setAttribute("cy", String(yMid));
-  circle.setAttribute("r", "5");
+  circle.setAttribute("r", "4");
   circle.setAttribute("fill", dotFill);
   circle.setAttribute("stroke", dotStroke);
   circle.setAttribute("stroke-width", "2");
   svg.appendChild(circle);
 
-  const addText = (text, x, y, anchor = "middle", color = "#6b7280", weight = "normal") => {
+  const addText = (text, x, y, anchor = "middle", color = "#64748b", weight = "normal") => {
     const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
     t.setAttribute("x", String(x));
     t.setAttribute("y", String(y));

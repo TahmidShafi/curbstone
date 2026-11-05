@@ -83,27 +83,33 @@ thead th { white-space: nowrap; }
 }
 .btn-secondary:hover, button.btn-secondary:hover { background: var(--page); }
 
-/* Control bar & inputs */
-.control-bar {
+/* Control panel: two rows max */
+.control-panel {
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  gap: 16px;
+  flex-direction: column;
+  gap: 12px;
   background: var(--surface);
   padding: 16px 20px;
   border: 1px solid var(--line);
   border-radius: 8px;
   margin: 16px 0 8px 0;
 }
+.control-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 20px;
+}
 .control-item { display: flex; flex-direction: column; }
+.control-item-btn { justify-content: flex-end; }
 .control-label { font-size: 13px; color: var(--muted); text-transform: none; font-weight: 500; margin-bottom: 6px; }
 
 .control-item form, .control-item .observablehq--input { margin: 0; font-family: var(--font-sans); }
 .observablehq--input label { font-size: 13px; color: var(--muted); text-transform: none !important; font-weight: 500; }
-.control-bar input[type="range"] { height: 36px; margin: 0; }
+.control-panel input[type="range"] { height: 36px; margin: 0; }
 
-/* Hide duplicate number input next to range sliders in control-bar */
-.control-bar input[type="number"], .control-item input[type="number"] { display: none !important; }
+/* Hide duplicate number input next to range sliders in control-panel */
+.control-panel input[type="number"], .control-item input[type="number"] { display: none !important; }
 details input[type="number"] { display: inline-block !important; }
 
 /* Segmented control for Scenario */
@@ -169,6 +175,17 @@ dl.sim-settings {
 dl.sim-settings dt { font-weight: 600; color: var(--muted); }
 dl.sim-settings dd { margin: 0; color: var(--ink); }
 
+/* Table responsive wrapper */
+.table-wrapper {
+  overflow-x: visible;
+  width: 100%;
+}
+@media (max-width: 900px) {
+  .table-wrapper {
+    overflow-x: auto;
+  }
+}
+
 /* Evidence chips & Downloads */
 .evidence-chip {
   display: inline-block;
@@ -179,7 +196,6 @@ dl.sim-settings dd { margin: 0; color: var(--ink); }
   padding: 2px 6px;
   font-size: 12px;
   font-weight: 500;
-  margin: 1px 2px;
   white-space: nowrap;
 }
 .downloads-row {

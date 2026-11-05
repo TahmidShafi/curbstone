@@ -63,12 +63,16 @@ const floorValSpan = html`<span class="tabular-nums" style="font-weight: 600; co
 floorShareInput.addEventListener("input", () => { floorValSpan.textContent = `${floorShareInput.value}%`; });
 
 display(html`
-<div class="control-bar">
-  <div class="control-item"><div class="control-label">Scenario</div><div class="segmented-control">${scenarioInput}</div></div>
-  <div class="control-item"><div class="control-label">Shrinkage</div><div>${shrinkageInput}</div></div>
-  <div class="control-item"><div class="control-label">Back-check budget: ${budgetValSpan}</div><div>${budgetInput}</div></div>
-  <div class="control-item"><div class="control-label">Random floor: ${floorValSpan}</div><div>${floorShareInput}</div></div>
-  <div class="control-item"><div class="control-label">&nbsp;</div><div class="reveal-btn">${revealButton}</div></div>
+<div class="control-panel">
+  <div class="control-row control-row-1">
+    <div class="control-item"><div class="control-label">Scenario</div><div class="segmented-control">${scenarioInput}</div></div>
+    <div class="control-item"><div class="control-label">Shrinkage</div><div>${shrinkageInput}</div></div>
+  </div>
+  <div class="control-row control-row-2">
+    <div class="control-item"><div class="control-label">Back-check budget: ${budgetValSpan}</div><div>${budgetInput}</div></div>
+    <div class="control-item"><div class="control-label">Random floor: ${floorValSpan}</div><div>${floorShareInput}</div></div>
+    <div class="control-item control-item-btn"><div class="reveal-btn">${revealButton}</div></div>
+  </div>
 </div>
 <details style="margin: 8px 0 16px 0; font-size: 13px;">
   <summary style="cursor: pointer; color: var(--muted); font-weight: 500;">Advanced</summary>
@@ -209,17 +213,8 @@ const tableRows = sortedScores.map((r, idx) => {
   };
 });
 
-const selectedEnumInput = Inputs.input("enum_27");
-const selectedEnumId = Generators.input(selectedEnumInput);
-function setSelected(id) {
-  selectedEnumInput.value = id;
-  selectedEnumInput.dispatchEvent(new Event("input", { bubbles: true }));
-}
-
 display(renderRiskTable({
   rows: tableRows,
-  selectedId: selectedEnumId,
-  onSelect: setSelected,
   isRevealed: isRevealed,
   evidenceDict: evidenceDict,
   submissions: submissions,
