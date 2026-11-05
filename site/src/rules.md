@@ -5,18 +5,20 @@ Execute all 12 pre-registered Data Quality Assurance (DQA) rules in DuckDB-Wasm 
 ```js
 import {load} from "npm:js-yaml";
 
-// Load scenario files
-const mixedSubmissions = FileAttachment("./data/mixed/submissions.parquet");
-const mixedVillages = FileAttachment("./data/mixed/villages.parquet");
-const mixedViewSql = await FileAttachment("./data/mixed/submissions_view.sql").text();
+// Load static rules YAML & expected hits
 const mixedRulesYaml = await FileAttachment("./data/mixed/rules.yaml").text();
 const mixedExpectedHits = await FileAttachment("./data/mixed/rule_hits_expected.json").json();
-
-const lowSubmissions = FileAttachment("./data/low/submissions.parquet");
-const lowVillages = FileAttachment("./data/low/villages.parquet");
-const lowViewSql = await FileAttachment("./data/low/submissions_view.sql").text();
 const lowRulesYaml = await FileAttachment("./data/low/rules.yaml").text();
 const lowExpectedHits = await FileAttachment("./data/low/rule_hits_expected.json").json();
+
+// Initialize ONE DuckDB instance per page load with unique file names
+const db = await DuckDBClient.of({
+  mixed_submissions: FileAttachment("./data/mixed_submissions.parquet"),
+  mixed_villages: FileAttachment("./data/mixed_villages.parquet"),
+  low_submissions: FileAttachment("./data/low_submissions.parquet"),
+  low_villages: FileAttachment("./data/low_villages.parquet"),
+});
+const benchHistory = [];
 ```
 
 ```js
@@ -31,45 +33,36 @@ const scenario = Generators.input(scenarioInput);
 
 ```js
 const isMixed = scenario === "mixed";
-const activeSubmissions = isMixed ? mixedSubmissions : lowSubmissions;
-const activeVillages = isMixed ? mixedVillages : lowVillages;
-const activeViewSql = isMixed ? mixedViewSql : lowViewSql;
+const activeRawTable = isMixed ? "mixed_submissions" : "low_submissions";
+const activeVilTable = isMixed ? "mixed_villages" : "low_villages";
 const activeRulesYaml = isMixed ? mixedRulesYaml : lowRulesYaml;
 const expectedHits = isMixed ? mixedExpectedHits : lowExpectedHits;
 const parsedRules = load(activeRulesYaml);
 
-// Initialize DuckDBClient with raw tables
-const db = await DuckDBClient.of({
-  _raw_submissions: activeSubmissions,
-  villages: activeVillages,
-});
+// Scenario switching only runs CREATE OR REPLACE VIEW statements over the registered files
+await db.query(`
+  CREATE OR REPLACE VIEW submissions AS
+  SELECT *,
+      CAST(substr(start_time, 1, 19) AS TIMESTAMP) AS start_local,
+      CAST(substr(end_time, 1, 19) AS TIMESTAMP) AS end_local
+  FROM ${activeRawTable};
 
-// Create the standard submissions view with start_local / end_local derivations
-await db.query(activeViewSql);
-```
+  CREATE OR REPLACE VIEW villages AS
+  SELECT * FROM ${activeVilTable};
+`);
 
-```js
-// Helper async function to safely await SQL execution inside loop
+// Execute all 12 rules against active submissions & villages views
 async function executeRules() {
   const results = [];
   for (const rule of parsedRules) {
     const t0 = performance.now();
     const res = await db.query(rule.sql);
-    const elapsedMs = performance.now() - t0;
     const actualHits = res.numRows;
     const expected = expectedHits[rule.id] ?? 0;
-    const pass = actualHits === expected;
-
     results.push({
-      id: rule.id,
-      level: rule.level,
-      severity: rule.severity,
-      description: rule.description,
-      hits: actualHits,
-      expected: expected,
-      pass: pass,
-      ms: elapsedMs,
-      sql: rule.sql,
+      id: rule.id, level: rule.level, severity: rule.severity, description: rule.description,
+      hits: actualHits, expected: expected, pass: actualHits === expected,
+      ms: performance.now() - t0, sql: rule.sql,
     });
   }
   return results;
@@ -138,10 +131,7 @@ display(html`
           <td style="padding: 8px 10px; text-align: right; font-weight: bold;">${r.hits}</td>
           <td style="padding: 8px 10px; text-align: right; color: #64748b;">${r.expected}</td>
           <td style="padding: 8px 10px; text-align: center;">
-            ${r.pass 
-              ? html`<span style="color: #16a34a; font-weight: bold;">PASS</span>`
-              : html`<span style="color: #dc2626; font-weight: bold;">FAIL</span>`
-            }
+            ${r.pass ? html`<span style="color: #16a34a; font-weight: bold;">PASS</span>` : html`<span style="color: #dc2626; font-weight: bold;">FAIL</span>`}
           </td>
           <td style="padding: 8px 10px; text-align: right; font-family: monospace; color: #64748b;">${r.ms.toFixed(1)} ms</td>
         </tr>
@@ -163,11 +153,11 @@ const runBenchmark = view(Inputs.button("Benchmark 1M rows"));
 ```
 
 ```js
-async function executeBenchmark() {
+// Benchmark cell depends ONLY on runBenchmark and scenario
+if (runBenchmark > 0) {
   const t0 = performance.now();
   const demoCountRes = await db.query("SELECT count(*)::INT AS cnt FROM submissions;");
   const demoSubmissionsCount = demoCountRes.toArray()[0].cnt;
-  const demoRate = (totalHits / (demoSubmissionsCount / 1000)).toFixed(2);
 
   let ruleTotalMs = 0;
   let benchHits = 0;
@@ -175,28 +165,12 @@ async function executeBenchmark() {
   try {
     await db.query(`
       CREATE OR REPLACE TABLE bench_submissions AS
-      SELECT
-        'bench_' || r.i AS submission_id,
-        s.round,
+      SELECT 'bench_' || r.i AS submission_id, s.round,
         s.enumerator_id || '_r' || (r.i // ${demoSubmissionsCount}) AS enumerator_id,
-        s.upazila_code,
-        s.village_id,
-        s.start_time,
-        s.end_time,
-        s.duration_min,
-        s.gps_lat,
-        s.gps_lon,
-        s.gps_accuracy,
-        s.hh_size,
-        s.head_age,
-        s.roster_ages,
-        s.asset_mobile,
-        s.asset_tv,
-        s.asset_internet,
-        s.asset_radio,
-        s.asset_computer,
-        s.start_local,
-        s.end_local
+        s.upazila_code, s.village_id, s.start_time, s.end_time, s.duration_min,
+        s.gps_lat, s.gps_lon, s.gps_accuracy, s.hh_size, s.head_age, s.roster_ages,
+        s.asset_mobile, s.asset_tv, s.asset_internet, s.asset_radio, s.asset_computer,
+        s.start_local, s.end_local
       FROM range(0, 1000000) r(i)
       JOIN (SELECT *, row_number() OVER () - 1 AS rn FROM submissions) s
         ON s.rn = r.i % ${demoSubmissionsCount};
@@ -204,6 +178,7 @@ async function executeBenchmark() {
 
     await db.query("CREATE OR REPLACE TABLE bench_villages AS SELECT * FROM villages;");
     await db.query("CREATE OR REPLACE VIEW submissions AS SELECT * FROM bench_submissions;");
+    await db.query("CREATE OR REPLACE VIEW villages AS SELECT * FROM bench_villages;");
 
     for (const rule of parsedRules) {
       const tb0 = performance.now();
@@ -212,57 +187,91 @@ async function executeBenchmark() {
       benchHits += res.numRows;
     }
   } finally {
-    await db.query(activeViewSql);
-    await db.query("DROP TABLE IF EXISTS bench_submissions;");
-    await db.query("DROP TABLE IF EXISTS bench_villages;");
+    await db.query(`
+      CREATE OR REPLACE VIEW submissions AS
+      SELECT *,
+          CAST(substr(start_time, 1, 19) AS TIMESTAMP) AS start_local,
+          CAST(substr(end_time, 1, 19) AS TIMESTAMP) AS end_local
+      FROM ${activeRawTable};
+
+      CREATE OR REPLACE VIEW villages AS
+      SELECT * FROM ${activeVilTable};
+
+      DROP TABLE IF EXISTS bench_submissions;
+      DROP TABLE IF EXISTS bench_villages;
+    `);
   }
 
-  const totalElapsed = performance.now() - t0;
-  const benchRate = (benchHits / 1000).toFixed(2);
-
-  return {
-    rows: 1000000,
+  benchHistory.push({
+    runIndex: benchHistory.length + 1,
+    scenario: scenario,
     ruleTotalMs: ruleTotalMs,
-    totalElapsed: totalElapsed,
+    totalElapsed: performance.now() - t0,
     benchHits: benchHits,
-    benchRate: benchRate,
-    demoRate: demoRate,
-    cores: typeof navigator !== 'undefined' ? (navigator.hardwareConcurrency || "Unknown") : "N/A",
-    userAgent: typeof navigator !== 'undefined' ? (navigator.userAgent || "Unknown") : "Node.js",
-  };
+    benchRate: (benchHits / 1000).toFixed(2),
+  });
 }
 
-const benchResult = runBenchmark > 0 ? await executeBenchmark() : null;
+const recentRuns = benchHistory.slice(-3);
+const hasRuns = recentRuns.length > 0;
+const logicalCores = typeof navigator !== "undefined" ? (navigator.hardwareConcurrency || "Unknown") : "N/A";
 
-if (benchResult) {
-  display(html`
-    <div class="card" style="padding: 16px; margin-top: 16px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px;">
-      <h4 style="margin: 0 0 10px 0; color: #1e293b;">1,000,000-Row Benchmark Results</h4>
-      <div class="grid grid-cols-3" style="gap: 12px; margin-bottom: 12px;">
-        <div style="background: #fff; padding: 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
-          <div style="font-size: 0.8rem; color: #64748b;">12-Rule Evaluation Time</div>
-          <div style="font-size: 1.25rem; font-weight: bold; color: #0284c7;">${benchResult.ruleTotalMs.toFixed(1)} ms</div>
-          <div style="font-size: 0.75rem; color: #64748b; margin-top: 4px;">measured in this browser (DuckDB-Wasm)</div>
-        </div>
-        <div style="background: #fff; padding: 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
-          <div style="font-size: 0.8rem; color: #64748b;">Processing Throughput</div>
-          <div style="font-size: 1.25rem; font-weight: bold; color: #16a34a;">
-            ${(1000000 / (benchResult.ruleTotalMs / 1000)).toLocaleString(undefined, {maximumFractionDigits: 0})} rows/sec
-          </div>
-          <div style="font-size: 0.75rem; color: #64748b; margin-top: 4px;">in-memory streaming SQL</div>
-        </div>
-        <div style="background: #fff; padding: 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
-          <div style="font-size: 0.8rem; color: #64748b;">Violations per 1,000 Submissions</div>
-          <div style="font-size: 1.25rem; font-weight: bold; color: #c2410c;">
-            ${benchResult.benchRate} <span style="font-size: 0.85rem; font-weight: normal; color: #64748b;">(demo: ${benchResult.demoRate})</span>
-          </div>
-          <div style="font-size: 0.75rem; color: #64748b; margin-top: 4px;">${benchResult.benchHits.toLocaleString()} total violations detected</div>
-        </div>
+let medianMs = 0;
+if (hasRuns) {
+  const sortedTimes = recentRuns.map(r => r.ruleTotalMs).sort((a, b) => a - b);
+  const mid = Math.floor(sortedTimes.length / 2);
+  medianMs = sortedTimes.length % 2 === 1
+    ? sortedTimes[mid]
+    : (sortedTimes[mid - 1] + sortedTimes[mid]) / 2;
+}
+
+display(html`
+<div class="card" style="padding: 16px; margin-top: 16px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px;">
+  <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
+    <h4 style="margin: 0; color: #1e293b;">1,000,000-Row Benchmark Results</h4>
+    <div style="font-size: 0.8rem; color: #64748b; font-family: monospace;">
+      single-threaded DuckDB-Wasm build; hardware: ${logicalCores} logical CPUs
+    </div>
+  </div>
+
+  ${!hasRuns ? html`<p style="margin: 0; font-size: 0.85rem; color: #64748b; font-style: italic;">Click "Benchmark 1M rows" above to execute the benchmark in DuckDB-Wasm.</p>` : html`
+    <div class="grid grid-cols-2" style="gap: 12px; margin-bottom: 12px;">
+      <div style="background: #fff; padding: 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
+        <div style="font-size: 0.8rem; color: #64748b;">Median Rule Evaluation Time (Last ${recentRuns.length} Run${recentRuns.length > 1 ? "s" : ""})</div>
+        <div style="font-size: 1.35rem; font-weight: bold; color: #0284c7;">${medianMs.toFixed(1)} ms</div>
       </div>
-      <div style="font-size: 0.825rem; color: #64748b; font-family: monospace;">
-        <strong>Stated Hardware:</strong> CPU Concurrency: ${benchResult.cores} threads &bull; User Agent: ${benchResult.userAgent}
+      <div style="background: #fff; padding: 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
+        <div style="font-size: 0.8rem; color: #64748b;">Median Processing Throughput</div>
+        <div style="font-size: 1.35rem; font-weight: bold; color: #16a34a;">
+          ${(1000000 / (medianMs / 1000)).toLocaleString(undefined, {maximumFractionDigits: 0})} rows/sec
+        </div>
       </div>
     </div>
-  `);
-}
+
+    <div style="font-size: 0.825rem; font-weight: 600; color: #475569; margin-bottom: 4px;">Last ${recentRuns.length} Execution${recentRuns.length > 1 ? "s" : ""}:</div>
+    <table style="width: 100%; border-collapse: collapse; font-size: 0.825rem; background: #fff; border: 1px solid #e2e8f0; border-radius: 4px;">
+      <thead>
+        <tr style="background: #f1f5f9; text-align: left; border-bottom: 1px solid #e2e8f0;">
+          <th style="padding: 6px 10px;">Run #</th>
+          <th style="padding: 6px 10px;">Scenario</th>
+          <th style="padding: 6px 10px; text-align: right;">12-Rule Time</th>
+          <th style="padding: 6px 10px; text-align: right;">Violations</th>
+          <th style="padding: 6px 10px; text-align: right;">Rate / 1k</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${recentRuns.map(r => html`
+          <tr style="border-bottom: 1px solid #f8fafc;">
+            <td style="padding: 6px 10px; font-weight: 600; color: #475569;">Run ${r.runIndex}</td>
+            <td style="padding: 6px 10px; color: #64748b;">${r.scenario}</td>
+            <td style="padding: 6px 10px; text-align: right; font-family: monospace; font-weight: bold; color: #0284c7;">${r.ruleTotalMs.toFixed(1)} ms</td>
+            <td style="padding: 6px 10px; text-align: right; font-family: monospace;">${r.benchHits.toLocaleString()}</td>
+            <td style="padding: 6px 10px; text-align: right; font-family: monospace;">${r.benchRate}</td>
+          </tr>
+        `)}
+      </tbody>
+    </table>
+  `}
+</div>
+`);
 ```

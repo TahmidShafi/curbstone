@@ -93,6 +93,8 @@ def build_single_scenario(
 
         df_sub.to_parquet(output_dir / "submissions.parquet", engine="pyarrow", index=False)
         df_vil.to_parquet(output_dir / "villages.parquet", engine="pyarrow", index=False)
+        df_sub.to_parquet(output_dir.parent / f"{scenario_name}_submissions.parquet", engine="pyarrow", index=False)
+        df_vil.to_parquet(output_dir.parent / f"{scenario_name}_villages.parquet", engine="pyarrow", index=False)
 
         # Features & Scores
         df_feat = build_feature_table(sub_path, vil_path, seed=12345)

@@ -135,6 +135,11 @@ def test_demo_build_deterministic(tmp_path):
             h2 = hashlib.sha256(open(sc_dir2 / fname, "rb").read()).hexdigest()
             assert h1 == h2, f"Scenario {scenario} file {fname} hash mismatch between runs: {h1} != {h2}"
 
+    for fname in ["mixed_submissions.parquet", "mixed_villages.parquet", "low_submissions.parquet", "low_villages.parquet"]:
+        h1 = hashlib.sha256(open(dir1 / fname, "rb").read()).hexdigest()
+        h2 = hashlib.sha256(open(dir2 / fname, "rb").read()).hexdigest()
+        assert h1 == h2, f"File {fname} hash mismatch between runs"
+
 
 @pytest.mark.parametrize("scenario", ["mixed", "low"])
 def test_rule_hits_identical_between_variants(scenario):
