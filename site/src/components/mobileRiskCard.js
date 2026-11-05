@@ -47,23 +47,34 @@ export function renderMobileCard(row, isRevealed, onActivate) {
   line1.appendChild(right1);
   card.appendChild(line1);
 
-  // Line 2: evidence chips
-  const line2 = document.createElement("div");
-  line2.style.cssText = "margin-bottom: 8px;";
-  line2.appendChild(renderEvidenceChips(row.evidence));
-  card.appendChild(line2);
+  const hasEvidence = Boolean(row.evidence && row.evidence.trim().length > 0);
+  if (!hasEvidence) {
+    const noFeat = document.createElement("div");
+    noFeat.style.cssText = "color: var(--muted); font-size: 13px; font-style: italic; margin-bottom: 8px;";
+    noFeat.textContent = "No flagged features";
+    card.appendChild(noFeat);
+  } else {
+    // Line 2: evidence chips
+    const line2 = document.createElement("div");
+    line2.style.cssText = "margin-bottom: 8px;";
+    line2.appendChild(renderEvidenceChips(row.evidence));
+    card.appendChild(line2);
 
-  // Line 3: honest-range mini chart (full width)
-  const line3 = document.createElement("div");
-  line3.style.cssText = "margin-bottom: 8px; width: 100%; box-sizing: border-box;";
-  line3.appendChild(renderIntervalBar(row.strongest_est, row.strongest_ci_low, row.strongest_ci_high, 280, 20, 0, true));
-  card.appendChild(line3);
+    // Line 3: honest-range mini chart (full width)
+    const line3 = document.createElement("div");
+    line3.style.cssText = "margin-bottom: 8px; width: 100%; box-sizing: border-box;";
+    line3.appendChild(renderIntervalBar(row.strongest_est, row.strongest_ci_low, row.strongest_ci_high, 280, 20, 0, true));
+    card.appendChild(line3);
+  }
 
-  // Line 4: "n · rules · checks" muted
+  // Line 4: meta line with singular/plural
   const line4 = document.createElement("div");
   line4.className = "tabular-nums";
   line4.style.cssText = "font-size: 12px; color: var(--muted); margin-top: 4px;";
-  line4.textContent = `${row.n} n · ${row.rule_hits} rules · ${row.allocated_backchecks} checks`;
+  const nStr = `${row.n} ${row.n === 1 ? "interview" : "interviews"}`;
+  const rulesStr = `${row.rule_hits} ${row.rule_hits === 1 ? "rule hit" : "rule hits"}`;
+  const checksStr = `${row.allocated_backchecks} ${row.allocated_backchecks === 1 ? "back-check" : "back-checks"}`;
+  line4.textContent = `${nStr} · ${rulesStr} · ${checksStr}`;
   card.appendChild(line4);
 
   // After reveal: truth label line
@@ -114,3 +125,4 @@ export function renderMobileDrawer(enumeratorId, drawerOptions, onClose) {
 
   return wrap;
 }
+

@@ -8,6 +8,7 @@ Execute all 12 pre-registered Data Quality Assurance (DQA) rules in DuckDB-Wasm 
 
 ```js
 import {load} from "npm:js-yaml";
+import { verifyDuckDBTables, executeDqaRules, run1MBenchmark } from "./components/ruleEngineHelpers.js";
 
 // Load static rules YAML & expected hits
 const mixedRulesYaml = await FileAttachment("./data/mixed/rules.yaml").text();
@@ -27,23 +28,7 @@ const db = await DuckDBClient.of({
 const benchHistory = [];
 
 // Self-check after registration: verify row counts match expected values from build_demo.py
-const mixedSubCnt = (await db.query("SELECT count(*)::INT AS cnt FROM mixed_submissions")).toArray()[0].cnt;
-const lowSubCnt = (await db.query("SELECT count(*)::INT AS cnt FROM low_submissions")).toArray()[0].cnt;
-const mixedVilCnt = (await db.query("SELECT count(*)::INT AS cnt FROM mixed_villages")).toArray()[0].cnt;
-const lowVilCnt = (await db.query("SELECT count(*)::INT AS cnt FROM low_villages")).toArray()[0].cnt;
-
-// Check that roster_ages (Arrow list) arrives as a DuckDB LIST (R03/R04 use len()/list_min())
-const mixedRosterType = (await db.query("SELECT typeof(roster_ages) AS t FROM mixed_submissions LIMIT 1")).toArray()[0]?.t ?? "unknown";
-const lowRosterType = (await db.query("SELECT typeof(roster_ages) AS t FROM low_submissions LIMIT 1")).toArray()[0]?.t ?? "unknown";
-
-const tableErrors = [];
-if (mixedSubCnt !== mixedMetrics.submissions_count) tableErrors.push(`mixed_submissions row count (got ${mixedSubCnt}, expected ${mixedMetrics.submissions_count})`);
-if (lowSubCnt !== lowMetrics.submissions_count) tableErrors.push(`low_submissions row count (got ${lowSubCnt}, expected ${lowMetrics.submissions_count})`);
-if (mixedVilCnt !== mixedMetrics.villages_count) tableErrors.push(`mixed_villages row count (got ${mixedVilCnt}, expected ${mixedMetrics.villages_count})`);
-if (lowVilCnt !== lowMetrics.villages_count) tableErrors.push(`low_villages row count (got ${lowVilCnt}, expected ${lowMetrics.villages_count})`);
-if (!mixedRosterType.includes("[]") && !mixedRosterType.toUpperCase().includes("LIST")) tableErrors.push(`mixed_submissions.roster_ages arrived as '${mixedRosterType}' instead of DuckDB LIST`);
-if (!lowRosterType.includes("[]") && !lowRosterType.toUpperCase().includes("LIST")) tableErrors.push(`low_submissions.roster_ages arrived as '${lowRosterType}' instead of DuckDB LIST`);
-
+const tableErrors = await verifyDuckDBTables(db, mixedMetrics, lowMetrics);
 if (tableErrors.length > 0) {
   display(html`<div class="card" style="padding: 16px; margin: 16px 0; background: var(--surface); border: 2px solid var(--ink); border-radius: 6px; color: var(--ink);">
     <div style="font-weight: bold; font-size: 1rem; margin-bottom: 4px;">Table Registration Verification Error</div>
@@ -84,41 +69,29 @@ await db.query(`
 `);
 
 // Execute all 12 rules against active submissions & villages views
-async function executeRules() {
-  const results = [];
-  for (const rule of parsedRules) {
-    const t0 = performance.now();
-    const res = await db.query(rule.sql);
-    const actualHits = res.numRows;
-    const expected = expectedHits[rule.id] ?? 0;
-    results.push({
-      id: rule.id, level: rule.level, severity: rule.severity, description: rule.description,
-      hits: actualHits, expected: expected, pass: actualHits === expected,
-      ms: performance.now() - t0, sql: rule.sql,
-    });
-  }
-  return results;
-}
-
-const ruleExecutionResults = await executeRules();
+const ruleExecutionResults = await executeDqaRules(db, parsedRules, expectedHits);
 const allPassed = ruleExecutionResults.every(r => r.pass);
 const matchingRulesCount = ruleExecutionResults.filter(r => r.pass).length;
 const totalHits = ruleExecutionResults.reduce((acc, r) => acc + r.hits, 0);
 const totalExpected = Object.values(expectedHits).reduce((acc, v) => acc + v, 0);
 const totalMs = ruleExecutionResults.reduce((acc, r) => acc + r.ms, 0);
-const badgeMessage = allPassed
-  ? `DuckDB-Wasm matches the Python rule engine: 12 of 12 rules (${totalHits} hits)`
-  : `DuckDB-Wasm does NOT match the Python rule engine: ${matchingRulesCount} of 12 rules match (browser total ${totalHits} vs expected ${totalExpected})`;
+const paritySymbol = allPassed ? "✓" : "✗";
+const parityColor = allPassed ? "var(--accent)" : "var(--fab)";
+const parityText = allPassed
+  ? `Browser matches Python rule engine — 12 of 12 rules (${totalHits} hits)`
+  : `Browser does NOT match Python rule engine — ${matchingRulesCount} of 12 rules match (${totalHits} vs ${totalExpected} hits)`;
 ```
 
 ```js
 display(html`
-<div class="card" style="padding: 16px; margin: 16px 0; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
+<div style="margin: 16px 0; font-size: 15px; font-weight: 600; color: var(--ink); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
   <div>
-    <span style="display: inline-block; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 0.9rem; background: ${allPassed ? '#16a34a' : 'var(--ink)'}; color: #fff;">${allPassed ? "PARITY MATCH" : "PARITY MISMATCH"}</span>
-    <span style="margin-left: 12px; font-size: 0.95rem; color: #1e293b; font-weight: 600;">${badgeMessage}</span>
+    <span style="color: ${parityColor}; font-weight: bold; margin-right: 6px;">${paritySymbol}</span>
+    <span>${parityText}</span>
   </div>
-  <div style="font-size: 0.85rem; color: #64748b; font-family: monospace;">12 rules evaluated in ${totalMs.toFixed(1)} ms</div>
+  <div class="tabular-nums" style="font-size: 13px; color: var(--muted); font-weight: normal;">
+    12 rules evaluated in ${totalMs.toFixed(1)} ms
+  </div>
 </div>
 `);
 ```
@@ -127,31 +100,31 @@ display(html`
 
 ```js
 display(html`
-<div style="overflow-x: auto; margin-bottom: 24px;">
-  <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+<div class="table-wrapper" style="overflow-x: auto; max-width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; margin-bottom: 24px; box-sizing: border-box;">
+  <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
     <thead>
-      <tr style="background: #f8fafc; border-bottom: 2px solid #cbd5e1; text-align: left;">
-        <th style="padding: 8px 10px;">Rule ID</th>
-        <th style="padding: 8px 10px;">Level</th>
-        <th style="padding: 8px 10px;">Severity</th>
-        <th style="padding: 8px 10px;">Description</th>
-        <th style="padding: 8px 10px; text-align: right;">Browser Hits</th>
-        <th style="padding: 8px 10px; text-align: right;">Python Expected</th>
-        <th style="padding: 8px 10px; text-align: center;">Parity</th>
-        <th style="padding: 8px 10px; text-align: right;">Latency</th>
+      <tr style="background: var(--surface); border-bottom: 1px solid var(--line); color: var(--ink); font-weight: 600;">
+        <th style="padding: 10px 12px; white-space: nowrap;">Rule ID</th>
+        <th style="padding: 10px 12px; white-space: nowrap;">Level</th>
+        <th style="padding: 10px 12px; white-space: nowrap;">Severity</th>
+        <th style="padding: 10px 12px;">Description</th>
+        <th style="padding: 10px 12px; text-align: right; white-space: nowrap;">Browser Hits</th>
+        <th style="padding: 10px 12px; text-align: right; white-space: nowrap;">Python Expected</th>
+        <th style="padding: 10px 12px; text-align: center; white-space: nowrap;">Parity</th>
+        <th style="padding: 10px 12px; text-align: right; white-space: nowrap;">Latency</th>
       </tr>
     </thead>
     <tbody>
       ${ruleExecutionResults.map(r => html`
-        <tr style="border-bottom: 1px solid #f1f5f9;">
-          <td style="padding: 8px 10px; font-family: monospace; font-weight: bold; color: #1e40af;">${r.id}</td>
-          <td style="padding: 8px 10px; color: #475569;">${r.level}</td>
-          <td style="padding: 8px 10px;"><span style="font-size: 0.75rem; font-weight: 600; padding: 2px 6px; border-radius: 4px; background: var(--page); border: 1px solid var(--line); color: var(--ink);">${r.severity.toUpperCase()}</span></td>
-          <td style="padding: 8px 10px; color: #334155;">${r.description}</td>
-          <td style="padding: 8px 10px; text-align: right; font-weight: bold;">${r.hits}</td>
-          <td style="padding: 8px 10px; text-align: right; color: #64748b;">${r.expected}</td>
-          <td style="padding: 8px 10px; text-align: center;">${r.pass ? html`<span style="color: #16a34a; font-weight: bold;">PASS</span>` : html`<span style="color: var(--ink); font-weight: bold;">FAIL</span>`}</td>
-          <td style="padding: 8px 10px; text-align: right; font-family: monospace; color: #64748b;">${r.ms.toFixed(1)} ms</td>
+        <tr style="border-bottom: 1px solid var(--line); color: var(--ink);">
+          <td style="padding: 8px 12px; font-weight: 600; color: var(--accent);" class="enum-id">${r.id}</td>
+          <td style="padding: 8px 12px; color: var(--muted);">${r.level}</td>
+          <td style="padding: 8px 12px; color: var(--muted);">${r.severity}</td>
+          <td style="padding: 8px 12px;">${r.description}</td>
+          <td style="padding: 8px 12px; text-align: right; font-weight: 600;" class="tabular-nums">${r.hits}</td>
+          <td style="padding: 8px 12px; text-align: right; color: var(--muted);" class="tabular-nums">${r.expected}</td>
+          <td style="padding: 8px 12px; text-align: center; font-weight: 600; color: ${r.pass ? 'var(--accent)' : 'var(--fab)'};">${r.pass ? "✓" : "✗"}</td>
+          <td style="padding: 8px 12px; text-align: right; color: var(--muted);" class="tabular-nums">${r.ms.toFixed(1)} ms</td>
         </tr>
       `)}
     </tbody>
@@ -173,61 +146,7 @@ const runBenchmark = view(Inputs.button("Benchmark 1M rows"));
 ```js
 // Benchmark cell depends ONLY on runBenchmark and scenario
 if (runBenchmark > 0) {
-  const t0 = performance.now();
-  const demoCountRes = await db.query("SELECT count(*)::INT AS cnt FROM submissions;");
-  const demoSubmissionsCount = demoCountRes.toArray()[0].cnt;
-
-  let ruleTotalMs = 0;
-  let benchHits = 0;
-
-  try {
-    await db.query(`
-      CREATE OR REPLACE TABLE bench_submissions AS
-      SELECT 'bench_' || r.i AS submission_id, s.round,
-        s.enumerator_id || '_r' || (r.i // ${demoSubmissionsCount}) AS enumerator_id,
-        s.upazila_code, s.village_id, s.start_time, s.end_time, s.duration_min,
-        s.gps_lat, s.gps_lon, s.gps_accuracy, s.hh_size, s.head_age, s.roster_ages,
-        s.asset_mobile, s.asset_tv, s.asset_internet, s.asset_radio, s.asset_computer,
-        s.start_local, s.end_local
-      FROM range(0, 1000000) r(i)
-      JOIN (SELECT *, row_number() OVER () - 1 AS rn FROM submissions) s
-        ON s.rn = r.i % ${demoSubmissionsCount};
-    `);
-
-    await db.query("CREATE OR REPLACE TABLE bench_villages AS SELECT * FROM villages;");
-    await db.query("CREATE OR REPLACE VIEW submissions AS SELECT * FROM bench_submissions;");
-    await db.query("CREATE OR REPLACE VIEW villages AS SELECT * FROM bench_villages;");
-
-    for (const rule of parsedRules) {
-      const tb0 = performance.now();
-      const res = await db.query(rule.sql);
-      ruleTotalMs += (performance.now() - tb0);
-      benchHits += res.numRows;
-    }
-  } finally {
-    await db.query(`
-      CREATE OR REPLACE VIEW submissions AS
-      SELECT *,
-          CAST(substr(start_time, 1, 19) AS TIMESTAMP) AS start_local,
-          CAST(substr(end_time, 1, 19) AS TIMESTAMP) AS end_local
-      FROM ${activeRawTable};
-
-      CREATE OR REPLACE VIEW villages AS
-      SELECT * FROM ${activeVilTable};
-
-      DROP TABLE IF EXISTS bench_submissions;
-      DROP TABLE IF EXISTS bench_villages;
-    `);
-  }
-
-  benchHistory.push({
-    runIndex: benchHistory.length + 1,
-    scenario: scenario,
-    ruleTotalMs: ruleTotalMs,
-    totalElapsed: performance.now() - t0,
-    benchHits: benchHits,
-    benchRate: (benchHits / 1000).toFixed(2),
-  });
+  await run1MBenchmark(db, parsedRules, activeRawTable, activeVilTable, scenario, benchHistory);
 }
 
 const recentRuns = benchHistory.slice(-3);
@@ -235,60 +154,75 @@ const hasRuns = recentRuns.length > 0;
 const logicalCores = typeof navigator !== "undefined" ? (navigator.hardwareConcurrency || "Unknown") : "N/A";
 
 let medianMs = 0;
+let medianRate = "0.00";
+let medianRowsPerSec = 0;
 if (hasRuns) {
   const sortedTimes = recentRuns.map(r => r.ruleTotalMs).sort((a, b) => a - b);
   const mid = Math.floor(sortedTimes.length / 2);
   medianMs = sortedTimes.length % 2 === 1
     ? sortedTimes[mid]
     : (sortedTimes[mid - 1] + sortedTimes[mid]) / 2;
+  medianRowsPerSec = Math.round(1000000 / (medianMs / 1000));
+  const sortedRates = recentRuns.map(r => Number(r.benchRate)).sort((a, b) => a - b);
+  medianRate = sortedRates[Math.floor(sortedRates.length / 2)].toFixed(2);
 }
 
 display(html`
-<div class="card" style="padding: 16px; margin-top: 16px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px;">
+<div style="margin-top: 16px;">
   <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
-    <h4 style="margin: 0; color: #1e293b;">1,000,000-Row Benchmark Results</h4>
-    <div style="font-size: 0.8rem; color: #64748b; font-family: monospace;">
-      single-threaded DuckDB-Wasm build; hardware: ${logicalCores} logical CPUs
+    <h4 style="margin: 0; color: var(--ink); font-size: 15px;">1,000,000-Row Benchmark Results</h4>
+    <div style="font-size: 12px; color: var(--muted);" class="tabular-nums">
+      single-threaded DuckDB-Wasm; ${logicalCores} logical CPUs
     </div>
   </div>
 
-  ${!hasRuns ? html`<p style="margin: 0; font-size: 0.85rem; color: #64748b; font-style: italic;">Click "Benchmark 1M rows" above to execute the benchmark in DuckDB-Wasm.</p>` : html`
-    <div class="grid grid-cols-2" style="gap: 12px; margin-bottom: 12px;">
-      <div style="background: #fff; padding: 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
-        <div style="font-size: 0.8rem; color: #64748b;">Median Rule Evaluation Time (Last ${recentRuns.length} Run${recentRuns.length > 1 ? "s" : ""})</div>
-        <div style="font-size: 1.35rem; font-weight: bold; color: #0284c7;">${medianMs.toFixed(1)} ms</div>
-      </div>
-      <div style="background: #fff; padding: 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
-        <div style="font-size: 0.8rem; color: #64748b;">Median Processing Throughput</div>
-        <div style="font-size: 1.35rem; font-weight: bold; color: #16a34a;">
-          ${(1000000 / (medianMs / 1000)).toLocaleString(undefined, {maximumFractionDigits: 0})} rows/sec
-        </div>
-      </div>
+  <div class="stat-strip" style="grid-template-columns: repeat(3, 1fr); margin: 12px 0;">
+    <div class="stat-tile">
+      <div class="stat-value tabular-nums">${hasRuns ? medianMs.toFixed(1) + " ms" : "—"}</div>
+      <div class="stat-label">Median Rule Time</div>
     </div>
+    <div class="stat-tile">
+      <div class="stat-value tabular-nums">${hasRuns ? medianRowsPerSec.toLocaleString() : "—"}</div>
+      <div class="stat-label">Throughput (rows/s)</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-value tabular-nums">${hasRuns ? medianRate : "—"}</div>
+      <div class="stat-label">Violations per 1,000</div>
+    </div>
+  </div>
 
-    <div style="font-size: 0.825rem; font-weight: 600; color: #475569; margin-bottom: 4px;">Last ${recentRuns.length} Execution${recentRuns.length > 1 ? "s" : ""}:</div>
-    <table style="width: 100%; border-collapse: collapse; font-size: 0.825rem; background: #fff; border: 1px solid #e2e8f0; border-radius: 4px;">
-      <thead>
-        <tr style="background: #f1f5f9; text-align: left; border-bottom: 1px solid #e2e8f0;">
-          <th style="padding: 6px 10px;">Run #</th>
-          <th style="padding: 6px 10px;">Scenario</th>
-          <th style="padding: 6px 10px; text-align: right;">12-Rule Time</th>
-          <th style="padding: 6px 10px; text-align: right;">Violations</th>
-          <th style="padding: 6px 10px; text-align: right;">Rate / 1k</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${recentRuns.map(r => html`
-          <tr style="border-bottom: 1px solid #f8fafc;">
-            <td style="padding: 6px 10px; font-weight: 600; color: #475569;">Run ${r.runIndex}</td>
-            <td style="padding: 6px 10px; color: #64748b;">${r.scenario}</td>
-            <td style="padding: 6px 10px; text-align: right; font-family: monospace; font-weight: bold; color: #0284c7;">${r.ruleTotalMs.toFixed(1)} ms</td>
-            <td style="padding: 6px 10px; text-align: right; font-family: monospace;">${r.benchHits.toLocaleString()}</td>
-            <td style="padding: 6px 10px; text-align: right; font-family: monospace;">${r.benchRate}</td>
+  ${!hasRuns ? html`
+    <p style="margin: 8px 0; font-size: 13px; color: var(--muted); font-style: italic;">
+      Click "Benchmark 1M rows" above to execute the benchmark in DuckDB-Wasm.
+    </p>
+  ` : html`
+    <div style="font-size: 13px; font-weight: 600; color: var(--ink); margin: 16px 0 8px 0;">
+      Last ${recentRuns.length} Execution${recentRuns.length > 1 ? "s" : ""}:
+    </div>
+    <div class="table-wrapper" style="overflow-x: auto; max-width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; box-sizing: border-box;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+        <thead>
+          <tr style="background: var(--surface); border-bottom: 1px solid var(--line); color: var(--ink); font-weight: 600;">
+            <th style="padding: 8px 12px;">Run</th>
+            <th style="padding: 8px 12px;">Scenario</th>
+            <th style="padding: 8px 12px; text-align: right;">12-Rule Time</th>
+            <th style="padding: 8px 12px; text-align: right;">Violations</th>
+            <th style="padding: 8px 12px; text-align: right;">Rate / 1k</th>
           </tr>
-        `)}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          ${recentRuns.map(r => html`
+            <tr style="border-bottom: 1px solid var(--line); color: var(--ink);">
+              <td style="padding: 8px 12px; font-weight: 600;">Run ${r.runIndex}</td>
+              <td style="padding: 8px 12px; color: var(--muted);">${r.scenario}</td>
+              <td style="padding: 8px 12px; text-align: right; font-weight: 600; color: var(--accent);" class="tabular-nums">${r.ruleTotalMs.toFixed(1)} ms</td>
+              <td style="padding: 8px 12px; text-align: right;" class="tabular-nums">${r.benchHits.toLocaleString()}</td>
+              <td style="padding: 8px 12px; text-align: right;" class="tabular-nums">${r.benchRate}</td>
+            </tr>
+          `)}
+        </tbody>
+      </table>
+    </div>
   `}
 </div>
 `);

@@ -169,8 +169,12 @@ test("mobile cards rendered with top-4 divider and toggle drawer on mobile", asy
   assert.ok(card1.textContent.includes("#1"), "line 1 has rank");
   assert.ok(card1.textContent.includes("enum_01"), "line 1 has enum_01");
   assert.ok(card1.textContent.includes("2.5"), "line 1 has risk score");
-  assert.ok(card1.textContent.includes("n · 1 rules · 5 checks"), "line 4 has n · rules · checks");
+  assert.ok(card1.textContent.includes("20 interviews · 1 rule hit · 5 back-checks"), "line 4 has meta singular/plural format");
   assert.ok(card1.textContent.includes("Honest"), "truth line rendered when revealed");
+
+  // Check card with no flagged features
+  const card3 = cards[2];
+  assert.ok(card3.textContent.includes("No flagged features"), "card without evidence shows 'No flagged features'");
 
   // Tapping card on mobile opens mobile drawer
   activateRow(container, "enum_01");

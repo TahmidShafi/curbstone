@@ -14,9 +14,9 @@ The diagram below illustrates the flow of data, rules, feature estimators, and a
 
 ```mermaid
 flowchart TD
-  classDef stage fill:#f8fafc,stroke:#3b82f6,stroke-width:2px,color:#1e293b;
-  classDef highlight fill:#eff6ff,stroke:#2563eb,stroke-width:2px,color:#1e40af;
-  classDef table fill:#f1f5f9,stroke:#64748b,stroke-width:2px,color:#0f172a;
+  classDef stage fill:#ffffff,stroke:#e5e7eb,stroke-width:1.5px,color:#1f2937;
+  classDef highlight fill:#ffffff,stroke:#2563eb,stroke-width:2px,color:#2563eb;
+  classDef table fill:#ffffff,stroke:#e5e7eb,stroke-width:1.5px,color:#1f2937;
 
   GEN["Generator<br/>(Population, Villages, Enumerators, Fraud)"]:::stage
   SUB["Submissions<br/>(Survey Paradata & Responses)"]:::stage
