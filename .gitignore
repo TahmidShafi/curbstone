@@ -1,5 +1,5 @@
-data/
-truth/
+/data/
+/truth/
 __pycache__/
 *.pyc
 .pytest_cache/

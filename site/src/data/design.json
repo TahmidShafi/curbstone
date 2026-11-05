@@ -1,0 +1,178 @@
+{
+  "active_fraud_modes": [
+    "copy_paste",
+    "straight_lining",
+    "rushed",
+    "invented_gps",
+    "too_average"
+  ],
+  "icc_level": "medium",
+  "icc_value": 0.15,
+  "include_holdout": false,
+  "n_enumerators": 40,
+  "parameters": {
+    "engine": {
+      "seed": 12345
+    },
+    "enumerators": {
+      "care_sd": 0.3,
+      "min_enumerators_per_village": 2,
+      "n_enumerators": 40,
+      "speed_sd": 0.2,
+      "villages_per_enumerator": [
+        1,
+        3
+      ],
+      "workload": [
+        5,
+        60
+      ]
+    },
+    "fraud": {
+      "holdout_mode": "partial_section",
+      "modes": {
+        "copy_paste": {
+          "edit_rate_range": [
+            0.1,
+            0.3
+          ],
+          "gps_jitter_sd_m": 15.0,
+          "intensity": 0.7
+        },
+        "invented_gps": {
+          "anchor_radius_m": 200.0,
+          "intensity": 0.6,
+          "jitter_sd_m": 5.0,
+          "n_anchor_choices": [
+            1,
+            2,
+            3
+          ]
+        },
+        "rushed": {
+          "duration_multiplier_range": [
+            0.3,
+            0.5
+          ],
+          "intensity": 0.5
+        },
+        "straight_lining": {
+          "all_one_prob": 0.2,
+          "all_zero_prob": 0.8,
+          "intensity": 0.8,
+          "prob_straight_range": [
+            0.7,
+            1.0
+          ]
+        },
+        "too_average": {
+          "hh_size_noise_sd": 0.5,
+          "intensity": 0.5,
+          "noise_range": [
+            0.0,
+            0.2
+          ]
+        }
+      },
+      "prevalence": 0.1,
+      "share_range": [
+        0.3,
+        0.9
+      ]
+    },
+    "geography": {
+      "households_per_village": [
+        100,
+        300
+      ],
+      "n_upazilas": 3,
+      "upazila_codes": [
+        "UPA01",
+        "UPA02",
+        "UPA03"
+      ],
+      "village_min_separation_km": 1.5,
+      "villages_per_upazila": 12
+    },
+    "gps": {
+      "accuracy_range_m": [
+        3.0,
+        25.0
+      ],
+      "device_error_sd_m": 10.0,
+      "scatter_m": 300.0
+    },
+    "household": {
+      "assets": [
+        {
+          "base_prob": 0.974,
+          "name": "asset_mobile"
+        },
+        {
+          "base_prob": 0.568,
+          "name": "asset_tv"
+        },
+        {
+          "base_prob": 0.381,
+          "name": "asset_internet"
+        },
+        {
+          "base_prob": 0.128,
+          "name": "asset_radio"
+        },
+        {
+          "base_prob": 0.087,
+          "name": "asset_computer"
+        }
+      ],
+      "hh_size": {
+        "dist": "poisson",
+        "lambda_base": 3.3,
+        "max_size": 15,
+        "mean": 4.3
+      }
+    },
+    "interview": {
+      "age_heaping_base_rate": 0.1,
+      "duration_lognormal": {
+        "mu": 3.355,
+        "sigma": 0.25
+      },
+      "gap_change_village_min": [
+        30,
+        90
+      ],
+      "gap_same_village_min": [
+        5,
+        20
+      ],
+      "item_nonresponse_base_rate": 0.01,
+      "per_member_minutes": 0.05,
+      "round_working_days": 10,
+      "start_date": "2026-11-01",
+      "timezone": "Asia/Dhaka",
+      "work_hours": [
+        9,
+        17
+      ]
+    },
+    "seed": 42,
+    "village_effects": {
+      "beta": 0.8,
+      "icc_levels": {
+        "high": 0.3,
+        "low": 0.05,
+        "medium": 0.15
+      },
+      "sigma_w": 0.15
+    }
+  },
+  "prevalence": 0.125,
+  "round": 1,
+  "seed": 5000,
+  "workload_profile": "mixed",
+  "workload_range": [
+    5,
+    60
+  ]
+}

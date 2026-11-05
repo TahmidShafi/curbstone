@@ -1,0 +1,1507 @@
+{
+  "enum_01": {
+    "enumerator_id": "enum_01",
+    "risk_score": -0.0,
+    "p_e": 1.0,
+    "m_e": 10,
+    "n_interviews": 33,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_02": {
+    "enumerator_id": "enum_02",
+    "risk_score": -0.0,
+    "p_e": 1.0,
+    "m_e": 10,
+    "n_interviews": 15,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_03": {
+    "enumerator_id": "enum_03",
+    "risk_score": -0.0,
+    "p_e": 1.0,
+    "m_e": 10,
+    "n_interviews": 29,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_04": {
+    "enumerator_id": "enum_04",
+    "risk_score": -0.0,
+    "p_e": 1.0,
+    "m_e": 10,
+    "n_interviews": 17,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_05": {
+    "enumerator_id": "enum_05",
+    "risk_score": 1.4565,
+    "p_e": 0.034951,
+    "m_e": 10,
+    "n_interviews": 55,
+    "evidence_features": [
+      "F2"
+    ],
+    "features": {
+      "F2": {
+        "feature_id": "F2",
+        "feature_name": "High daily interview volume",
+        "p_value": 0.003495,
+        "feature_estimate": 5.8929,
+        "shrunk_estimate": 1.1622,
+        "ci_90": [
+          -2.2418,
+          4.5662
+        ],
+        "submission_ids": [
+          "sub_01_00095",
+          "sub_01_00096",
+          "sub_01_00097",
+          "sub_01_00098",
+          "sub_01_00099",
+          "sub_01_00100",
+          "sub_01_00101",
+          "sub_01_00102",
+          "sub_01_00103",
+          "sub_01_00104",
+          "sub_01_00105",
+          "sub_01_00106",
+          "sub_01_00107",
+          "sub_01_00108",
+          "sub_01_00109",
+          "sub_01_00110",
+          "sub_01_00111",
+          "sub_01_00112",
+          "sub_01_00113",
+          "sub_01_00114",
+          "sub_01_00115",
+          "sub_01_00116",
+          "sub_01_00117",
+          "sub_01_00118",
+          "sub_01_00119",
+          "sub_01_00120",
+          "sub_01_00121",
+          "sub_01_00122",
+          "sub_01_00123",
+          "sub_01_00124",
+          "sub_01_00125",
+          "sub_01_00126",
+          "sub_01_00127",
+          "sub_01_00128",
+          "sub_01_00129",
+          "sub_01_00130",
+          "sub_01_00131",
+          "sub_01_00132",
+          "sub_01_00133",
+          "sub_01_00134",
+          "sub_01_00135",
+          "sub_01_00136",
+          "sub_01_00137",
+          "sub_01_00138",
+          "sub_01_00139",
+          "sub_01_00140",
+          "sub_01_00141",
+          "sub_01_00142",
+          "sub_01_00143",
+          "sub_01_00144",
+          "sub_01_00145",
+          "sub_01_00146",
+          "sub_01_00147",
+          "sub_01_00148",
+          "sub_01_00149"
+        ],
+        "daily_counts": [
+          {
+            "date": "2026-11-01",
+            "count": 14,
+            "submission_ids": [
+              "sub_01_00095",
+              "sub_01_00096",
+              "sub_01_00097",
+              "sub_01_00098",
+              "sub_01_00099",
+              "sub_01_00100",
+              "sub_01_00101",
+              "sub_01_00102",
+              "sub_01_00103",
+              "sub_01_00104",
+              "sub_01_00105",
+              "sub_01_00106",
+              "sub_01_00107",
+              "sub_01_00108"
+            ]
+          },
+          {
+            "date": "2026-11-02",
+            "count": 14,
+            "submission_ids": [
+              "sub_01_00109",
+              "sub_01_00110",
+              "sub_01_00111",
+              "sub_01_00112",
+              "sub_01_00113",
+              "sub_01_00114",
+              "sub_01_00115",
+              "sub_01_00116",
+              "sub_01_00117",
+              "sub_01_00118",
+              "sub_01_00119",
+              "sub_01_00120",
+              "sub_01_00121",
+              "sub_01_00122"
+            ]
+          },
+          {
+            "date": "2026-11-03",
+            "count": 13,
+            "submission_ids": [
+              "sub_01_00123",
+              "sub_01_00124",
+              "sub_01_00125",
+              "sub_01_00126",
+              "sub_01_00127",
+              "sub_01_00128",
+              "sub_01_00129",
+              "sub_01_00130",
+              "sub_01_00131",
+              "sub_01_00132",
+              "sub_01_00133",
+              "sub_01_00134",
+              "sub_01_00135"
+            ]
+          },
+          {
+            "date": "2026-11-04",
+            "count": 14,
+            "submission_ids": [
+              "sub_01_00136",
+              "sub_01_00137",
+              "sub_01_00138",
+              "sub_01_00139",
+              "sub_01_00140",
+              "sub_01_00141",
+              "sub_01_00142",
+              "sub_01_00143",
+              "sub_01_00144",
+              "sub_01_00145",
+              "sub_01_00146",
+              "sub_01_00147",
+              "sub_01_00148",
+              "sub_01_00149"
+            ]
+          }
+        ],
+        "max_daily_count": 14
+      }
+    }
+  },
+  "enum_06": {
+    "enumerator_id": "enum_06",
+    "risk_score": -0.0,
+    "p_e": 1.0,
+    "m_e": 10,
+    "n_interviews": 33,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_07": {
+    "enumerator_id": "enum_07",
+    "risk_score": 0.2569,
+    "p_e": 0.553529,
+    "m_e": 10,
+    "n_interviews": 10,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_08": {
+    "enumerator_id": "enum_08",
+    "risk_score": 0.6793,
+    "p_e": 0.209285,
+    "m_e": 10,
+    "n_interviews": 24,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_09": {
+    "enumerator_id": "enum_09",
+    "risk_score": 3.3644,
+    "p_e": 0.000432,
+    "m_e": 8,
+    "n_interviews": 21,
+    "evidence_features": [
+      "F4"
+    ],
+    "features": {
+      "F4": {
+        "feature_id": "F4",
+        "feature_name": "Straight-lined asset responses",
+        "p_value": 5.4e-05,
+        "feature_estimate": 0.6667,
+        "shrunk_estimate": 0.4476,
+        "ci_90": [
+          0.3074,
+          0.5916
+        ],
+        "submission_ids": [
+          "sub_01_00217",
+          "sub_01_00219",
+          "sub_01_00220",
+          "sub_01_00221",
+          "sub_01_00222",
+          "sub_01_00223",
+          "sub_01_00227",
+          "sub_01_00228",
+          "sub_01_00229",
+          "sub_01_00232",
+          "sub_01_00233",
+          "sub_01_00234",
+          "sub_01_00235",
+          "sub_01_00237"
+        ],
+        "straight_records": [
+          {
+            "submission_id": "sub_01_00217",
+            "village_id": "VIL018",
+            "straight_value": 0
+          },
+          {
+            "submission_id": "sub_01_00219",
+            "village_id": "VIL018",
+            "straight_value": 0
+          },
+          {
+            "submission_id": "sub_01_00220",
+            "village_id": "VIL018",
+            "straight_value": 0
+          },
+          {
+            "submission_id": "sub_01_00221",
+            "village_id": "VIL018",
+            "straight_value": 0
+          },
+          {
+            "submission_id": "sub_01_00222",
+            "village_id": "VIL018",
+            "straight_value": 1
+          },
+          {
+            "submission_id": "sub_01_00223",
+            "village_id": "VIL018",
+            "straight_value": 1
+          },
+          {
+            "submission_id": "sub_01_00227",
+            "village_id": "VIL018",
+            "straight_value": 1
+          },
+          {
+            "submission_id": "sub_01_00228",
+            "village_id": "VIL018",
+            "straight_value": 0
+          },
+          {
+            "submission_id": "sub_01_00229",
+            "village_id": "VIL018",
+            "straight_value": 0
+          },
+          {
+            "submission_id": "sub_01_00232",
+            "village_id": "VIL018",
+            "straight_value": 0
+          },
+          {
+            "submission_id": "sub_01_00233",
+            "village_id": "VIL018",
+            "straight_value": 0
+          },
+          {
+            "submission_id": "sub_01_00234",
+            "village_id": "VIL018",
+            "straight_value": 0
+          },
+          {
+            "submission_id": "sub_01_00235",
+            "village_id": "VIL018",
+            "straight_value": 0
+          },
+          {
+            "submission_id": "sub_01_00237",
+            "village_id": "VIL018",
+            "straight_value": 0
+          }
+        ],
+        "straight_count": 14
+      }
+    }
+  },
+  "enum_10": {
+    "enumerator_id": "enum_10",
+    "risk_score": -0.0,
+    "p_e": 1.0,
+    "m_e": 10,
+    "n_interviews": 41,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_11": {
+    "enumerator_id": "enum_11",
+    "risk_score": -0.0,
+    "p_e": 1.0,
+    "m_e": 8,
+    "n_interviews": 20,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_12": {
+    "enumerator_id": "enum_12",
+    "risk_score": 3.7554,
+    "p_e": 0.000176,
+    "m_e": 10,
+    "n_interviews": 12,
+    "evidence_features": [
+      "F1"
+    ],
+    "features": {
+      "F1": {
+        "feature_id": "F1",
+        "feature_name": "Short interview duration",
+        "p_value": 1.8e-05,
+        "feature_estimate": -1.191,
+        "shrunk_estimate": -0.9459,
+        "ci_90": [
+          -1.3653,
+          -0.5265
+        ],
+        "submission_ids": [
+          "sub_01_00299",
+          "sub_01_00300",
+          "sub_01_00301",
+          "sub_01_00302",
+          "sub_01_00303",
+          "sub_01_00304",
+          "sub_01_00305",
+          "sub_01_00306",
+          "sub_01_00307",
+          "sub_01_00308",
+          "sub_01_00309",
+          "sub_01_00310"
+        ],
+        "durations": [
+          {
+            "submission_id": "sub_01_00299",
+            "duration_min": 10.14,
+            "hh_size": 3
+          },
+          {
+            "submission_id": "sub_01_00300",
+            "duration_min": 10.99,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00301",
+            "duration_min": 11.04,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00302",
+            "duration_min": 22.61,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00303",
+            "duration_min": 19.82,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00304",
+            "duration_min": 14.57,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00305",
+            "duration_min": 9.9,
+            "hh_size": 4
+          },
+          {
+            "submission_id": "sub_01_00306",
+            "duration_min": 9.82,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00307",
+            "duration_min": 12.21,
+            "hh_size": 2
+          },
+          {
+            "submission_id": "sub_01_00308",
+            "duration_min": 13.31,
+            "hh_size": 6
+          },
+          {
+            "submission_id": "sub_01_00309",
+            "duration_min": 26.2,
+            "hh_size": 5
+          },
+          {
+            "submission_id": "sub_01_00310",
+            "duration_min": 8.6,
+            "hh_size": 4
+          }
+        ],
+        "mean_duration": 14.1
+      }
+    }
+  },
+  "enum_13": {
+    "enumerator_id": "enum_13",
+    "risk_score": 0.3791,
+    "p_e": 0.4177,
+    "m_e": 8,
+    "n_interviews": 38,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_14": {
+    "enumerator_id": "enum_14",
+    "risk_score": 0.0579,
+    "p_e": 0.875183,
+    "m_e": 8,
+    "n_interviews": 17,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_15": {
+    "enumerator_id": "enum_15",
+    "risk_score": 1.5176,
+    "p_e": 0.030367,
+    "m_e": 8,
+    "n_interviews": 55,
+    "evidence_features": [
+      "F3"
+    ],
+    "features": {
+      "F3": {
+        "feature_id": "F3",
+        "feature_name": "Near-duplicate submissions",
+        "p_value": 0.003796,
+        "feature_estimate": 0.1091,
+        "shrunk_estimate": 0.0275,
+        "ci_90": [
+          0.0249,
+          0.0303
+        ],
+        "submission_ids": [
+          "sub_01_00385",
+          "sub_01_00390",
+          "sub_01_00396",
+          "sub_01_00404",
+          "sub_01_00408",
+          "sub_01_00420"
+        ],
+        "pairs": [
+          {
+            "submission_id_1": "sub_01_00385",
+            "submission_id_2": "sub_01_00390",
+            "village_id": "VIL019",
+            "differing_fields": [
+              "roster_ages"
+            ]
+          },
+          {
+            "submission_id_1": "sub_01_00385",
+            "submission_id_2": "sub_01_00408",
+            "village_id": "VIL019",
+            "differing_fields": [
+              "roster_ages"
+            ]
+          },
+          {
+            "submission_id_1": "sub_01_00385",
+            "submission_id_2": "sub_01_00420",
+            "village_id": "VIL019",
+            "differing_fields": [
+              "roster_ages"
+            ]
+          },
+          {
+            "submission_id_1": "sub_01_00390",
+            "submission_id_2": "sub_01_00408",
+            "village_id": "VIL019",
+            "differing_fields": [
+              "roster_ages"
+            ]
+          },
+          {
+            "submission_id_1": "sub_01_00390",
+            "submission_id_2": "sub_01_00420",
+            "village_id": "VIL019",
+            "differing_fields": [
+              "roster_ages"
+            ]
+          },
+          {
+            "submission_id_1": "sub_01_00396",
+            "submission_id_2": "sub_01_00404",
+            "village_id": "VIL019",
+            "differing_fields": [
+              "roster_ages"
+            ]
+          },
+          {
+            "submission_id_1": "sub_01_00408",
+            "submission_id_2": "sub_01_00420",
+            "village_id": "VIL019",
+            "differing_fields": [
+              "roster_ages"
+            ]
+          }
+        ],
+        "pair_count": 7
+      }
+    }
+  },
+  "enum_16": {
+    "enumerator_id": "enum_16",
+    "risk_score": -0.0,
+    "p_e": 1.0,
+    "m_e": 10,
+    "n_interviews": 19,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_17": {
+    "enumerator_id": "enum_17",
+    "risk_score": 0.4388,
+    "p_e": 0.364072,
+    "m_e": 10,
+    "n_interviews": 51,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_18": {
+    "enumerator_id": "enum_18",
+    "risk_score": 0.6165,
+    "p_e": 0.241842,
+    "m_e": 10,
+    "n_interviews": 49,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_19": {
+    "enumerator_id": "enum_19",
+    "risk_score": -0.0,
+    "p_e": 1.0,
+    "m_e": 8,
+    "n_interviews": 55,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_20": {
+    "enumerator_id": "enum_20",
+    "risk_score": 0.9446,
+    "p_e": 0.113598,
+    "m_e": 10,
+    "n_interviews": 5,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_21": {
+    "enumerator_id": "enum_21",
+    "risk_score": -0.0,
+    "p_e": 1.0,
+    "m_e": 8,
+    "n_interviews": 48,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_22": {
+    "enumerator_id": "enum_22",
+    "risk_score": 0.8457,
+    "p_e": 0.142646,
+    "m_e": 8,
+    "n_interviews": 9,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_23": {
+    "enumerator_id": "enum_23",
+    "risk_score": -0.0,
+    "p_e": 1.0,
+    "m_e": 10,
+    "n_interviews": 31,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_24": {
+    "enumerator_id": "enum_24",
+    "risk_score": 0.8427,
+    "p_e": 0.143651,
+    "m_e": 8,
+    "n_interviews": 18,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_25": {
+    "enumerator_id": "enum_25",
+    "risk_score": 0.2955,
+    "p_e": 0.506377,
+    "m_e": 10,
+    "n_interviews": 36,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_26": {
+    "enumerator_id": "enum_26",
+    "risk_score": 1.5301,
+    "p_e": 0.029506,
+    "m_e": 10,
+    "n_interviews": 25,
+    "evidence_features": [
+      "F9"
+    ],
+    "features": {
+      "F9": {
+        "feature_id": "F9",
+        "feature_name": "Item nonresponse anomaly",
+        "p_value": 0.002951,
+        "feature_estimate": 0.04,
+        "shrunk_estimate": 0.0068,
+        "ci_90": [
+          0.0055,
+          0.0082
+        ],
+        "submission_ids": [
+          "sub_01_00751",
+          "sub_01_00753",
+          "sub_01_00765",
+          "sub_01_00766"
+        ],
+        "missing_count": 4
+      }
+    }
+  },
+  "enum_27": {
+    "enumerator_id": "enum_27",
+    "risk_score": 9.7212,
+    "p_e": 0.0,
+    "m_e": 10,
+    "n_interviews": 14,
+    "evidence_features": [
+      "F3",
+      "F6",
+      "F7"
+    ],
+    "features": {
+      "F3": {
+        "feature_id": "F3",
+        "feature_name": "Near-duplicate submissions",
+        "p_value": 0.0,
+        "feature_estimate": 0.6429,
+        "shrunk_estimate": 0.0294,
+        "ci_90": [
+          0.0267,
+          0.0323
+        ],
+        "submission_ids": [
+          "sub_01_00768",
+          "sub_01_00769",
+          "sub_01_00770",
+          "sub_01_00775",
+          "sub_01_00776",
+          "sub_01_00777",
+          "sub_01_00778",
+          "sub_01_00779",
+          "sub_01_00780"
+        ],
+        "pairs": [
+          {
+            "submission_id_1": "sub_01_00768",
+            "submission_id_2": "sub_01_00769",
+            "village_id": "VIL025",
+            "differing_fields": []
+          },
+          {
+            "submission_id_1": "sub_01_00768",
+            "submission_id_2": "sub_01_00770",
+            "village_id": "VIL025",
+            "differing_fields": [
+              "asset_internet"
+            ]
+          },
+          {
+            "submission_id_1": "sub_01_00769",
+            "submission_id_2": "sub_01_00770",
+            "village_id": "VIL025",
+            "differing_fields": [
+              "asset_internet"
+            ]
+          },
+          {
+            "submission_id_1": "sub_01_00775",
+            "submission_id_2": "sub_01_00776",
+            "village_id": "VIL035",
+            "differing_fields": []
+          },
+          {
+            "submission_id_1": "sub_01_00775",
+            "submission_id_2": "sub_01_00777",
+            "village_id": "VIL035",
+            "differing_fields": []
+          },
+          {
+            "submission_id_1": "sub_01_00775",
+            "submission_id_2": "sub_01_00778",
+            "village_id": "VIL035",
+            "differing_fields": []
+          },
+          {
+            "submission_id_1": "sub_01_00775",
+            "submission_id_2": "sub_01_00779",
+            "village_id": "VIL035",
+            "differing_fields": []
+          },
+          {
+            "submission_id_1": "sub_01_00775",
+            "submission_id_2": "sub_01_00780",
+            "village_id": "VIL035",
+            "differing_fields": []
+          },
+          {
+            "submission_id_1": "sub_01_00776",
+            "submission_id_2": "sub_01_00777",
+            "village_id": "VIL035",
+            "differing_fields": []
+          },
+          {
+            "submission_id_1": "sub_01_00776",
+            "submission_id_2": "sub_01_00778",
+            "village_id": "VIL035",
+            "differing_fields": []
+          },
+          {
+            "submission_id_1": "sub_01_00776",
+            "submission_id_2": "sub_01_00779",
+            "village_id": "VIL035",
+            "differing_fields": []
+          },
+          {
+            "submission_id_1": "sub_01_00776",
+            "submission_id_2": "sub_01_00780",
+            "village_id": "VIL035",
+            "differing_fields": []
+          },
+          {
+            "submission_id_1": "sub_01_00777",
+            "submission_id_2": "sub_01_00778",
+            "village_id": "VIL035",
+            "differing_fields": []
+          },
+          {
+            "submission_id_1": "sub_01_00777",
+            "submission_id_2": "sub_01_00779",
+            "village_id": "VIL035",
+            "differing_fields": []
+          },
+          {
+            "submission_id_1": "sub_01_00777",
+            "submission_id_2": "sub_01_00780",
+            "village_id": "VIL035",
+            "differing_fields": []
+          },
+          {
+            "submission_id_1": "sub_01_00778",
+            "submission_id_2": "sub_01_00779",
+            "village_id": "VIL035",
+            "differing_fields": []
+          },
+          {
+            "submission_id_1": "sub_01_00778",
+            "submission_id_2": "sub_01_00780",
+            "village_id": "VIL035",
+            "differing_fields": []
+          },
+          {
+            "submission_id_1": "sub_01_00779",
+            "submission_id_2": "sub_01_00780",
+            "village_id": "VIL035",
+            "differing_fields": []
+          }
+        ],
+        "pair_count": 18
+      },
+      "F6": {
+        "feature_id": "F6",
+        "feature_name": "Low household size dispersion",
+        "p_value": 0.003416,
+        "feature_estimate": -2.4652,
+        "shrunk_estimate": 0.0,
+        "ci_90": [
+          -1.3754,
+          1.3754
+        ],
+        "submission_ids": [
+          "sub_01_00767",
+          "sub_01_00768",
+          "sub_01_00769",
+          "sub_01_00770",
+          "sub_01_00771",
+          "sub_01_00772",
+          "sub_01_00773",
+          "sub_01_00774",
+          "sub_01_00775",
+          "sub_01_00776",
+          "sub_01_00777",
+          "sub_01_00778",
+          "sub_01_00779",
+          "sub_01_00780"
+        ],
+        "hh_size_variance": 0.6429
+      },
+      "F7": {
+        "feature_id": "F7",
+        "feature_name": "GPS clustering / low spread",
+        "p_value": 0.0,
+        "feature_estimate": -2.4004,
+        "shrunk_estimate": -0.9862,
+        "ci_90": [
+          -1.6465,
+          -0.3259
+        ],
+        "submission_ids": [
+          "sub_01_00767",
+          "sub_01_00768",
+          "sub_01_00769",
+          "sub_01_00770",
+          "sub_01_00771",
+          "sub_01_00772",
+          "sub_01_00773",
+          "sub_01_00774",
+          "sub_01_00775",
+          "sub_01_00776",
+          "sub_01_00777",
+          "sub_01_00778",
+          "sub_01_00779",
+          "sub_01_00780"
+        ],
+        "points": [
+          {
+            "submission_id": "sub_01_00767",
+            "village_id": "VIL025",
+            "lat": 24.581908,
+            "lon": 90.11611,
+            "accuracy": 16.52
+          },
+          {
+            "submission_id": "sub_01_00768",
+            "village_id": "VIL025",
+            "lat": 24.581977,
+            "lon": 90.116053,
+            "accuracy": 18.33
+          },
+          {
+            "submission_id": "sub_01_00769",
+            "village_id": "VIL025",
+            "lat": 24.582012,
+            "lon": 90.116429,
+            "accuracy": 21.86
+          },
+          {
+            "submission_id": "sub_01_00770",
+            "village_id": "VIL025",
+            "lat": 24.581937,
+            "lon": 90.116001,
+            "accuracy": 11.13
+          },
+          {
+            "submission_id": "sub_01_00771",
+            "village_id": "VIL011",
+            "lat": 24.544722,
+            "lon": 89.898356,
+            "accuracy": 3.54
+          },
+          {
+            "submission_id": "sub_01_00772",
+            "village_id": "VIL011",
+            "lat": 24.544816,
+            "lon": 89.898162,
+            "accuracy": 15.87
+          },
+          {
+            "submission_id": "sub_01_00773",
+            "village_id": "VIL011",
+            "lat": 24.54316,
+            "lon": 89.899403,
+            "accuracy": 10.57
+          },
+          {
+            "submission_id": "sub_01_00774",
+            "village_id": "VIL011",
+            "lat": 24.537044,
+            "lon": 89.902295,
+            "accuracy": 5.63
+          },
+          {
+            "submission_id": "sub_01_00775",
+            "village_id": "VIL035",
+            "lat": 24.581986,
+            "lon": 90.116065,
+            "accuracy": 11.0
+          },
+          {
+            "submission_id": "sub_01_00776",
+            "village_id": "VIL035",
+            "lat": 24.582085,
+            "lon": 90.11598,
+            "accuracy": 17.57
+          },
+          {
+            "submission_id": "sub_01_00777",
+            "village_id": "VIL035",
+            "lat": 24.581899,
+            "lon": 90.115751,
+            "accuracy": 15.04
+          },
+          {
+            "submission_id": "sub_01_00778",
+            "village_id": "VIL035",
+            "lat": 24.581893,
+            "lon": 90.115933,
+            "accuracy": 5.6
+          },
+          {
+            "submission_id": "sub_01_00779",
+            "village_id": "VIL035",
+            "lat": 24.582015,
+            "lon": 90.116402,
+            "accuracy": 11.9
+          },
+          {
+            "submission_id": "sub_01_00780",
+            "village_id": "VIL035",
+            "lat": 24.581819,
+            "lon": 90.116028,
+            "accuracy": 21.35
+          }
+        ],
+        "village_references": [
+          {
+            "village_id": "VIL025",
+            "ref_lat": 24.583889,
+            "ref_lon": 90.123193
+          },
+          {
+            "village_id": "VIL011",
+            "ref_lat": 24.542161,
+            "ref_lon": 89.899463
+          },
+          {
+            "village_id": "VIL035",
+            "ref_lat": 24.598781,
+            "ref_lon": 89.973056
+          }
+        ]
+      }
+    }
+  },
+  "enum_28": {
+    "enumerator_id": "enum_28",
+    "risk_score": -0.0,
+    "p_e": 1.0,
+    "m_e": 8,
+    "n_interviews": 28,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_29": {
+    "enumerator_id": "enum_29",
+    "risk_score": 0.175,
+    "p_e": 0.668345,
+    "m_e": 8,
+    "n_interviews": 57,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_30": {
+    "enumerator_id": "enum_30",
+    "risk_score": -0.0,
+    "p_e": 1.0,
+    "m_e": 10,
+    "n_interviews": 23,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_31": {
+    "enumerator_id": "enum_31",
+    "risk_score": -0.0,
+    "p_e": 1.0,
+    "m_e": 10,
+    "n_interviews": 33,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_32": {
+    "enumerator_id": "enum_32",
+    "risk_score": 8.4046,
+    "p_e": 0.0,
+    "m_e": 10,
+    "n_interviews": 44,
+    "evidence_features": [
+      "F7"
+    ],
+    "features": {
+      "F7": {
+        "feature_id": "F7",
+        "feature_name": "GPS clustering / low spread",
+        "p_value": 0.0,
+        "feature_estimate": -2.731,
+        "shrunk_estimate": -1.5745,
+        "ci_90": [
+          -2.1319,
+          -1.0171
+        ],
+        "submission_ids": [
+          "sub_01_00922",
+          "sub_01_00923",
+          "sub_01_00924",
+          "sub_01_00925",
+          "sub_01_00926",
+          "sub_01_00927",
+          "sub_01_00928",
+          "sub_01_00929",
+          "sub_01_00930",
+          "sub_01_00931",
+          "sub_01_00932",
+          "sub_01_00933",
+          "sub_01_00934",
+          "sub_01_00935",
+          "sub_01_00936",
+          "sub_01_00937",
+          "sub_01_00938",
+          "sub_01_00939",
+          "sub_01_00940",
+          "sub_01_00941",
+          "sub_01_00942",
+          "sub_01_00943",
+          "sub_01_00944",
+          "sub_01_00945",
+          "sub_01_00946",
+          "sub_01_00947",
+          "sub_01_00948",
+          "sub_01_00949",
+          "sub_01_00950",
+          "sub_01_00951",
+          "sub_01_00952",
+          "sub_01_00953",
+          "sub_01_00954",
+          "sub_01_00955",
+          "sub_01_00956",
+          "sub_01_00957",
+          "sub_01_00958",
+          "sub_01_00959",
+          "sub_01_00960",
+          "sub_01_00961",
+          "sub_01_00962",
+          "sub_01_00963",
+          "sub_01_00964",
+          "sub_01_00965"
+        ],
+        "points": [
+          {
+            "submission_id": "sub_01_00922",
+            "village_id": "VIL027",
+            "lat": 24.383297,
+            "lon": 89.916713,
+            "accuracy": 24.39
+          },
+          {
+            "submission_id": "sub_01_00923",
+            "village_id": "VIL027",
+            "lat": 24.379057,
+            "lon": 89.91482,
+            "accuracy": 9.49
+          },
+          {
+            "submission_id": "sub_01_00924",
+            "village_id": "VIL027",
+            "lat": 24.378723,
+            "lon": 89.914685,
+            "accuracy": 15.39
+          },
+          {
+            "submission_id": "sub_01_00925",
+            "village_id": "VIL027",
+            "lat": 24.377107,
+            "lon": 89.915224,
+            "accuracy": 6.14
+          },
+          {
+            "submission_id": "sub_01_00926",
+            "village_id": "VIL027",
+            "lat": 24.378729,
+            "lon": 89.914559,
+            "accuracy": 16.6
+          },
+          {
+            "submission_id": "sub_01_00927",
+            "village_id": "VIL027",
+            "lat": 24.377105,
+            "lon": 89.915288,
+            "accuracy": 13.68
+          },
+          {
+            "submission_id": "sub_01_00928",
+            "village_id": "VIL027",
+            "lat": 24.378666,
+            "lon": 89.91455,
+            "accuracy": 24.36
+          },
+          {
+            "submission_id": "sub_01_00929",
+            "village_id": "VIL027",
+            "lat": 24.375119,
+            "lon": 89.914224,
+            "accuracy": 7.02
+          },
+          {
+            "submission_id": "sub_01_00930",
+            "village_id": "VIL027",
+            "lat": 24.37907,
+            "lon": 89.914763,
+            "accuracy": 22.7
+          },
+          {
+            "submission_id": "sub_01_00931",
+            "village_id": "VIL027",
+            "lat": 24.378609,
+            "lon": 89.914635,
+            "accuracy": 7.17
+          },
+          {
+            "submission_id": "sub_01_00932",
+            "village_id": "VIL027",
+            "lat": 24.376153,
+            "lon": 89.91273,
+            "accuracy": 7.95
+          },
+          {
+            "submission_id": "sub_01_00933",
+            "village_id": "VIL027",
+            "lat": 24.378691,
+            "lon": 89.914615,
+            "accuracy": 17.19
+          },
+          {
+            "submission_id": "sub_01_00934",
+            "village_id": "VIL027",
+            "lat": 24.378255,
+            "lon": 89.920974,
+            "accuracy": 7.42
+          },
+          {
+            "submission_id": "sub_01_00935",
+            "village_id": "VIL027",
+            "lat": 24.378915,
+            "lon": 89.914729,
+            "accuracy": 9.25
+          },
+          {
+            "submission_id": "sub_01_00936",
+            "village_id": "VIL027",
+            "lat": 24.377167,
+            "lon": 89.915231,
+            "accuracy": 9.97
+          },
+          {
+            "submission_id": "sub_01_00937",
+            "village_id": "VIL027",
+            "lat": 24.377199,
+            "lon": 89.915214,
+            "accuracy": 20.25
+          },
+          {
+            "submission_id": "sub_01_00938",
+            "village_id": "VIL027",
+            "lat": 24.378995,
+            "lon": 89.91477,
+            "accuracy": 9.87
+          },
+          {
+            "submission_id": "sub_01_00939",
+            "village_id": "VIL027",
+            "lat": 24.377193,
+            "lon": 89.915226,
+            "accuracy": 24.09
+          },
+          {
+            "submission_id": "sub_01_00940",
+            "village_id": "VIL027",
+            "lat": 24.37715,
+            "lon": 89.915297,
+            "accuracy": 12.08
+          },
+          {
+            "submission_id": "sub_01_00941",
+            "village_id": "VIL027",
+            "lat": 24.379009,
+            "lon": 89.914759,
+            "accuracy": 14.45
+          },
+          {
+            "submission_id": "sub_01_00942",
+            "village_id": "VIL027",
+            "lat": 24.378986,
+            "lon": 89.914707,
+            "accuracy": 22.39
+          },
+          {
+            "submission_id": "sub_01_00943",
+            "village_id": "VIL027",
+            "lat": 24.377168,
+            "lon": 89.915303,
+            "accuracy": 10.45
+          },
+          {
+            "submission_id": "sub_01_00944",
+            "village_id": "VIL027",
+            "lat": 24.378922,
+            "lon": 89.914782,
+            "accuracy": 6.52
+          },
+          {
+            "submission_id": "sub_01_00945",
+            "village_id": "VIL027",
+            "lat": 24.377116,
+            "lon": 89.915299,
+            "accuracy": 3.12
+          },
+          {
+            "submission_id": "sub_01_00946",
+            "village_id": "VIL027",
+            "lat": 24.3772,
+            "lon": 89.91528,
+            "accuracy": 21.72
+          },
+          {
+            "submission_id": "sub_01_00947",
+            "village_id": "VIL027",
+            "lat": 24.377084,
+            "lon": 89.915268,
+            "accuracy": 18.63
+          },
+          {
+            "submission_id": "sub_01_00948",
+            "village_id": "VIL027",
+            "lat": 24.378684,
+            "lon": 89.91454,
+            "accuracy": 9.06
+          },
+          {
+            "submission_id": "sub_01_00949",
+            "village_id": "VIL027",
+            "lat": 24.376899,
+            "lon": 89.917116,
+            "accuracy": 16.75
+          },
+          {
+            "submission_id": "sub_01_00950",
+            "village_id": "VIL027",
+            "lat": 24.377174,
+            "lon": 89.915199,
+            "accuracy": 21.94
+          },
+          {
+            "submission_id": "sub_01_00951",
+            "village_id": "VIL034",
+            "lat": 24.624004,
+            "lon": 89.856038,
+            "accuracy": 18.29
+          },
+          {
+            "submission_id": "sub_01_00952",
+            "village_id": "VIL034",
+            "lat": 24.624159,
+            "lon": 89.854672,
+            "accuracy": 13.42
+          },
+          {
+            "submission_id": "sub_01_00953",
+            "village_id": "VIL034",
+            "lat": 24.624186,
+            "lon": 89.85483,
+            "accuracy": 5.67
+          },
+          {
+            "submission_id": "sub_01_00954",
+            "village_id": "VIL034",
+            "lat": 24.62414,
+            "lon": 89.854715,
+            "accuracy": 18.31
+          },
+          {
+            "submission_id": "sub_01_00955",
+            "village_id": "VIL034",
+            "lat": 24.625284,
+            "lon": 89.854106,
+            "accuracy": 17.06
+          },
+          {
+            "submission_id": "sub_01_00956",
+            "village_id": "VIL034",
+            "lat": 24.624109,
+            "lon": 89.854833,
+            "accuracy": 8.23
+          },
+          {
+            "submission_id": "sub_01_00957",
+            "village_id": "VIL034",
+            "lat": 24.617631,
+            "lon": 89.855319,
+            "accuracy": 11.51
+          },
+          {
+            "submission_id": "sub_01_00958",
+            "village_id": "VIL034",
+            "lat": 24.624081,
+            "lon": 89.854717,
+            "accuracy": 5.57
+          },
+          {
+            "submission_id": "sub_01_00959",
+            "village_id": "VIL034",
+            "lat": 24.624167,
+            "lon": 89.854765,
+            "accuracy": 13.8
+          },
+          {
+            "submission_id": "sub_01_00960",
+            "village_id": "VIL034",
+            "lat": 24.627875,
+            "lon": 89.856441,
+            "accuracy": 22.58
+          },
+          {
+            "submission_id": "sub_01_00961",
+            "village_id": "VIL034",
+            "lat": 24.625219,
+            "lon": 89.854128,
+            "accuracy": 4.8
+          },
+          {
+            "submission_id": "sub_01_00962",
+            "village_id": "VIL034",
+            "lat": 24.623973,
+            "lon": 89.856163,
+            "accuracy": 8.65
+          },
+          {
+            "submission_id": "sub_01_00963",
+            "village_id": "VIL034",
+            "lat": 24.624103,
+            "lon": 89.854779,
+            "accuracy": 10.74
+          },
+          {
+            "submission_id": "sub_01_00964",
+            "village_id": "VIL034",
+            "lat": 24.624142,
+            "lon": 89.854753,
+            "accuracy": 23.34
+          },
+          {
+            "submission_id": "sub_01_00965",
+            "village_id": "VIL034",
+            "lat": 24.625199,
+            "lon": 89.854121,
+            "accuracy": 11.92
+          }
+        ],
+        "village_references": [
+          {
+            "village_id": "VIL027",
+            "ref_lat": 24.378661,
+            "ref_lon": 89.914539
+          },
+          {
+            "village_id": "VIL034",
+            "ref_lat": 24.624344,
+            "ref_lon": 89.855675
+          }
+        ]
+      }
+    }
+  },
+  "enum_33": {
+    "enumerator_id": "enum_33",
+    "risk_score": -0.0,
+    "p_e": 1.0,
+    "m_e": 10,
+    "n_interviews": 58,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_34": {
+    "enumerator_id": "enum_34",
+    "risk_score": -0.0,
+    "p_e": 1.0,
+    "m_e": 8,
+    "n_interviews": 14,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_35": {
+    "enumerator_id": "enum_35",
+    "risk_score": -0.0,
+    "p_e": 1.0,
+    "m_e": 10,
+    "n_interviews": 28,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_36": {
+    "enumerator_id": "enum_36",
+    "risk_score": -0.0,
+    "p_e": 1.0,
+    "m_e": 10,
+    "n_interviews": 13,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_37": {
+    "enumerator_id": "enum_37",
+    "risk_score": 0.077,
+    "p_e": 0.837525,
+    "m_e": 8,
+    "n_interviews": 42,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_38": {
+    "enumerator_id": "enum_38",
+    "risk_score": -0.0,
+    "p_e": 1.0,
+    "m_e": 10,
+    "n_interviews": 45,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_39": {
+    "enumerator_id": "enum_39",
+    "risk_score": -0.0,
+    "p_e": 1.0,
+    "m_e": 10,
+    "n_interviews": 20,
+    "evidence_features": [],
+    "features": {}
+  },
+  "enum_40": {
+    "enumerator_id": "enum_40",
+    "risk_score": 0.7727,
+    "p_e": 0.168784,
+    "m_e": 8,
+    "n_interviews": 56,
+    "evidence_features": [],
+    "features": {}
+  }
+}

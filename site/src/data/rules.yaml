@@ -1,0 +1,219 @@
+# curbstone DQA Rules Specification
+# Format:
+# id, version, level, description, rationale, threshold_basis, severity, sql
+
+- id: R01
+  version: "1.0.0"
+  level: submission
+  description: "Household size is out of valid range (< 1 or > 15)"
+  rationale: "range check"
+  threshold_basis: "ASSUMPTION – standard DQA practice"
+  severity: high
+  sql: >
+    SELECT
+        submission_id AS unit_id,
+        'R01' AS rule_id,
+        CAST(hh_size AS DOUBLE) AS value
+    FROM submissions
+    WHERE hh_size < 1 OR hh_size > 15
+
+- id: R02
+  version: "1.0.0"
+  level: submission
+  description: "Head of household age is out of valid range (< 15 or > 100)"
+  rationale: "range check"
+  threshold_basis: "ASSUMPTION – standard DQA practice"
+  severity: high
+  sql: >
+    SELECT
+        submission_id AS unit_id,
+        'R02' AS rule_id,
+        CAST(head_age AS DOUBLE) AS value
+    FROM submissions
+    WHERE head_age < 15 OR head_age > 100
+
+- id: R03
+  version: "1.0.0"
+  level: submission
+  description: "Roster member count does not equal reported household size"
+  rationale: "internal consistency"
+  threshold_basis: "ASSUMPTION – standard DQA practice"
+  severity: high
+  sql: >
+    SELECT
+        submission_id AS unit_id,
+        'R03' AS rule_id,
+        CAST(len(roster_ages) - hh_size AS DOUBLE) AS value
+    FROM submissions
+    WHERE len(roster_ages) != hh_size
+
+- id: R04
+  version: "1.0.0"
+  level: submission
+  description: "Roster contains a member age out of valid range (< 0 or > 110)"
+  rationale: "range check"
+  threshold_basis: "ASSUMPTION – standard DQA practice"
+  severity: medium
+  sql: >
+    SELECT
+        submission_id AS unit_id,
+        'R04' AS rule_id,
+        CAST(
+            CASE
+                WHEN list_min(roster_ages) < 0 THEN list_min(roster_ages)
+                ELSE list_max(roster_ages)
+            END AS DOUBLE
+        ) AS value
+    FROM submissions
+    WHERE list_min(roster_ages) < 0 OR list_max(roster_ages) > 110
+
+- id: R05
+  version: "1.0.0"
+  level: submission
+  description: "Interview duration is suspiciously short (< 10 minutes)"
+  rationale: "implausibly short interview"
+  threshold_basis: "ASSUMPTION – standard DQA practice"
+  severity: medium
+  sql: >
+    SELECT
+        submission_id AS unit_id,
+        'R05' AS rule_id,
+        CAST(duration_min AS DOUBLE) AS value
+    FROM submissions
+    WHERE duration_min < 10
+
+- id: R06
+  version: "1.0.0"
+  level: submission
+  description: "Interview duration is suspiciously long (> 180 minutes)"
+  rationale: "implausibly long or abandoned interview"
+  threshold_basis: "ASSUMPTION – standard DQA practice"
+  severity: low
+  sql: >
+    SELECT
+        submission_id AS unit_id,
+        'R06' AS rule_id,
+        CAST(duration_min AS DOUBLE) AS value
+    FROM submissions
+    WHERE duration_min > 180
+
+- id: R07
+  version: "1.0.0"
+  level: submission
+  description: "Interview conducted out of standard working hours (start < 07:00 or end > 20:00)"
+  rationale: "out-of-hours submission"
+  threshold_basis: "ASSUMPTION – standard DQA practice"
+  severity: medium
+  sql: >
+    SELECT
+        submission_id AS unit_id,
+        'R07' AS rule_id,
+        CAST(hour(start_local) AS DOUBLE) AS value
+    FROM submissions
+    WHERE hour(start_local) < 7 OR CAST(end_local AS TIME) > TIME '20:00:00'
+
+- id: R08
+  version: "1.0.0"
+  level: submission
+  description: "GPS accuracy radius exceeds 50 meters"
+  rationale: "unreliable GPS fix"
+  threshold_basis: "ASSUMPTION – standard DQA practice"
+  severity: low
+  sql: >
+    SELECT
+        submission_id AS unit_id,
+        'R08' AS rule_id,
+        CAST(gps_accuracy AS DOUBLE) AS value
+    FROM submissions
+    WHERE gps_accuracy > 50
+
+- id: R09
+  version: "1.0.0"
+  level: submission
+  description: "Haversine distance between submission GPS and village reference coordinates exceeds 3000 meters"
+  rationale: "location inconsistent with assigned village"
+  threshold_basis: "ASSUMPTION – standard DQA practice"
+  severity: high
+  sql: >
+    SELECT
+        s.submission_id AS unit_id,
+        'R09' AS rule_id,
+        2.0 * 6371000.0 * asin(sqrt(
+            sin(radians(s.gps_lat - v.ref_lat) / 2.0) * sin(radians(s.gps_lat - v.ref_lat) / 2.0) +
+            cos(radians(v.ref_lat)) * cos(radians(s.gps_lat)) *
+            sin(radians(s.gps_lon - v.ref_lon) / 2.0) * sin(radians(s.gps_lon - v.ref_lon) / 2.0)
+        )) AS value
+    FROM submissions s
+    JOIN villages v ON s.village_id = v.village_id
+    WHERE 2.0 * 6371000.0 * asin(sqrt(
+            sin(radians(s.gps_lat - v.ref_lat) / 2.0) * sin(radians(s.gps_lat - v.ref_lat) / 2.0) +
+            cos(radians(v.ref_lat)) * cos(radians(s.gps_lat)) *
+            sin(radians(s.gps_lon - v.ref_lon) / 2.0) * sin(radians(s.gps_lon - v.ref_lon) / 2.0)
+        )) > 3000.0
+
+- id: R10
+  version: "1.0.0"
+  level: submission
+  description: "Excessive item non-response across household assets (>= 3 assets coded as -8)"
+  rationale: "excessive item non-response"
+  threshold_basis: "ASSUMPTION – standard DQA practice"
+  severity: medium
+  sql: >
+    SELECT
+        submission_id AS unit_id,
+        'R10' AS rule_id,
+        CAST(
+            (CASE WHEN asset_mobile = -8 THEN 1 ELSE 0 END) +
+            (CASE WHEN asset_tv = -8 THEN 1 ELSE 0 END) +
+            (CASE WHEN asset_internet = -8 THEN 1 ELSE 0 END) +
+            (CASE WHEN asset_radio = -8 THEN 1 ELSE 0 END) +
+            (CASE WHEN asset_computer = -8 THEN 1 ELSE 0 END)
+        AS DOUBLE) AS value
+    FROM submissions
+    WHERE (
+        (CASE WHEN asset_mobile = -8 THEN 1 ELSE 0 END) +
+        (CASE WHEN asset_tv = -8 THEN 1 ELSE 0 END) +
+        (CASE WHEN asset_internet = -8 THEN 1 ELSE 0 END) +
+        (CASE WHEN asset_radio = -8 THEN 1 ELSE 0 END) +
+        (CASE WHEN asset_computer = -8 THEN 1 ELSE 0 END)
+    ) >= 3
+
+- id: R11
+  version: "1.0.0"
+  level: submission
+  description: "Exact duplicate interview entry submitted by the same enumerator"
+  rationale: "exact duplicate entry"
+  threshold_basis: "ASSUMPTION – standard DQA practice"
+  severity: high
+  sql: >
+    WITH dupes AS (
+        SELECT
+            submission_id,
+            COUNT(*) OVER (
+                PARTITION BY enumerator_id, hh_size, head_age, roster_ages,
+                             asset_mobile, asset_tv, asset_internet, asset_radio, asset_computer
+            ) AS group_size
+        FROM submissions
+    )
+    SELECT
+        submission_id AS unit_id,
+        'R11' AS rule_id,
+        CAST(group_size AS DOUBLE) AS value
+    FROM dupes
+    WHERE group_size > 1
+
+- id: R12
+  version: "1.0.0"
+  level: enumerator_day
+  description: "Infeasible daily interview volume per enumerator (> 12 submissions in one day)"
+  rationale: "infeasible daily workload"
+  threshold_basis: "ASSUMPTION – standard DQA practice"
+  severity: medium
+  sql: >
+    SELECT
+        enumerator_id || '_' || strftime(CAST(start_local AS DATE), '%Y-%m-%d') AS unit_id,
+        'R12' AS rule_id,
+        CAST(COUNT(*) AS DOUBLE) AS value
+    FROM submissions
+    GROUP BY enumerator_id, strftime(CAST(start_local AS DATE), '%Y-%m-%d')
+    HAVING COUNT(*) > 12

@@ -1,0 +1,129 @@
+"""Tests for evidence layer, demo dataset generation, Stata export round-trip, and determinism."""
+
+from datetime import datetime
+import hashlib
+from pathlib import Path
+import numpy as np
+import pandas as pd
+import pytest
+
+from engine.evidence import build_evidence
+from engine.features import build_feature_table
+from engine.scoring import score_enumerators
+from generator.run import run_generation
+from scripts.build_demo import build_demo
+
+
+def test_evidence_generation_does_not_mutate_scores(tmp_path):
+    """Verify that building evidence does not alter scores table (hash identical before/after)."""
+    sub_path = run_generation(
+        icc_level="medium",
+        seed=5000,
+        out_dir=tmp_path / "data",
+        round_num=1,
+        prevalence=0.125,
+        include_holdout=False,
+        workload_range=[5, 60],
+        verbose=False,
+    )
+    vil_path = tmp_path / "data" / "reference" / "villages.parquet"
+
+    df_sub = pd.read_parquet(sub_path)
+    df_vil = pd.read_parquet(vil_path)
+    df_feat = build_feature_table(sub_path, vil_path, seed=12345)
+    scores = score_enumerators(df_feat, scoring_version="v3")
+
+    hash_before = hashlib.sha256(scores.to_json().encode("utf-8")).hexdigest()
+    evidence_dict = build_evidence(df_sub, df_vil, scores, df_feat)
+    hash_after = hashlib.sha256(scores.to_json().encode("utf-8")).hexdigest()
+
+    assert hash_before == hash_after, "scores DataFrame was mutated during evidence generation!"
+    assert len(evidence_dict) == len(scores)
+
+
+def test_evidence_structure(tmp_path):
+    """Verify that evidence details include estimates, 90% CIs, p-values, and submission IDs."""
+    sub_path = run_generation(
+        icc_level="medium",
+        seed=5000,
+        out_dir=tmp_path / "data",
+        round_num=1,
+        prevalence=0.125,
+        include_holdout=False,
+        workload_range=[5, 60],
+        verbose=False,
+    )
+    vil_path = tmp_path / "data" / "reference" / "villages.parquet"
+
+    df_sub = pd.read_parquet(sub_path)
+    df_vil = pd.read_parquet(vil_path)
+    df_feat = build_feature_table(sub_path, vil_path, seed=12345)
+    scores = score_enumerators(df_feat, scoring_version="v3")
+
+    ev_dict = build_evidence(df_sub, df_vil, scores, df_feat)
+
+    # Check enumerator enum_27 which has evidence (F3, F6, F7)
+    assert "enum_27" in ev_dict
+    e27 = ev_dict["enum_27"]
+    assert "F3" in e27["features"]
+    assert "F7" in e27["features"]
+
+    f3 = e27["features"]["F3"]
+    assert "p_value" in f3 and f3["p_value"] < 0.05
+    assert "feature_estimate" in f3
+    assert "shrunk_estimate" in f3
+    assert "ci_90" in f3 and len(f3["ci_90"]) == 2
+    assert "pairs" in f3 and len(f3["pairs"]) > 0
+    assert len(f3["submission_ids"]) > 0
+
+    f7 = e27["features"]["F7"]
+    assert "points" in f7 and len(f7["points"]) > 0
+    assert "village_references" in f7 and len(f7["village_references"]) > 0
+
+
+def test_stata_and_csv_exports_match():
+    """Verify that flags.dta reads back with pandas.read_stata and matches flags.csv."""
+    root = Path(__file__).resolve().parent.parent
+    data_dir = root / "site" / "src" / "data"
+
+    csv_path = data_dir / "flags.csv"
+    dta_path = data_dir / "flags.dta"
+
+    assert csv_path.is_file(), "flags.csv not found in site/src/data"
+    assert dta_path.is_file(), "flags.dta not found in site/src/data"
+
+    df_csv = pd.read_csv(csv_path, keep_default_na=False)
+    df_dta = pd.read_stata(dta_path)
+
+    expected_cols = ["enumerator_id", "n", "risk_score", "rank", "evidence", "rule_hits"]
+    assert list(df_csv.columns) == expected_cols
+    assert list(df_dta.columns) == expected_cols
+
+    assert len(df_csv) == len(df_dta) == 40
+    assert (df_csv["enumerator_id"] == df_dta["enumerator_id"]).all()
+    assert (df_csv["n"] == df_dta["n"]).all()
+    assert np.allclose(df_csv["risk_score"], df_dta["risk_score"], atol=1e-4)
+    assert (df_csv["rank"] == df_dta["rank"]).all()
+    assert (df_csv["evidence"] == df_dta["evidence"]).all()
+    assert (df_csv["rule_hits"] == df_dta["rule_hits"]).all()
+
+
+def test_demo_build_deterministic(tmp_path):
+    """Verify that build_demo produces bit-for-bit identical files across multiple executions."""
+    dir1 = tmp_path / "run1"
+    dir2 = tmp_path / "run2"
+    res1 = tmp_path / "res1"
+    res2 = tmp_path / "res2"
+
+    build_demo(output_dir=dir1, results_dir=res1, verbose=False)
+    build_demo(output_dir=dir2, results_dir=res2, verbose=False)
+
+    files1 = sorted([f.name for f in dir1.iterdir() if f.is_file()])
+    files2 = sorted([f.name for f in dir2.iterdir() if f.is_file()])
+    assert files1 == files2
+
+    for fname in files1:
+        h1 = hashlib.sha256(open(dir1 / fname, "rb").read()).hexdigest()
+        h2 = hashlib.sha256(open(dir2 / fname, "rb").read()).hexdigest()
+        assert h1 == h2, f"File {fname} hash mismatch between runs: {h1} != {h2}"
+
