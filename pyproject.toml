@@ -22,6 +22,10 @@ dev = [
     "pytest",
 ]
 
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["engine*", "generator*", "eval*"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
