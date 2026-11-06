@@ -12,22 +12,24 @@
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
 }
 
-html, body {
+html {
+  margin: 0;
+  padding: 0;
+}
+
+body {
   background-color: var(--page);
   color: var(--ink);
   font-family: var(--font-sans);
   font-size: 15px;
   line-height: 22px;
-  margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;
 }
 
-#observablehq-center, #observablehq-main {
+#observablehq-main {
   max-width: 1180px;
-  margin: 0 auto;
 }
-#observablehq-center { padding: 0 24px; }
 
 h1 { font-size: 32px; line-height: 40px; font-weight: 600; color: var(--ink); margin: 16px 0 8px 0; }
 h2 { font-size: 24px; line-height: 32px; font-weight: 600; color: var(--ink); margin: 24px 0 12px 0; }

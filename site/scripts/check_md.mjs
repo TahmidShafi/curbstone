@@ -179,12 +179,55 @@ for (const file of distParquetFiles) {
   }
 }
 
+// 4. Check built CSS (from style.css) for prohibited rules:
+// - must not select #observablehq-center
+// - "body" must not contain a margin declaration
+function getBuiltStyleFiles(dir) {
+  if (!fs.existsSync(dir)) return [];
+  const files = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...getBuiltStyleFiles(full));
+    } else if (entry.isFile() && /^style(\.[a-f0-9]+)?\.css$/i.test(entry.name)) {
+      files.push(full);
+    }
+  }
+  return files;
+}
+
+const styleFiles = [
+  ...getBuiltStyleFiles(path.join(distDir, "_file")),
+  path.join(srcDir, "style.css"),
+].filter((f) => fs.existsSync(f));
+let cssFileCount = 0;
+for (const file of styleFiles) {
+  cssFileCount++;
+  const cssContent = fs.readFileSync(file, "utf-8");
+  if (/#observablehq-center\b/.test(cssContent)) {
+    logError(file, null, "CSS contains a rule selecting #observablehq-center.");
+  }
+  const ruleRegex = /([^{}]+)\{([^}]+)\}/g;
+  let m;
+  while ((m = ruleRegex.exec(cssContent)) !== null) {
+    const selector = m[1];
+    const declarations = m[2];
+    if (/\bbody\b/.test(selector) && /\bmargin\s*:/.test(declarations)) {
+      logError(
+        file,
+        null,
+        `CSS rule '${selector.trim()}' contains a margin declaration on body.`
+      );
+    }
+  }
+}
+
 if (errorCount > 0) {
   console.error(`\ncheck_md: FAILED with ${errorCount} error(s).`);
   process.exit(1);
 } else {
   console.log(
-    `check_md: PASSED. Scanned ${mdFiles.length} markdown file(s), ${htmlFiles.length} built HTML file(s), verified ${moduleScriptCount} module script(s), verified ${parquetFileCount} parquet file(s).`
+    `check_md: PASSED. Scanned ${mdFiles.length} markdown file(s), ${htmlFiles.length} built HTML file(s), verified ${moduleScriptCount} module script(s), verified ${parquetFileCount} parquet file(s), verified ${cssFileCount} style CSS file(s).`
   );
   process.exit(0);
 }
